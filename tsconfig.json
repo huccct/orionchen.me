@@ -22,6 +22,7 @@
     ],
     "paths": {
       "content-collections": ["./.content-collections/generated"],
+      "@/scripts/*": ["./scripts/*"],
       "@/*": ["./src/*"]
     }
   },
