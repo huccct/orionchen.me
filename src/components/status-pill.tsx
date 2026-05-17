@@ -9,7 +9,9 @@ const styles = {
 
 export function StatusPill({ kind }: { kind: keyof typeof styles }) {
   return (
-    <span className={`inline-block rounded-sm border px-2 py-0.5 font-mono text-xs ${styles[kind]}`}>
+    <span
+      className={`inline-block rounded-sm border px-2 py-0.5 font-mono text-xs ${styles[kind]}`}
+    >
       {kind}
     </span>
   )
