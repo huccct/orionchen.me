@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { postSchema } from '@/content/schemas'
+import { postSchema, workSchema } from '@/content/schemas'
 
 describe('postSchema', () => {
   it('accepts a minimal valid post', () => {
@@ -27,5 +27,54 @@ describe('postSchema', () => {
       earlyContent: true,
     })
     expect(result.success).toBe(true)
+  })
+})
+
+describe('workSchema', () => {
+  it('accepts a minimal code work', () => {
+    const r = workSchema.safeParse({
+      slug: 'movorca',
+      title: 'Movorca',
+      summary: 'AI knowledge video skill',
+      type: 'code',
+      status: 'live',
+      publishedAt: '2026-04-01',
+      cover: '/images/works/movorca.jpg',
+    })
+    expect(r.success).toBe(true)
+  })
+
+  it('rejects unknown type', () => {
+    const r = workSchema.safeParse({
+      slug: 'x',
+      title: 'X',
+      summary: 'y',
+      type: 'podcast',
+      status: 'live',
+      publishedAt: '2026-04-01',
+      cover: '/x.jpg',
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('accepts film with guests + episode', () => {
+    const r = workSchema.safeParse({
+      slug: 'ep01',
+      title: 'EP01',
+      summary: 's',
+      type: 'film',
+      status: 'live',
+      publishedAt: '2026-06-01',
+      cover: '/x.jpg',
+      meta: {
+        runtime: '32 min',
+        guests: ['A'],
+        episode: 'EP01',
+      },
+      links: {
+        youtube: 'https://youtu.be/x',
+      },
+    })
+    expect(r.success).toBe(true)
   })
 })

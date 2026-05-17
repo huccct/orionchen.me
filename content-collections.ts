@@ -1,6 +1,6 @@
 import { defineCollection, defineConfig } from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
-import { postSchema } from './src/content/schemas'
+import { postSchema, workSchema } from './src/content/schemas'
 
 const posts = defineCollection({
   name: 'posts',
@@ -13,6 +13,17 @@ const posts = defineCollection({
   }),
 })
 
+const works = defineCollection({
+  name: 'works',
+  directory: 'src/content/works',
+  include: '**/*.mdx',
+  schema: workSchema,
+  transform: async (doc, ctx) => ({
+    ...doc,
+    body: await compileMDX(ctx, doc),
+  }),
+})
+
 export default defineConfig({
-  content: [posts],
+  content: [posts, works],
 })
