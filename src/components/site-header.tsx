@@ -24,10 +24,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 md:px-8">
-        <Link
-          href="/"
-          className="shrink-0 font-mono text-sm hover:text-[var(--color-accent)]"
-        >
+        <Link href="/" className="shrink-0 font-mono text-sm hover:text-[var(--color-accent)]">
           orionchen.me
         </Link>
         <nav className="flex items-center gap-3 text-sm md:gap-6">
