@@ -63,16 +63,16 @@ Explicitly **dropped**: Building (GitHub feed), Circle (tools/people/projects), 
 
 ### 4.3 URL structure
 
-| URL | Purpose |
-|---|---|
-| `/` | Homepage |
-| `/works` | All works, with `?type=code\|film\|writing` filter tabs |
+| URL             | Purpose                                                        |
+| --------------- | -------------------------------------------------------------- |
+| `/`             | Homepage                                                       |
+| `/works`        | All works, with `?type=code\|film\|writing` filter tabs        |
 | `/works/[slug]` | Optional detail page (renders only when MDX body is non-empty) |
-| `/blog` | Existing posts archive — **path preserved for SEO** |
-| `/blog/[slug]` | Existing post — **path preserved for SEO** |
-| `/tags/[tag]` | Existing tag page — preserved |
-| `/guestbook` | Comments via giscus |
-| `/about` | Bio + mini-resume + now + contact (single page, not split) |
+| `/blog`         | Existing posts archive — **path preserved for SEO**            |
+| `/blog/[slug]`  | Existing post — **path preserved for SEO**                     |
+| `/tags/[tag]`   | Existing tag page — preserved                                  |
+| `/guestbook`    | Comments via giscus                                            |
+| `/about`        | Bio + mini-resume + now + contact (single page, not split)     |
 
 Redirects:
 
@@ -128,10 +128,12 @@ Each film is a Work card with poster, title, one-line summary, and external link
 ```
 
 **Body behavior**:
+
 - Empty body → card click goes to first available external link, priority `demo > repo > youtube > bilibili > article`.
 - Non-empty body → renders `/works/[slug]` detail page.
 
 **Listing**:
+
 - Homepage Works: `featured === true`, sorted `publishedAt` desc, max 6.
 - `/works`: all items, with top tabs `All / Code / Film / Writing` (4 tabs).
 
@@ -139,44 +141,44 @@ Each film is a Work card with poster, title, one-line summary, and external link
 
 > **Direction**: engineer's restraint × documentary storytelling. **Not** a fork of lovstudio's purple cyber palette.
 
-| Token | Value |
-|---|---|
-| Background (dark) | `zinc-950` (slightly warm, not pure black) |
-| Foreground (dark) | near-white grays |
-| Accent | **sienna `#A0522D`** — film/old-photo warmth, avoids common blue/purple |
-| Heading typeface | **Newsreader** (English serif) + **Noto Serif SC** (Chinese serif) — "documentary opening" feel |
-| Body sans | **Geist Sans** |
-| Mono | **Geist Mono** — used for nav, tags, numerics, `//` comment decorations |
-| Decoration | `// Section Name` headers, `─────` dividers, status pills (`code` / `film` / `wip` / `live`) |
-| Density | high — card gap 16–24px, line-height 1.6–1.7, type scale ~5 steps (14/16/20/32/64) |
-| Animation | minimal — hover + first-screen fade-in only. **No** scroll parallax, mouse trail, or particle background. |
-| Radius | up to `rounded-md` only |
-| Shadow | none on default cards; subtle on hover only |
+| Token             | Value                                                                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------- |
+| Background (dark) | `zinc-950` (slightly warm, not pure black)                                                                |
+| Foreground (dark) | near-white grays                                                                                          |
+| Accent            | **sienna `#A0522D`** — film/old-photo warmth, avoids common blue/purple                                   |
+| Heading typeface  | **Newsreader** (English serif) + **Noto Serif SC** (Chinese serif) — "documentary opening" feel           |
+| Body sans         | **Geist Sans**                                                                                            |
+| Mono              | **Geist Mono** — used for nav, tags, numerics, `//` comment decorations                                   |
+| Decoration        | `// Section Name` headers, `─────` dividers, status pills (`code` / `film` / `wip` / `live`)              |
+| Density           | high — card gap 16–24px, line-height 1.6–1.7, type scale ~5 steps (14/16/20/32/64)                        |
+| Animation         | minimal — hover + first-screen fade-in only. **No** scroll parallax, mouse trail, or particle background. |
+| Radius            | up to `rounded-md` only                                                                                   |
+| Shadow            | none on default cards; subtle on hover only                                                               |
 
 **Authoring**: This visual system will be encoded as a `DESIGN.md` file at the repo root, following the [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) Stitch format (9 sections: theme, color, typography, components, layout, depth, do/don't, responsive, agent prompts). **Not copied from any existing brand template** — written from scratch, using `Linear` and `WIRED` as format references only. The DESIGN.md is itself a v1 deliverable and will be linked from `/about`.
 
 ## 7. Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | **Next.js 15** (App Router, RSC, streaming, metadata API) |
-| Node | 22 LTS |
-| Package manager | pnpm |
-| Styling | **Tailwind v4** |
-| UI primitives | **shadcn/ui** — install on demand: `button / card / dialog / tooltip / tabs` only |
-| Fonts | `next/font/google` for Geist (Sans + Mono) + Newsreader + Noto Serif SC |
-| Content layer | **content-collections** (TypeScript-native, contentlayer's spiritual successor, Next 15 compatible) |
-| MDX | `@content-collections/mdx` + `rehype-pretty-code` (Shiki) + `rehype-slug` + `rehype-autolink-headings` + `remark-gfm` |
-| Icons | **lucide-react** (no emojis in UI per existing project rule) |
-| Comments | **giscus** (carry over from old site, GitHub Discussions backend) |
-| Theme | **next-themes** (dark / light / system) |
-| OG images | **`@vercel/og`** — dynamic per post |
-| RSS / sitemap | Next 15 metadata API + ported scripts from old site |
-| Analytics | **Plausible** |
-| Deployment | Vercel |
-| Lint / Format | `eslint-config-next` + `prettier` (not antfu — that's for movorca / 虾聊) |
-| TypeScript | strict |
-| i18n | **Not in v1.** Single language (Chinese-primary, English allowed in posts where the author chose to write in English). Add only when there is concrete English audience demand. |
+| Layer           | Choice                                                                                                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework       | **Next.js 15** (App Router, RSC, streaming, metadata API)                                                                                                                       |
+| Node            | 22 LTS                                                                                                                                                                          |
+| Package manager | pnpm                                                                                                                                                                            |
+| Styling         | **Tailwind v4**                                                                                                                                                                 |
+| UI primitives   | **shadcn/ui** — install on demand: `button / card / dialog / tooltip / tabs` only                                                                                               |
+| Fonts           | `next/font/google` for Geist (Sans + Mono) + Newsreader + Noto Serif SC                                                                                                         |
+| Content layer   | **content-collections** (TypeScript-native, contentlayer's spiritual successor, Next 15 compatible)                                                                             |
+| MDX             | `@content-collections/mdx` + `rehype-pretty-code` (Shiki) + `rehype-slug` + `rehype-autolink-headings` + `remark-gfm`                                                           |
+| Icons           | **lucide-react** (no emojis in UI per existing project rule)                                                                                                                    |
+| Comments        | **giscus** (carry over from old site, GitHub Discussions backend)                                                                                                               |
+| Theme           | **next-themes** (dark / light / system)                                                                                                                                         |
+| OG images       | **`@vercel/og`** — dynamic per post                                                                                                                                             |
+| RSS / sitemap   | Next 15 metadata API + ported scripts from old site                                                                                                                             |
+| Analytics       | **Plausible**                                                                                                                                                                   |
+| Deployment      | Vercel                                                                                                                                                                          |
+| Lint / Format   | `eslint-config-next` + `prettier` (not antfu — that's for movorca / 虾聊)                                                                                                       |
+| TypeScript      | strict                                                                                                                                                                          |
+| i18n            | **Not in v1.** Single language (Chinese-primary, English allowed in posts where the author chose to write in English). Add only when there is concrete English audience demand. |
 
 ## 8. Cadence & Content Mechanics
 
@@ -188,15 +190,16 @@ Each film is a Work card with poster, title, one-line summary, and external link
 
 ### 8.2 Minimum publishing cadence — soft floors with review
 
-| Medium | Floor | Action on miss |
-|---|---|---|
-| Writing | 1 post / 3 months | Review state; not forced to ship — but must show evidence of progress (notes, draft, WIP) |
-| Code | 1 new piece / 6 months (skill / demo / toy is fine) | Same review rule; can repackage an internal 虾聊 decision into a public post |
-| Film | none yet (not started) | Set after first film ships; no floor in first 6 months |
+| Medium  | Floor                                               | Action on miss                                                                            |
+| ------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Writing | 1 post / 3 months                                   | Review state; not forced to ship — but must show evidence of progress (notes, draft, WIP) |
+| Code    | 1 new piece / 6 months (skill / demo / toy is fine) | Same review rule; can repackage an internal 虾聊 decision into a public post              |
+| Film    | none yet (not started)                              | Set after first film ships; no floor in first 6 months                                    |
 
 ### 8.3 Maintenance hour priority (the 2h/week)
 
 In strict order:
+
 1. Reply to guestbook (~15 min)
 2. Triage PRs / issues if any (~30 min)
 3. Writing or works changes
@@ -216,18 +219,19 @@ If 6 months pass with zero output: declare hiatus publicly via a banner in the h
 
 ### 9.2 Existing content handling
 
-| Class | Count | Action |
-|---|---|---|
-| Tech posts (grid/flex/canvas/http/router) | ~10 | Migrate all |
-| Career/thinking posts (future-path, financial-independence, etc.) | ~5 | Migrate all |
-| Interview prep posts | 2 | Migrate, add "early content" banner |
-| `projectsData.ts` | — | Rebuild as `content/works/*.mdx` |
-| `resume.tsx` | — | Merge into `/about` |
-| `public/static/images/` | — | Move to new path; redirects if needed |
+| Class                                                             | Count | Action                                |
+| ----------------------------------------------------------------- | ----- | ------------------------------------- |
+| Tech posts (grid/flex/canvas/http/router)                         | ~10   | Migrate all                           |
+| Career/thinking posts (future-path, financial-independence, etc.) | ~5    | Migrate all                           |
+| Interview prep posts                                              | 2     | Migrate, add "early content" banner   |
+| `projectsData.ts`                                                 | —     | Rebuild as `content/works/*.mdx`      |
+| `resume.tsx`                                                      | —     | Merge into `/about`                   |
+| `public/static/images/`                                           | —     | Move to new path; redirects if needed |
 
 ### 9.3 Migration script
 
 `scripts/migrate-blog-v1.ts`, one-shot:
+
 1. Read old `data/blog/*.mdx` frontmatter
 2. Field mapping (`summary` → `summary`, `tags` → `tags`, add `type: 'writing'`, add `status: 'live'`)
 3. Write to new repo's `content/posts/*.mdx`
@@ -243,6 +247,7 @@ If 6 months pass with zero output: declare hiatus publicly via a banner in the h
 ### 9.5 Cutover sequence (Phase 5)
 
 Each step reversible:
+
 1. Deploy new repo to Vercel preview domain (`orionchen-me-v2.vercel.app`).
 2. Run a 200-status check across all old URLs (curl list).
 3. Switch `orionchen.me` DNS / Vercel domain to new project.
@@ -278,14 +283,14 @@ Each step reversible:
 
 ## Appendix A — Phase Summary (high-level; full plan via writing-plans skill)
 
-| Phase | Duration | Output |
-|---|---|---|
-| 0. Stack lock-in | 0.5 day | Final stack decisions, `DESIGN.md` skeleton |
-| 1. Scaffold | 1 day | New repo, layout, theme, design tokens, CLAUDE.md |
-| 2. Content migration | 1–2 days | 20+ posts ported; redirects in place |
-| 3. Pages | 3–4 days | Hero, Works, Writing strip, Guestbook, About |
-| 4. Polish | 1 day | OG images, RSS/sitemap, Plausible, 404/loading/error |
-| 5. Cutover | 0.5 day | DNS switch, observation, old-repo archive |
+| Phase                | Duration | Output                                               |
+| -------------------- | -------- | ---------------------------------------------------- |
+| 0. Stack lock-in     | 0.5 day  | Final stack decisions, `DESIGN.md` skeleton          |
+| 1. Scaffold          | 1 day    | New repo, layout, theme, design tokens, CLAUDE.md    |
+| 2. Content migration | 1–2 days | 20+ posts ported; redirects in place                 |
+| 3. Pages             | 3–4 days | Hero, Works, Writing strip, Guestbook, About         |
+| 4. Polish            | 1 day    | OG images, RSS/sitemap, Plausible, 404/loading/error |
+| 5. Cutover           | 0.5 day  | DNS switch, observation, old-repo archive            |
 
 **Total estimate**: 7–9 working days, ~3 weeks elapsed at 5–10h/week.
 
