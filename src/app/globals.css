@@ -25,12 +25,10 @@
   --text-xl: 4rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-bg: var(--color-bg-dark);
-    --color-fg: var(--color-fg-dark);
-    --color-border: var(--color-border-dark);
-  }
+.dark {
+  --color-bg: var(--color-bg-dark);
+  --color-fg: var(--color-fg-dark);
+  --color-border: var(--color-border-dark);
 }
 
 html {

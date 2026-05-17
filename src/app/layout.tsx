@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ThemeProvider } from '@/components/theme-provider'
 import { geistMono, geistSans, newsreader, notoSerifSC } from '@/lib/fonts'
 import './globals.css'
 
@@ -16,8 +17,11 @@ export default function RootLayout({
     <html
       lang="zh-CN"
       className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} ${notoSerifSC.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   )
 }
