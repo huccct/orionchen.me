@@ -9,6 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "migrate": "tsx scripts/migrate-blog-v1.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
@@ -41,6 +42,7 @@
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4",
+    "tsx": "^4.22.1",
     "typescript": "^5",
     "vitest": "^4.1.6"
   }
