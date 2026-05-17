@@ -48,9 +48,7 @@ describe('mapFrontmatter', () => {
 
 describe('rewriteImagePaths', () => {
   it('rewrites local /static/images/ to /images/posts/', () => {
-    expect(rewriteImagePaths(`![x](/static/images/foo.png)`)).toBe(
-      `![x](/images/posts/foo.png)`
-    )
+    expect(rewriteImagePaths(`![x](/static/images/foo.png)`)).toBe(`![x](/images/posts/foo.png)`)
   })
 
   it('leaves absolute CDN URLs untouched', () => {
