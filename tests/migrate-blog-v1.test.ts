@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mapFrontmatter } from '@/scripts/migrate-blog-v1'
+import { mapFrontmatter, rewriteImagePaths } from '@/scripts/migrate-blog-v1'
 
 describe('mapFrontmatter', () => {
   it('preserves title/date/summary/tags', () => {
@@ -42,5 +42,24 @@ describe('mapFrontmatter', () => {
       'ai-agent-crypto-payments'
     )
     expect(out.earlyContent).toBeFalsy()
+  })
+})
+
+describe('rewriteImagePaths', () => {
+  it('rewrites local /static/images/ to /images/posts/', () => {
+    expect(rewriteImagePaths(`![x](/static/images/foo.png)`)).toBe(
+      `![x](/images/posts/foo.png)`
+    )
+  })
+
+  it('leaves absolute CDN URLs untouched', () => {
+    const md = `![x](https://cdn.jsdelivr.net/foo.webp)`
+    expect(rewriteImagePaths(md)).toBe(md)
+  })
+
+  it('handles HTML <img> tags', () => {
+    expect(rewriteImagePaths(`<img src="/static/images/y.png" />`)).toBe(
+      `<img src="/images/posts/y.png" />`
+    )
   })
 })

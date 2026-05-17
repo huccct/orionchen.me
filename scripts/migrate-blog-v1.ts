@@ -16,3 +16,7 @@ export function mapFrontmatter(old: Record<string, unknown>, slug: string) {
 
   return out
 }
+
+export function rewriteImagePaths(content: string): string {
+  return content.replace(/\/static\/images\//g, '/images/posts/')
+}
