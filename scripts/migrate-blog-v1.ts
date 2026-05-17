@@ -1,3 +1,7 @@
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import matter from 'gray-matter'
+
 const EARLY_SLUGS = new Set(['frontend-interview', 'frontend-interview2'])
 
 export function mapFrontmatter(old: Record<string, unknown>, slug: string) {
@@ -19,4 +23,16 @@ export function mapFrontmatter(old: Record<string, unknown>, slug: string) {
 
 export function rewriteImagePaths(content: string): string {
   return content.replace(/\/static\/images\//g, '/images/posts/')
+}
+
+export async function migrateOne(srcPath: string) {
+  const slug = path.basename(srcPath, '.mdx')
+  const raw = await fs.readFile(srcPath, 'utf8')
+  const { data, content } = matter(raw)
+  const serialized = matter.stringify(rewriteImagePaths(content), mapFrontmatter(data, slug))
+
+  return {
+    slug,
+    serialized,
+  }
 }

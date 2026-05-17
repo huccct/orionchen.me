@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { mapFrontmatter, rewriteImagePaths } from '@/scripts/migrate-blog-v1'
+import path from 'node:path'
+import { mapFrontmatter, migrateOne, rewriteImagePaths } from '@/scripts/migrate-blog-v1'
 
 describe('mapFrontmatter', () => {
   it('preserves title/date/summary/tags', () => {
@@ -61,5 +62,15 @@ describe('rewriteImagePaths', () => {
     expect(rewriteImagePaths(`<img src="/static/images/y.png" />`)).toBe(
       `<img src="/images/posts/y.png" />`
     )
+  })
+})
+
+describe('migrateOne', () => {
+  it('reads, transforms, and returns serialized mdx', async () => {
+    const out = await migrateOne(path.resolve('tests/fixtures/sample-post.mdx'))
+    expect(out.slug).toBe('sample-post')
+    expect(out.serialized).toContain('title: Sample')
+    expect(out.serialized).toContain('/images/posts/foo.png')
+    expect(out.serialized).not.toContain('/static/images/foo.png')
   })
 })
