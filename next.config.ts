@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    return [
+      { source: '/projects', destination: '/works', permanent: true },
+      { source: '/resume', destination: '/about', permanent: true },
+    ]
+  },
 }
 
 export default withContentCollections(nextConfig)
