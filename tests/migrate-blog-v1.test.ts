@@ -44,6 +44,17 @@ describe('mapFrontmatter', () => {
     )
     expect(out.earlyContent).toBeFalsy()
   })
+
+  it('zero-pads single-digit month and day to ISO YYYY-MM-DD', () => {
+    expect(mapFrontmatter({ title: 'X', date: '2025-1-05' }, 'foo').date).toBe('2025-01-05')
+    expect(mapFrontmatter({ title: 'X', date: '2024-3-25' }, 'foo').date).toBe('2024-03-25')
+    expect(mapFrontmatter({ title: 'X', date: '2024-4-23' }, 'foo').date).toBe('2024-04-23')
+    expect(mapFrontmatter({ title: 'X', date: '2024-12-31' }, 'foo').date).toBe('2024-12-31')
+  })
+
+  it('preserves already-padded ISO dates verbatim', () => {
+    expect(mapFrontmatter({ title: 'X', date: '2023-10-22' }, 'foo').date).toBe('2023-10-22')
+  })
 })
 
 describe('rewriteImagePaths', () => {

@@ -4,10 +4,19 @@ import matter from 'gray-matter'
 
 const EARLY_SLUGS = new Set(['frontend-interview', 'frontend-interview2'])
 
+function normalizeDate(input: unknown): unknown {
+  if (typeof input !== 'string') return input
+  const match = input.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
+  if (!match) return input
+  const [, y, m, d] = match
+  if (!y || !m || !d) return input
+  return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+}
+
 export function mapFrontmatter(old: Record<string, unknown>, slug: string) {
   const out: Record<string, unknown> = {
     title: old.title,
-    date: old.date,
+    date: normalizeDate(old.date),
     slug,
     summary: old.summary,
     tags: old.tags ?? [],
