@@ -6,19 +6,15 @@ import { StatusPill } from '@/components/status-pill'
 
 export const dynamicParams = false
 
-function hasSourceBody(work: (typeof allWorks)[number]) {
-  return String(work.content ?? '').trim().length > 0
-}
-
 export function generateStaticParams() {
-  return allWorks.filter(hasSourceBody).map((work) => ({ slug: work.slug }))
+  return allWorks.filter((work) => work.hasDetail).map((work) => ({ slug: work.slug }))
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const work = allWorks.find((item) => item.slug === slug)
 
-  if (!work || !hasSourceBody(work)) notFound()
+  if (!work || !work.hasDetail) notFound()
 
   return (
     <article className="mx-auto max-w-2xl">
@@ -27,7 +23,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           <StatusPill kind={work.type} />
           <StatusPill kind={work.status} />
         </div>
-        <h1 className="font-serif text-xl">{work.title}</h1>
+        <h1 className="font-serif text-4xl">{work.title}</h1>
         <p className="text-[var(--color-muted)]">{work.summary}</p>
       </header>
       <div className="prose">

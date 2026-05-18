@@ -32,11 +32,7 @@ export default function Home() {
         <SectionHeader action={<Link href="/works">all</Link>}>Works</SectionHeader>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((work) => (
-            <WorkCard
-              key={work.slug}
-              work={work}
-              hasBody={String(work.content ?? '').trim().length > 0}
-            />
+            <WorkCard key={work.slug} work={work} />
           ))}
         </div>
       </section>

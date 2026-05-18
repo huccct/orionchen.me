@@ -77,4 +77,33 @@ describe('workSchema', () => {
     })
     expect(r.success).toBe(true)
   })
+
+  it('defaults hasDetail to false when absent', () => {
+    const r = workSchema.safeParse({
+      slug: 'x',
+      title: 'X',
+      summary: 's',
+      type: 'code',
+      status: 'live',
+      publishedAt: '2026-04-01',
+      cover: '/x.jpg',
+    })
+    expect(r.success).toBe(true)
+    if (r.success) expect(r.data.hasDetail).toBe(false)
+  })
+
+  it('honors explicit hasDetail: true', () => {
+    const r = workSchema.safeParse({
+      slug: 'x',
+      title: 'X',
+      summary: 's',
+      type: 'code',
+      status: 'live',
+      publishedAt: '2026-04-01',
+      cover: '/x.jpg',
+      hasDetail: true,
+    })
+    expect(r.success).toBe(true)
+    if (r.success) expect(r.data.hasDetail).toBe(true)
+  })
 })

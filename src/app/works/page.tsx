@@ -7,12 +7,7 @@ export const metadata = {
 }
 
 export default function WorksPage() {
-  const works = allWorks
-    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-    .map((work) => ({
-      ...work,
-      hasBody: String(work.content ?? '').trim().length > 0,
-    }))
+  const works = allWorks.toSorted((a, b) => b.publishedAt.localeCompare(a.publishedAt))
 
   return (
     <div>
