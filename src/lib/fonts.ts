@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Newsreader } from 'next/font/google'
+import { Geist, Geist_Mono, Newsreader, Noto_Serif_SC } from 'next/font/google'
 
 export const geistSans = Geist({
   subsets: ['latin'],
@@ -19,6 +19,9 @@ export const newsreader = Newsreader({
   display: 'swap',
 })
 
-export const notoSerifSC = {
-  variable: 'font-noto-serif-sc-fallback',
-}
+export const notoSerifSC = Noto_Serif_SC({
+  variable: '--font-noto-serif-sc',
+  weight: ['400', '700'],
+  display: 'swap',
+  preload: false,
+})
