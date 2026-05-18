@@ -9,11 +9,11 @@ export default defineConfig({
     alias: [
       {
         find: '@/scripts',
-        replacement: path.resolve(__dirname, './scripts'),
+        replacement: path.resolve(import.meta.dirname, './scripts'),
       },
       {
         find: '@',
-        replacement: path.resolve(__dirname, './src'),
+        replacement: path.resolve(import.meta.dirname, './src'),
       },
     ],
   },
