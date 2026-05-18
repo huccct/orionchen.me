@@ -23,8 +23,8 @@ export default function Home() {
           by <span className="text-[var(--color-accent)]">Orion Chen</span>.
         </h1>
         <p className="mt-6 max-w-xl text-[var(--color-muted)]">
-          一个程序员、纪录片作者的个人作品场。在 AI
-          时代里继续做有意思的东西，有没有人用是另一回事。
+          一间用代码、影像和文字开着门的小工作室。在 AI
+          时代继续做一些偏执、好玩、也许没人用的东西。
         </p>
       </section>
 

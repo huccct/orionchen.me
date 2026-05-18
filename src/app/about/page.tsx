@@ -9,11 +9,11 @@ export default function AboutPage() {
       <section>
         <SectionHeader>About</SectionHeader>
         <p className="text-base leading-relaxed">
-          我是 Orion Chen, 程序员, 纪录片创作者。目前全职在{' '}
+          我是 Orion Chen, 写代码, 也拍纪录片。目前全职在{' '}
           <a href="https://xialiao.ai" className="text-[var(--color-accent)]">
             硅基回响 / 虾聊
           </a>
-          , 这个站是我的副线 - 把脑子里有意思的想法做出来放着, 有没有人用是另一回事。
+          , 这个站是我的副线 - 把一些偏执、好玩、也许没人用的想法做出来。
         </p>
       </section>
 

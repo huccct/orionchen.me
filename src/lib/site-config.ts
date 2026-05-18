@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: 'Orion Chen',
   url: 'https://orionchen.me',
-  description: '一个程序员、纪录片作者的个人作品场。',
+  description: '一间用代码、影像和文字开着门的小工作室。',
   email: 'hi@orionchen.me',
   social: {
     github: 'https://github.com/huccct',
