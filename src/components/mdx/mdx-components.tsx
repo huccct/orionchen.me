@@ -6,8 +6,20 @@ type MDXImageProps = ComponentPropsWithoutRef<'img'> & {
   src?: string
 }
 
+function isLocalSrc(src: string): boolean {
+  return src.startsWith('/') && !src.startsWith('//')
+}
+
 function MDXImage({ alt = '', src, ...props }: MDXImageProps) {
   if (!src) return null
+
+  if (!isLocalSrc(src)) {
+    // External images (CDN, embedded references) bypass next/image so we don't
+    // need to maintain a remotePatterns whitelist for every host that ever
+    // appeared in a post.
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img {...props} src={src} alt={alt} className="my-6 rounded-md" loading="lazy" />
+  }
 
   return (
     <Image
