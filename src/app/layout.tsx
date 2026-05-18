@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Plausible } from '@/components/plausible'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { ThemeProvider } from '@/components/theme-provider'
@@ -31,6 +32,7 @@ export default function RootLayout({
           <SiteHeader />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 md:px-8">{children}</main>
           <SiteFooter />
+          <Plausible />
         </ThemeProvider>
       </body>
     </html>
