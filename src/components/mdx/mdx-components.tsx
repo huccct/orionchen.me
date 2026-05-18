@@ -36,10 +36,10 @@ function MDXImage({ alt = '', src, ...props }: MDXImageProps) {
 export const mdxComponents = {
   img: MDXImage,
   h2: (props: ComponentPropsWithoutRef<'h2'>) => (
-    <h2 className="mt-8 mb-4 font-serif text-lg" {...props} />
+    <h2 className="mt-8 mb-4 font-serif text-2xl" {...props} />
   ),
   h3: (props: ComponentPropsWithoutRef<'h3'>) => (
-    <h3 className="mt-6 mb-3 font-serif text-base" {...props} />
+    <h3 className="mt-6 mb-3 font-serif text-xl" {...props} />
   ),
   a: (props: ComponentPropsWithoutRef<'a'>) => (
     <a className="text-[var(--color-accent)] underline-offset-4 hover:underline" {...props} />
