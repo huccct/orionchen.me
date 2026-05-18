@@ -9,7 +9,14 @@ const posts = defineCollection({
   schema: postSchema,
   transform: async (doc, ctx) => ({
     ...doc,
-    body: await compileMDX(ctx, doc),
+    body: await compileMDX(ctx, doc, {
+      remarkPlugins: [(await import('remark-gfm')).default],
+      rehypePlugins: [
+        (await import('rehype-slug')).default,
+        [(await import('rehype-pretty-code')).default, { theme: 'github-dark-dimmed' }],
+        [(await import('rehype-autolink-headings')).default, { behavior: 'append' }],
+      ],
+    }),
   }),
 })
 
