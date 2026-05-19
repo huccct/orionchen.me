@@ -10,7 +10,7 @@ export default function AboutPage() {
         <SectionHeader>About</SectionHeader>
         <p className="text-base leading-relaxed">
           我是 Orion Chen, 写代码, 也拍纪录片。目前全职在{' '}
-          <a href="https://xialiao.ai" className="text-[var(--color-accent)]">
+          <a href="https://xialiao.ai" className="text-accent">
             硅基回响 / 虾聊
           </a>
           , 这个站是我的副线 - 把一些偏执、好玩、也许没人用的想法做出来。
@@ -28,9 +28,9 @@ export default function AboutPage() {
 
       <section>
         <SectionHeader>Resume</SectionHeader>
-        <p className="text-sm text-[var(--color-muted)]">
+        <p className="text-muted-foreground text-sm">
           (mini summary; full resume available on request via{' '}
-          <a href={`mailto:${siteConfig.email}`} className="text-[var(--color-accent)]">
+          <a href={`mailto:${siteConfig.email}`} className="text-accent">
             {siteConfig.email}
           </a>
           )
@@ -43,7 +43,7 @@ export default function AboutPage() {
           这个站本身的设计系统在{' '}
           <a
             href="https://github.com/huccct/orionchen.me/blob/main/DESIGN.md"
-            className="text-[var(--color-accent)]"
+            className="text-accent"
           >
             DESIGN.md
           </a>{' '}

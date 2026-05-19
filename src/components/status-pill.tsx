@@ -1,10 +1,10 @@
 const styles = {
-  code: 'border-[var(--color-border)]',
-  documentary: 'border-[var(--color-accent)] text-[var(--color-accent)]',
-  writing: 'border-[var(--color-border)]',
+  code: 'border-border',
+  documentary: 'border-accent text-accent',
+  writing: 'border-border',
   wip: 'border-amber-500 text-amber-600 dark:text-amber-400',
   live: 'border-emerald-500 text-emerald-600 dark:text-emerald-400',
-  archived: 'border-[var(--color-muted)] text-[var(--color-muted)]',
+  archived: 'border-muted-foreground text-muted-foreground',
 }
 
 export function StatusPill({ kind }: { kind: keyof typeof styles }) {

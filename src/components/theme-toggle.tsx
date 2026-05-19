@@ -9,7 +9,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="p-2 hover:text-[var(--color-accent)]"
+      className="hover:text-accent p-2"
       aria-label="Toggle theme"
     >
       <Sun className="h-4 w-4 dark:hidden" />

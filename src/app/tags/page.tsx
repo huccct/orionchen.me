@@ -21,9 +21,9 @@ export default function TagsPage() {
           <Link
             key={tag}
             href={`/tags/${encodeURIComponent(tag)}`}
-            className="rounded-sm border border-[var(--color-border)] px-2 py-1 hover:text-[var(--color-accent)]"
+            className="border-border hover:text-accent rounded-sm border px-2 py-1"
           >
-            {tag} <span className="text-[var(--color-muted)]">{count}</span>
+            {tag} <span className="text-muted-foreground">{count}</span>
           </Link>
         ))}
       </div>

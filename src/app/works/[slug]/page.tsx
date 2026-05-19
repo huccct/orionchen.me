@@ -24,7 +24,7 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
           <StatusPill kind={work.status} />
         </div>
         <h1 className="font-serif text-4xl">{work.title}</h1>
-        <p className="text-[var(--color-muted)]">{work.summary}</p>
+        <p className="text-muted-foreground">{work.summary}</p>
       </header>
       <div className="prose">
         <MDXContent code={work.body} components={mdxComponents} />

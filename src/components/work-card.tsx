@@ -9,14 +9,14 @@ function firstExternalLink(work: Work): string | null {
 }
 
 const cardClass =
-  'group block overflow-hidden rounded-md border border-[var(--color-border)] transition-colors'
-const linkableClass = 'hover:border-[var(--color-accent)] hover:shadow-sm'
+  'group block overflow-hidden rounded-md border border-border bg-card transition-colors'
+const linkableClass = 'hover:border-accent hover:shadow-sm'
 const inertClass = 'opacity-90 cursor-default'
 
 function CardInner({ work, badge }: { work: Work; badge?: string }) {
   return (
     <>
-      <div className="relative aspect-[16/10] bg-[var(--color-border)]">
+      <div className="bg-muted relative aspect-[16/10]">
         <Image
           src={work.cover}
           alt={work.title}
@@ -25,7 +25,7 @@ function CardInner({ work, badge }: { work: Work; badge?: string }) {
           sizes="(max-width: 768px) 100vw, 33vw"
         />
         {badge && (
-          <span className="absolute top-2 right-2 rounded-sm border border-[var(--color-border)] bg-[var(--color-bg)]/80 px-2 py-0.5 font-mono text-xs text-[var(--color-muted)] backdrop-blur">
+          <span className="border-border bg-background/90 text-muted-foreground absolute top-2 right-2 rounded-sm border px-2 py-0.5 font-mono text-xs backdrop-blur">
             {badge}
           </span>
         )}
@@ -38,7 +38,7 @@ function CardInner({ work, badge }: { work: Work; badge?: string }) {
             {work.status !== 'live' && <StatusPill kind={work.status} />}
           </div>
         </div>
-        <p className="line-clamp-2 text-xs text-[var(--color-muted)]">{work.summary}</p>
+        <p className="text-muted-foreground line-clamp-2 text-xs">{work.summary}</p>
       </div>
     </>
   )

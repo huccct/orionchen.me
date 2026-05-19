@@ -22,14 +22,14 @@ const NAV = [
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-10 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 backdrop-blur">
+    <header className="border-border bg-background/85 sticky top-0 z-10 border-b backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 md:px-8">
-        <Link href="/" className="shrink-0 font-mono text-sm hover:text-[var(--color-accent)]">
+        <Link href="/" className="hover:text-accent shrink-0 font-mono text-sm">
           orionchen.me
         </Link>
         <nav className="flex items-center gap-3 text-sm md:gap-6">
           {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-[var(--color-accent)]">
+            <Link key={item.href} href={item.href} className="hover:text-accent">
               {item.label}
             </Link>
           ))}

@@ -15,11 +15,13 @@ export function GiscusComments({ term = 'Guestbook' }: { term?: string }) {
       categoryId={siteConfig.giscus.categoryId}
       mapping="specific"
       term={term}
+      strict="0"
       reactionsEnabled="1"
       emitMetadata="0"
       inputPosition="top"
       theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
       lang="zh-CN"
+      loading="lazy"
     />
   )
 }

@@ -10,7 +10,7 @@ export default function BlogPage() {
   return (
     <div>
       <SectionHeader>Writing</SectionHeader>
-      <div className="mb-4 font-mono text-xs text-[var(--color-muted)]">{posts.length} posts</div>
+      <div className="text-muted-foreground mb-4 font-mono text-xs">{posts.length} posts</div>
       <div>
         {posts.map((post) => (
           <PostCard key={post.slug} post={post} />

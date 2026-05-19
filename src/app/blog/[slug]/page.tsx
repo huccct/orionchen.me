@@ -18,7 +18,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     <article className="mx-auto max-w-2xl">
       <header className="mb-8 space-y-2">
         <h1 className="font-serif text-4xl">{post.title}</h1>
-        <time className="font-mono text-xs text-[var(--color-muted)]">{post.date}</time>
+        <time className="text-muted-foreground font-mono text-xs">{post.date}</time>
       </header>
       {post.earlyContent && <EarlyContentBanner />}
       <div className="prose">

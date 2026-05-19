@@ -10,9 +10,9 @@ export const siteConfig = {
   },
   giscus: {
     repo: 'huccct/orionchen.me' as `${string}/${string}`,
-    repoId: '',
-    category: 'Guestbook',
-    categoryId: '',
+    repoId: 'R_kgDOSgibMQ',
+    category: 'General',
+    categoryId: 'DIC_kwDOSgibMc4C9W0L',
   },
   plausibleDomain: 'orionchen.me',
 }

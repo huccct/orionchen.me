@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 
 export function SectionHeader({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="mb-6 flex items-baseline justify-between border-b border-[var(--color-border)] pb-2">
-      <h2 className="font-mono text-sm text-[var(--color-muted)]">
+    <div className="border-border mb-6 flex items-baseline justify-between border-b pb-2">
+      <h2 className="text-muted-foreground font-mono text-sm">
         {`// `}
         {children}
       </h2>

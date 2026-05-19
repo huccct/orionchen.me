@@ -42,12 +42,9 @@ export const mdxComponents = {
     <h3 className="mt-6 mb-3 font-serif text-xl" {...props} />
   ),
   a: (props: ComponentPropsWithoutRef<'a'>) => (
-    <a className="text-[var(--color-accent)] underline-offset-4 hover:underline" {...props} />
+    <a className="text-accent underline-offset-4 hover:underline" {...props} />
   ),
   pre: (props: ComponentPropsWithoutRef<'pre'>) => (
-    <pre
-      className="my-4 overflow-x-auto rounded-md border border-[var(--color-border)] p-4"
-      {...props}
-    />
+    <pre className="border-border bg-card my-4 overflow-x-auto rounded-md border p-4" {...props} />
   ),
 }

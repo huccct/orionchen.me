@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="py-24 text-center font-mono text-sm text-[var(--color-muted)]">
+    <div className="text-muted-foreground py-24 text-center font-mono text-sm">
       {`// loading...`}
     </div>
   )
