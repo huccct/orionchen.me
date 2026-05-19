@@ -1,11 +1,16 @@
 import type { MetadataRoute } from 'next'
 import { allPosts, allWorks } from 'content-collections'
+import { getBlogPageCount } from '@/lib/posts'
 import { siteConfig } from '@/lib/site-config'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteConfig.url
   const staticRoutes = ['', '/works', '/blog', '/tags', '/guestbook', '/about'].map((path) => ({
     url: `${baseUrl}${path}`,
+    changeFrequency: 'monthly' as const,
+  }))
+  const blogPages = Array.from({ length: Math.max(0, getBlogPageCount() - 1) }, (_, index) => ({
+    url: `${baseUrl}/blog/page/${index + 2}`,
     changeFrequency: 'monthly' as const,
   }))
   const posts = allPosts
@@ -16,5 +21,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: work.publishedAt,
   }))
 
-  return [...staticRoutes, ...posts, ...works]
+  return [...staticRoutes, ...blogPages, ...posts, ...works]
 }

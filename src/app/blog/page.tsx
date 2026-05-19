@@ -1,21 +1,15 @@
-import { allPosts } from 'content-collections'
-import { PostCard } from '@/components/post-card'
-import { SectionHeader } from '@/components/section-header'
+import { BlogArchive } from '@/components/blog-archive'
+import { getBlogPageCount, getBlogPagePosts, getPublishedPosts } from '@/lib/posts'
 
 export const metadata = { title: 'Writing' }
 
 export default function BlogPage() {
-  const posts = allPosts.filter((post) => !post.draft).sort((a, b) => b.date.localeCompare(a.date))
+  const allPosts = getPublishedPosts()
+  const page = 1
+  const pageCount = getBlogPageCount(allPosts)
+  const posts = getBlogPagePosts(page, allPosts)
 
   return (
-    <div>
-      <SectionHeader>Writing</SectionHeader>
-      <div className="text-muted-foreground mb-4 font-mono text-xs">{posts.length} posts</div>
-      <div>
-        {posts.map((post) => (
-          <PostCard key={post.slug} post={post} />
-        ))}
-      </div>
-    </div>
+    <BlogArchive page={page} pageCount={pageCount} posts={posts} totalPosts={allPosts.length} />
   )
 }
