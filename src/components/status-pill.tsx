@@ -1,6 +1,6 @@
 const styles = {
   code: 'border-[var(--color-border)]',
-  film: 'border-[var(--color-accent)] text-[var(--color-accent)]',
+  documentary: 'border-[var(--color-accent)] text-[var(--color-accent)]',
   writing: 'border-[var(--color-border)]',
   wip: 'border-amber-500 text-amber-600 dark:text-amber-400',
   live: 'border-emerald-500 text-emerald-600 dark:text-emerald-400',

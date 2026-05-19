@@ -51,7 +51,7 @@ export function WorkCard({ work }: { work: Work }) {
   const external = !internalHref && externalHref?.startsWith('http')
 
   if (!href) {
-    // Featured wip works (e.g. an upcoming film) may have neither a detail
+    // Featured wip works (e.g. an upcoming documentary) may have neither a detail
     // page nor an external link yet — render a non-clickable card with a
     // "coming soon" badge so the homepage doesn't 404 on click.
     return (

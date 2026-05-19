@@ -5,7 +5,7 @@ import type { Work } from '@/content/schemas'
 import { Tabs, TabsList, TabsTrigger } from './ui/tabs'
 import { WorkCard } from './work-card'
 
-const KINDS = ['all', 'code', 'film', 'writing'] as const
+const KINDS = ['all', 'code', 'documentary', 'writing'] as const
 
 export function WorksFilter({ works }: { works: Work[] }) {
   const [kind, setKind] = useState<(typeof KINDS)[number]>('all')

@@ -57,12 +57,12 @@ describe('workSchema', () => {
     expect(r.success).toBe(false)
   })
 
-  it('accepts film with guests + episode', () => {
+  it('accepts documentary with guests + episode', () => {
     const r = workSchema.safeParse({
       slug: 'ep01',
       title: 'EP01',
       summary: 's',
-      type: 'film',
+      type: 'documentary',
       status: 'live',
       publishedAt: '2026-06-01',
       cover: '/x.jpg',

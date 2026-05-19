@@ -17,7 +17,7 @@ export const workSchema = z.object({
   slug: z.string(),
   title: z.string(),
   summary: z.string(),
-  type: z.enum(['code', 'film', 'writing']),
+  type: z.enum(['code', 'documentary', 'writing']),
   status: z.enum(['wip', 'live', 'archived']),
   publishedAt: z.string(),
   cover: z.string(),

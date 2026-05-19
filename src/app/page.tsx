@@ -18,14 +18,26 @@ export default function Home() {
     <div className="space-y-16">
       <section className="py-16">
         <h1 className="font-serif text-5xl leading-tight md:text-6xl">
-          Code, film, and writing
+          Code, documentary,
           <br />
-          by <span className="text-[var(--color-accent)]">Orion Chen</span>.
+          and writing
+          <br />
+          by{' '}
+          <span className="text-foreground relative isolate inline-block whitespace-nowrap after:absolute after:inset-x-[-0.08em] after:bottom-[0.08em] after:-z-10 after:h-[0.34em] after:bg-[var(--site-accent)] after:opacity-50 after:content-['']">
+            Orion Chen
+          </span>
+          .
         </h1>
-        <p className="mt-6 max-w-xl text-[var(--color-muted)]">
-          一间用代码、影像和文字开着门的小工作室。在 AI
-          时代继续做一些偏执、好玩、也许没人用的东西。
-        </p>
+        <div className="mt-10 font-mono uppercase">
+          <div className="text-muted-foreground flex items-center gap-2.5 text-[11px] tracking-[0.35em]">
+            <span
+              aria-hidden="true"
+              className="inline-block size-1.5 animate-pulse rounded-full bg-red-500"
+            />
+            <span>REC</span>
+          </div>
+          <p className="mt-3 text-sm tracking-[0.3em] md:text-base">You are being watched.</p>
+        </div>
       </section>
 
       <section>
