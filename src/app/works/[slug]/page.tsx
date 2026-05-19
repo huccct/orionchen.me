@@ -17,16 +17,18 @@ export default async function WorkPage({ params }: { params: Promise<{ slug: str
   if (!work || !work.hasDetail) notFound()
 
   return (
-    <article className="mx-auto max-w-2xl">
+    <article className="mx-auto w-full max-w-2xl">
       <header className="mb-8 space-y-3">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <StatusPill kind={work.type} />
           <StatusPill kind={work.status} />
         </div>
-        <h1 className="font-serif text-4xl">{work.title}</h1>
-        <p className="text-muted-foreground">{work.summary}</p>
+        <h1 className="font-serif text-3xl leading-tight text-balance break-words sm:text-4xl">
+          {work.title}
+        </h1>
+        <p className="text-muted-foreground break-words">{work.summary}</p>
       </header>
-      <div className="prose">
+      <div className="prose min-w-0">
         <MDXContent code={work.body} components={mdxComponents} />
       </div>
     </article>

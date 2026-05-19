@@ -18,7 +18,7 @@ export function WorksFilter({ works }: { works: Work[] }) {
         onValueChange={(value) => setKind(value as (typeof KINDS)[number])}
         className="mb-6"
       >
-        <TabsList>
+        <TabsList className="max-w-full overflow-x-auto">
           {KINDS.map((item) => (
             <TabsTrigger key={item} value={item}>
               {item}

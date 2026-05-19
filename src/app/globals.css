@@ -65,6 +65,7 @@ body {
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -164,5 +165,81 @@ body {
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer components {
+  .prose {
+    @apply text-base leading-7;
+    overflow-wrap: anywhere;
+  }
+
+  .prose > * {
+    max-width: 100%;
+  }
+
+  .prose p,
+  .prose ul,
+  .prose ol,
+  .prose blockquote {
+    @apply my-5;
+  }
+
+  .prose ul,
+  .prose ol {
+    @apply space-y-2 pl-5;
+  }
+
+  .prose ul {
+    @apply list-disc;
+  }
+
+  .prose ol {
+    @apply list-decimal;
+  }
+
+  .prose li {
+    @apply pl-1;
+  }
+
+  .prose blockquote {
+    border-left: 2px solid var(--site-accent);
+    color: var(--site-muted);
+    padding: 0.25rem 0 0.25rem 1rem;
+  }
+
+  .prose :not(pre) > code {
+    @apply rounded-sm px-1 py-0.5 font-mono text-[0.9em];
+    background: var(--site-surface);
+    overflow-wrap: anywhere;
+  }
+
+  .prose pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+  }
+
+  .prose th,
+  .prose td {
+    border: 1px solid var(--site-border);
+    padding: 0.5rem 0.75rem;
+    vertical-align: top;
+  }
+
+  .prose th {
+    background: var(--site-surface);
+    font-weight: 500;
+  }
+
+  .prose hr {
+    border-color: var(--site-border);
+    margin: 2rem 0;
+  }
+
+  .prose iframe,
+  .prose video {
+    max-width: 100%;
+    border-radius: var(--radius-md);
   }
 }

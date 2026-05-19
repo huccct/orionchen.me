@@ -7,8 +7,10 @@ export function PostCard({ post }: { post: Post & { _meta?: { path: string } } }
       href={`/blog/${post.slug}`}
       className="group border-border hover:border-accent block border-b py-4"
     >
-      <div className="flex items-baseline justify-between gap-4">
-        <h3 className="group-hover:text-accent font-serif text-base">{post.title}</h3>
+      <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+        <h3 className="group-hover:text-accent min-w-0 font-serif text-base break-words">
+          {post.title}
+        </h3>
         <time className="text-muted-foreground font-mono text-xs whitespace-nowrap">
           {post.date}
         </time>

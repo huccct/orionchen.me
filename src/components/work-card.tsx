@@ -31,9 +31,9 @@ function CardInner({ work, badge }: { work: Work; badge?: string }) {
         )}
       </div>
       <div className="space-y-2 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="font-serif text-base">{work.title}</h3>
-          <div className="flex shrink-0 gap-1">
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+          <h3 className="min-w-0 font-serif text-base break-words">{work.title}</h3>
+          <div className="flex shrink-0 flex-wrap gap-1">
             <StatusPill kind={work.type} />
             {work.status !== 'live' && <StatusPill kind={work.status} />}
           </div>

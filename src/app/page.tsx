@@ -15,9 +15,9 @@ export default function Home() {
     .slice(0, 5)
 
   return (
-    <div className="space-y-16">
-      <section className="py-16">
-        <h1 className="font-serif text-5xl leading-tight md:text-6xl">
+    <div className="space-y-12 md:space-y-16">
+      <section className="py-10 sm:py-14 md:py-16">
+        <h1 className="font-serif text-4xl leading-tight text-balance sm:text-5xl md:text-6xl">
           Code, documentary,
           <br />
           and writing
@@ -28,15 +28,17 @@ export default function Home() {
           </span>
           .
         </h1>
-        <div className="mt-10 font-mono uppercase">
-          <div className="text-muted-foreground flex items-center gap-2.5 text-[11px] tracking-[0.35em]">
+        <div className="mt-8 font-mono uppercase sm:mt-10">
+          <div className="text-muted-foreground flex items-center gap-2.5 text-[11px] tracking-[0.28em] sm:tracking-[0.35em]">
             <span
               aria-hidden="true"
               className="inline-block size-1.5 animate-pulse rounded-full bg-red-500"
             />
             <span>REC</span>
           </div>
-          <p className="mt-3 text-sm tracking-[0.3em] md:text-base">You are being watched.</p>
+          <p className="mt-3 text-xs tracking-[0.22em] sm:text-sm sm:tracking-[0.3em] md:text-base">
+            You are being watched.
+          </p>
         </div>
       </section>
 

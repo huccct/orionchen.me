@@ -16,13 +16,15 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) notFound()
 
   return (
-    <article className="mx-auto max-w-2xl">
-      <header className="mb-8 space-y-2">
-        <h1 className="font-serif text-4xl">{post.title}</h1>
+    <article className="mx-auto w-full max-w-2xl">
+      <header className="mb-8 space-y-3">
+        <h1 className="font-serif text-3xl leading-tight text-balance break-words sm:text-4xl">
+          {post.title}
+        </h1>
         <time className="text-muted-foreground font-mono text-xs">{post.date}</time>
       </header>
       {post.earlyContent && <EarlyContentBanner />}
-      <div className="prose">
+      <div className="prose min-w-0">
         <MDXContent code={post.body} components={mdxComponents} />
       </div>
       <PostNavigation newerPost={newerPost} olderPost={olderPost} />
@@ -72,7 +74,7 @@ function PostNavigationLink({
       }`}
     >
       <div className="text-muted-foreground font-mono text-xs">{label}</div>
-      <div className="mt-2 font-serif text-base">{post.title}</div>
+      <div className="mt-2 font-serif text-base break-words">{post.title}</div>
       <time className="text-muted-foreground mt-1 block font-mono text-xs">{post.date}</time>
     </Link>
   )
