@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
-import { allPosts, allWorks } from 'content-collections'
+import { allPosts } from 'content-collections'
 import { getBlogPageCount } from '@/lib/posts'
 import { siteConfig } from '@/lib/site-config'
+import { getVisibleWorks } from '@/lib/works'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = siteConfig.url
@@ -16,10 +17,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const posts = allPosts
     .filter((post) => !post.draft)
     .map((post) => ({ url: `${baseUrl}/blog/${post.slug}`, lastModified: post.date }))
-  const works = allWorks.map((work) => ({
+  const works = getVisibleWorks()
+    .filter((work) => work.hasDetail)
+    .map((work) => ({
     url: `${baseUrl}/works/${work.slug}`,
     lastModified: work.publishedAt,
-  }))
+    }))
 
   return [...staticRoutes, ...blogPages, ...posts, ...works]
 }

@@ -1,14 +1,12 @@
-import { allPosts, allWorks } from 'content-collections'
+import { allPosts } from 'content-collections'
 import Link from 'next/link'
 import { PostCard } from '@/components/post-card'
 import { SectionHeader } from '@/components/section-header'
 import { WorkCard } from '@/components/work-card'
+import { getVisibleWorks } from '@/lib/works'
 
 export default function Home() {
-  const featured = allWorks
-    .filter((work) => work.featured)
-    .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-    .slice(0, 6)
+  const featured = getVisibleWorks().filter((work) => work.featured).slice(0, 6)
   const latest = allPosts
     .filter((post) => !post.draft)
     .sort((a, b) => b.date.localeCompare(a.date))
