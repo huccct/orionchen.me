@@ -12,19 +12,19 @@ export default function AboutPage() {
         <div className="space-y-5 text-base leading-relaxed">
           <p>
             我是 图南 (Orion Chen)。做内容的账号叫{' '}
-            <span className="font-serif italic">第三幕</span>。写程序、写文章,最近开始拍人。
+            <span className="font-serif italic">第三幕</span>。
           </p>
           <p>
-            戏剧有三幕 —— setup、confrontation、resolution。AI 时代是人类故事的第三幕,我们这代人也正好走到自己的第三幕。我感兴趣的是这一幕里的人 ——
-            <strong>那些不在叙事中心、却把自己的一幕走完的人</strong>。
+            从高中做网页开始算,代码断断续续也写了有些年头了。一路从古法编程写到 AI agent 开发,工具换了三轮,活儿还是那个活儿 —— 把模糊的需求,做成能跑的东西。
           </p>
           <p>
-            代码这条线跟着时代翻了页:从古法编程写到 AI
-            agent 开发,和一代工程师一起换轨。
+            写字是顺手开始的。先写技术,写着写着写到了县城、亲情、买房、和那些「用不着 AI 的人」。写得越多越觉得,
+            <strong>比技术更值得记下来的,是这个时代里普通人怎么活</strong>。
           </p>
           <p>
-            正在拍《第三幕》人物纪录片 ——
-            麻将馆的阿姨、深夜写代码的同行、回不去也留不下的同学。第一支还在准备。
+            最近开始拍人。戏剧有三幕 —— 铺垫、冲突、收场。AI 时代是人类故事的第三幕,我们这代人也正好走到自己的第三幕。我想拍这一幕里{' '}
+            <strong>那些不在叙事中心、却把自己的一幕走完的人</strong>
+            {' '}—— 麻将馆的阿姨、深夜写代码的同行、回不去也留不下的同学。第一支还在准备。
           </p>
         </div>
       </section>
