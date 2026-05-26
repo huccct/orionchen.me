@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
-import { BlogArchive } from '@/components/blog-archive'
+import { BlogFilter } from '@/components/blog-filter'
 import { getBlogPageCount, getBlogPagePosts, getPublishedPosts } from '@/lib/posts'
 
 function parsePageParam(value: string) {
@@ -43,6 +43,6 @@ export default async function BlogPageNumber({ params }: { params: Promise<{ pag
   const posts = getBlogPagePosts(page, allPosts)
 
   return (
-    <BlogArchive page={page} pageCount={pageCount} posts={posts} totalPosts={allPosts.length} />
+    <BlogFilter allPosts={allPosts} page={page} pageCount={pageCount} pagedPosts={posts} />
   )
 }
