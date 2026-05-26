@@ -1,9 +1,8 @@
 import Link from 'next/link'
 import type { Post } from '@/content/schemas'
-import { cn } from '@/lib/utils'
 
 export function PostCard({ post }: { post: Post & { _meta?: { path: string } } }) {
-  const tags = post.tags ?? []
+  const isTutorial = post.tags?.includes('tutorial')
 
   return (
     <Link
@@ -14,27 +13,17 @@ export function PostCard({ post }: { post: Post & { _meta?: { path: string } } }
         <h3 className="group-hover:text-accent min-w-0 font-serif text-base break-words">
           {post.title}
         </h3>
-        <time className="text-muted-foreground font-mono text-xs whitespace-nowrap">
-          {post.date}
-        </time>
+        <div className="flex shrink-0 items-baseline gap-2 font-mono text-xs">
+          {isTutorial && (
+            <span className="border-accent text-accent rounded-sm border px-1.5 py-0.5 leading-none">
+              tutorial
+            </span>
+          )}
+          <time className="text-muted-foreground whitespace-nowrap">{post.date}</time>
+        </div>
       </div>
       {post.summary && (
         <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">{post.summary}</p>
-      )}
-      {tags.length > 0 && (
-        <div className="text-muted-foreground mt-2 flex flex-wrap gap-x-2 font-mono text-xs">
-          {tags.map((tag, index) => (
-            <span key={tag} className="flex items-baseline gap-2">
-              {index > 0 && <span aria-hidden>·</span>}
-              <span
-                className={cn(tag === 'tutorial' && 'text-accent')}
-              >
-                #
-                {tag}
-              </span>
-            </span>
-          ))}
-        </div>
       )}
     </Link>
   )
