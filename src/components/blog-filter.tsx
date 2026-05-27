@@ -4,11 +4,15 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { PostCard } from '@/components/post-card'
 import { SectionHeader } from '@/components/section-header'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getBlogPageHref, POSTS_PER_PAGE, type PublishedPost } from '@/lib/posts'
+import { cn } from '@/lib/utils'
 
-const KINDS = ['all', 'tutorial', 'notes'] as const
-type Kind = (typeof KINDS)[number]
+const FILTERS = [
+  { value: 'all', label: 'All writing' },
+  { value: 'tutorial', label: 'Tutorials' },
+  { value: 'notes', label: 'Notes' },
+] as const
+type Kind = (typeof FILTERS)[number]['value']
 
 export function BlogFilter({
   allPosts,
@@ -39,30 +43,48 @@ export function BlogFilter({
     tutorial: tutorials.length,
     notes: notes.length,
   }
+  const listMeta =
+    kind === 'all'
+      ? `${firstPostNumber}-${lastPostNumber} / ${totalPosts}`
+      : `${visible.length} ${kind}`
 
   return (
     <div>
-      <SectionHeader>Writing</SectionHeader>
+      <SectionHeader action={<span>{listMeta}</span>}>Writing</SectionHeader>
 
-      <Tabs
-        value={kind}
-        onValueChange={(value) => setKind(value as Kind)}
-        className="mb-4"
+      <nav
+        aria-label="Filter writing"
+        className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs"
       >
-        <TabsList>
-          {KINDS.map((item) => (
-            <TabsTrigger key={item} value={item}>
-              {item} <span className="text-muted-foreground ml-1">{counts[item]}</span>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+        {FILTERS.map((filter) => {
+          const active = kind === filter.value
 
-      {kind === 'all' && (
-        <div className="text-muted-foreground mb-4 font-mono text-xs">
-          {`${totalPosts} posts · page ${page} of ${pageCount}`}
-        </div>
-      )}
+          return (
+            <button
+              key={filter.value}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setKind(filter.value)}
+              className={cn(
+                'inline-flex min-h-7 items-center gap-1.5 border-b px-0.5 text-left transition-colors',
+                active
+                  ? 'border-accent text-foreground'
+                  : 'text-muted-foreground hover:border-border hover:text-foreground border-transparent'
+              )}
+            >
+              <span>{filter.label}</span>
+              <span
+                className={cn(
+                  'tabular-nums',
+                  active ? 'text-accent' : 'text-muted-foreground/80'
+                )}
+              >
+                {counts[filter.value]}
+              </span>
+            </button>
+          )
+        })}
+      </nav>
 
       <div>
         {visible.map((post) => (
