@@ -7,6 +7,7 @@ describe('postSchema', () => {
       title: 'Hello',
       date: '2024-01-01',
       slug: 'hello',
+      content: 'Hello world',
     })
     expect(result.success).toBe(true)
   })
@@ -15,6 +16,7 @@ describe('postSchema', () => {
     const result = postSchema.safeParse({
       date: '2024-01-01',
       slug: 'hello',
+      content: 'Hello world',
     })
     expect(result.success).toBe(false)
   })
@@ -24,6 +26,7 @@ describe('postSchema', () => {
       title: 'X',
       date: '2024-01-01',
       slug: 'x',
+      content: 'Hello world',
       earlyContent: true,
     })
     expect(result.success).toBe(true)
@@ -35,6 +38,7 @@ describe('workSchema', () => {
     const r = workSchema.safeParse({
       slug: 'movorca',
       title: 'Movorca',
+      content: 'Movorca detail',
       summary: 'AI knowledge video skill',
       type: 'code',
       status: 'live',
@@ -48,6 +52,7 @@ describe('workSchema', () => {
     const r = workSchema.safeParse({
       slug: 'x',
       title: 'X',
+      content: 'Work detail',
       summary: 'y',
       type: 'podcast',
       status: 'live',
@@ -61,6 +66,7 @@ describe('workSchema', () => {
     const r = workSchema.safeParse({
       slug: 'ep01',
       title: 'EP01',
+      content: 'Episode detail',
       summary: 's',
       type: 'documentary',
       status: 'live',
@@ -82,6 +88,7 @@ describe('workSchema', () => {
     const r = workSchema.safeParse({
       slug: 'x',
       title: 'X',
+      content: 'Work detail',
       summary: 's',
       type: 'code',
       status: 'live',
@@ -96,6 +103,7 @@ describe('workSchema', () => {
     const r = workSchema.safeParse({
       slug: 'x',
       title: 'X',
+      content: 'Work detail',
       summary: 's',
       type: 'code',
       status: 'live',

@@ -66,6 +66,8 @@ draft: false
 
 **推荐组合**：能上 Claude.ai 用 Claude，国内首选 Kimi（让它生成 HTML 代码），不要用 DeepSeek 做这件事。
 
+**进阶玩法**：不想自己每次写设计 brief 的，可以直接装 [jiji262/claude-design-skill](https://github.com/jiji262/claude-design-skill) 这个开源 Claude Skill。它把 Claude.ai 内部的设计系统提示词、反 AI Slop 规则、字号字体规范打包成可移植 skill，本地 Claude Code / Cursor 都能用，等于把本文第三到第五节的人工 brief 自动注入。中文拆解版见 [刘大猫的解析](https://liduos.com/posts/claude-design-system-prompt)。
+
 ## 三、设计 token：你要给 AI 的"色卡"
 
 每次开一份新 PPT 之前，先把这张色卡填好。它就是你的"设计宪法"，下面所有提示词都基于它。
@@ -83,8 +85,8 @@ draft: false
 
 【字体】
 - 中文：Noto Serif SC（如果要"庄重"）或 Noto Sans SC（如果要"现代"）
-- 英文：Inter，不要 Roboto
-- 数字：用 SF Pro 或 Inter 等宽变体，不要思源
+- 英文：**避开 Inter / Roboto / Fraunces 这三个被 AI 用滥的"默认审美字体"**，优先选 Geist / Space Grotesk / IBM Plex Sans / Söhne 之一，没有授权再退到 Helvetica Neue
+- 数字：SF Pro 或 Inter Tight 等宽变体（数字位是例外，因为对齐刚需）
 
 【颜色】（举例，可换）
 - 主色 #1a3a5c（深藏青）
@@ -116,6 +118,9 @@ draft: false
 - 不要居中对齐到底（除了金句页），正文统一左对齐
 - 不要在数据图上加描边、阴影、发光
 - 不要用 Material Design 默认蓝
+- 不要用 CSS 描边或 box-shadow 模拟产品图（典型症状：一个圆角矩形 + 浅灰底，声称是"产品截图"）
+- 不要在"AI / 智能"主题页用渐变球（gradient orbs）代表算法——这是 AI 自我画像最大的 tell
+- 不要用 `text-align: center` 做整段正文居中——金句页可以，正文段落必须左对齐
 ```
 
 把这段每次跟着设计 token 一起粘。AI 看到这种否定式约束，输出质量会显著好转。
@@ -150,6 +155,9 @@ draft: false
 【主题】
 [在这里填你的主题，例如：从 0 到 1 做一款独立产品的复盘]
 
+【事实约束】
+涉及具体公司、产品、数据时，先 WebSearch 验证，禁止凭印象生成数字 / 公司名 / 产品功能。不确定就用 [占位符]。
+
 【画布】
 - 16:9，画布 1920×1080，整页 transform:scale 适配窗口，加 letterbox
 - 四周内边距 ≥80px
@@ -159,8 +167,8 @@ draft: false
 
 【字体】
 - 中文：Noto Serif SC（标题）+ Noto Sans SC（正文）
-- 英文：Inter
-- 数字：SF Pro / Inter 等宽
+- 英文：Geist 或 Space Grotesk 或 IBM Plex Sans，避开 Inter / Roboto / Fraunces
+- 数字：SF Pro / Inter Tight 等宽
 
 【颜色】
 - 主色 #1a3a5c，强调色 #c9a961，背景 #f5f0e6，文字 #1f1410
@@ -173,6 +181,8 @@ draft: false
 - 不要"专业感"渐变球 / 玻璃拟物 / 光晕
 - 不要每页同一种版式
 - 不要 Material Design 默认蓝
+- 不要 CSS 描边模拟产品图
+- 不要 gradient orbs 代表 AI / 算法
 
 【结构（10 页）】
 1. 封面：主题 + 副标 + 装饰元素
@@ -191,6 +201,7 @@ draft: false
 - 键盘 ← → 翻页，按 F 全屏，按 P 进打印模式
 - 每页左下显示页码 "01 / 10"
 - 顶部加细进度条
+- 适配脚本：用 `transform: scale(min(vw/1920, vh/1080))` + `transform-origin: top left`，外层 `<body>` 黑底制造 letterbox。**禁止用百分比 / vw / vh 做内部尺寸**——所有元素以 1920×1080 绝对像素布局，字号才稳定
 
 【关键】
 - 先列每页一句话主题给我看，我确认后再写代码
@@ -200,6 +211,12 @@ draft: false
 最后那条"先 outline 后 implementation"是这套提示词的真正杠杆——**不让它直接生成完整 HTML，先看 outline 改一遍**。这一步能省下 30 分钟反复重生成的时间。
 
 ## 七、单案例迭代法：怎么让它越改越好不是越改越烂
+
+迭代不是随机往回改，是有循环结构的。借 [宝玉总结的 prompt engineering 5 步](https://baoyu.io/blog/why-people-struggle-with-prompt-engineering)：
+
+**GOAL（具体到能验收）→ IDEA（选一个方向）→ PROMPT（写，先别想太多）→ TEST（跑出来）→ EVALUATE（对比 GOAL 找差距）→ 回 GOAL 修订。**
+
+新手卡在 PROMPT 步反复重写，高手在 EVALUATE 步发现是 GOAL 没定清楚——所以每轮迭代之前先问自己"我现在到底想看到什么变化"，再改提示词。
 
 新手最容易越改越乱。原因永远只有一个：**整段重写**。
 

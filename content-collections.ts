@@ -1,6 +1,7 @@
 import { defineCollection, defineConfig } from '@content-collections/core'
 import { compileMDX } from '@content-collections/mdx'
 import { postSchema, workSchema } from './src/content/schemas'
+import { getReadingTime, getTableOfContents } from './src/lib/post-metadata'
 
 const posts = defineCollection({
   name: 'posts',
@@ -9,6 +10,8 @@ const posts = defineCollection({
   schema: postSchema,
   transform: async (doc, ctx) => ({
     ...doc,
+    readingTime: getReadingTime(doc.content),
+    tableOfContents: getTableOfContents(doc.content, doc.title),
     body: await compileMDX(ctx, doc, {
       remarkPlugins: [(await import('remark-gfm')).default],
       rehypePlugins: [
