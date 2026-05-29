@@ -131,6 +131,39 @@ export default function AboutPage() {
             </a>{' '}
             <span className="text-muted-foreground">— 中国式做事方法论的源代码</span>
           </li>
+          <li>
+            <a
+              href="https://book.douban.com/subject/1261560/"
+              className="text-accent"
+              target="_blank"
+              rel="noreferrer"
+            >
+              国富论
+            </a>{' '}
+            <span className="text-muted-foreground">— 看不见的手,两百年前就写好了</span>
+          </li>
+          <li>
+            <a
+              href="https://book.douban.com/subject/6798611/"
+              className="text-accent"
+              target="_blank"
+              rel="noreferrer"
+            >
+              史蒂夫·乔布斯传
+            </a>{' '}
+            <span className="text-muted-foreground">— 把产品做到偏执,是什么代价</span>
+          </li>
+          <li>
+            <a
+              href="https://book.douban.com/subject/36518892/"
+              className="text-accent"
+              target="_blank"
+              rel="noreferrer"
+            >
+              埃隆·马斯克传
+            </a>{' '}
+            <span className="text-muted-foreground">— 一个人怎么把不可能当成日程表</span>
+          </li>
         </ul>
       </section>
 
