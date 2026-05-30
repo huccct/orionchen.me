@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { SectionHeader } from '@/components/section-header'
 import { siteConfig } from '@/lib/site-config'
 
@@ -12,7 +11,15 @@ export default function AboutPage() {
         <div className="space-y-5 text-base leading-relaxed">
           <p>
             我是 图南 (Orion Chen)。做内容的账号叫{' '}
-            <span className="font-serif italic">第三幕</span>。
+            <a
+              href={siteConfig.social.bilibili}
+              className="text-accent font-serif italic"
+              target="_blank"
+              rel="noreferrer"
+            >
+              第三幕
+            </a>
+            。
           </p>
           <p>
             从高中做网页开始算,代码断断续续也写了有些年头了。一路从古法编程写到 AI agent 开发,工具换了三轮,活儿还是那个活儿 —— 把模糊的需求,做成能跑的东西。
@@ -163,42 +170,6 @@ export default function AboutPage() {
               埃隆·马斯克传
             </a>{' '}
             <span className="text-muted-foreground">— 一个人怎么把不可能当成日程表</span>
-          </li>
-        </ul>
-      </section>
-
-      <section>
-        <SectionHeader>Selected Writing</SectionHeader>
-        <ul className="space-y-2 text-sm">
-          <li>
-            <Link href="/blog/county-town-reality" className="text-accent">
-              九亿人的底色
-            </Link>{' '}
-            <span className="text-muted-foreground">— 县城是中国两千多座城的底色,不是落后,是真实</span>
-          </li>
-          <li>
-            <Link href="/blog/human-value-in-ai-era" className="text-accent">
-              当 AI 无处不在,人的价值在哪里?
-            </Link>{' '}
-            <span className="text-muted-foreground">— 内容廉价之后,人味反而成稀缺资源</span>
-          </li>
-          <li>
-            <Link href="/blog/tech-is-not-the-moat" className="text-accent">
-              技术不是护城河
-            </Link>{' '}
-            <span className="text-muted-foreground">— 大厂能抄功能,抄不走理解和速度</span>
-          </li>
-          <li>
-            <Link href="/blog/vibe-coding" className="text-accent">
-              Vibe Coding:AI 编程时代的幻象
-            </Link>{' '}
-            <span className="text-muted-foreground">— 当魔法变成日常,程序员还剩什么</span>
-          </li>
-          <li>
-            <Link href="/blog/financial-independence" className="text-accent">
-              经济独立与亲情的拧巴
-            </Link>{' '}
-            <span className="text-muted-foreground">— 中国式父母想多给一点,而我只想早点不再拿</span>
           </li>
         </ul>
       </section>

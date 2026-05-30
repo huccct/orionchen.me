@@ -7,6 +7,7 @@ export const siteConfig = {
     github: 'https://github.com/huccct',
     x: 'https://x.com/orion_c29',
     linkedin: 'https://www.linkedin.com/in/tunan-chen-720627283',
+    bilibili: 'https://space.bilibili.com/660617770',
   },
   giscus: {
     repo: 'huccct/orionchen.me' as `${string}/${string}`,
