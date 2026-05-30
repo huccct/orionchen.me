@@ -17,7 +17,7 @@ export default function AboutPage() {
               target="_blank"
               rel="noreferrer"
             >
-              第三幕
+              还没到第五幕
             </a>
             。
           </p>
