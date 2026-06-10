@@ -1,0 +1,88 @@
+{
+  "site": {
+    "tagline": "一间用代码、影像和文字开着门的小工作室。",
+    "homeDescription": "Orion Chen 的个人站点，记录代码、纪录片和写作。",
+    "homeCollectionDescription": "代码、纪录片和写作的个人站点首页。",
+    "writingDescription": "技术教程、AI 观察和个人写作归档。",
+    "worksDescription": "Orion Chen 的项目、产品实验与纪录片作品。",
+    "tagsDescription": "按主题浏览 Orion Chen 的已发布文章。",
+    "guestbookDescription": "留言、想法、批评和合作意向。"
+  },
+  "nav": {
+    "works": "Works",
+    "writing": "Writing",
+    "guestbook": "Guestbook",
+    "about": "About",
+    "openMenu": "打开导航",
+    "switchToOther": "Switch to English"
+  },
+  "footer": {
+    "github": "GitHub",
+    "x": "X",
+    "email": "Email"
+  },
+  "home": {
+    "heroLine1": "Code, documentary,",
+    "heroLine2": "and writing",
+    "heroLine3": "by",
+    "rec": "REC",
+    "watching": "You are being watched.",
+    "worksTitle": "Works",
+    "writingTitle": "Writing",
+    "all": "all"
+  },
+  "blog": {
+    "title": "Writing",
+    "filterAll": "All writing",
+    "filterTutorial": "Tutorials",
+    "filterNotes": "Notes",
+    "ariaFilter": "Filter writing",
+    "newer": "newer",
+    "older": "older",
+    "tutorialBadge": "tutorial",
+    "tableOfContents": "目录",
+    "tocAria": "文章目录",
+    "previousPost": "上一篇",
+    "nextPost": "下一篇",
+    "pageDescription": "Writing 归档第 {page} 页。",
+    "tagsTitle": "Tags",
+    "tagDescription": "{tag} 相关文章归档，共 {count} 篇。",
+    "emptyEnglish": "还没有英文版的文章。",
+    "emptyEnglishLink": "回到中文写作归档",
+    "earlyContent": "// early content - written years ago, kept for archive completeness; tone & opinions may be dated."
+  },
+  "works": {
+    "title": "Works",
+    "emptyEnglish": "还没有英文版的项目页。",
+    "emptyEnglishLink": "回到中文项目归档"
+  },
+  "guestbook": {
+    "title": "Guestbook",
+    "intro": "留言、想法、批评、合作意向，都欢迎。"
+  },
+  "about": {
+    "title": "About",
+    "readingTitle": "Reading",
+    "contactTitle": "Contact",
+    "contactEmail": "Email",
+    "contactGithub": "GitHub",
+    "contactX": "X"
+  },
+  "errors": {
+    "notFoundTitle": "404",
+    "notFoundHeading": "页面不在这里",
+    "notFoundDescription": "页面未找到。",
+    "notFoundBackHome": "返回首页",
+    "fiveHundred": "500",
+    "retry": "重试"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "writing": "Writing",
+    "works": "Works",
+    "tags": "Tags",
+    "guestbook": "Guestbook",
+    "about": "About",
+    "page": "Page {page}"
+  }
+}

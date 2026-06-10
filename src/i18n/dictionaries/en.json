@@ -1,0 +1,88 @@
+{
+  "site": {
+    "tagline": "A small studio with the door open, made of code, film, and writing.",
+    "homeDescription": "Orion Chen's personal site — code, documentary, and writing.",
+    "homeCollectionDescription": "The home of Orion Chen's code, documentary, and writing.",
+    "writingDescription": "Tutorials, notes on AI, and personal essays.",
+    "worksDescription": "Orion Chen's projects, product experiments, and documentary work.",
+    "tagsDescription": "Browse Orion Chen's published writing by topic.",
+    "guestbookDescription": "Notes, thoughts, criticism, and collaboration ideas."
+  },
+  "nav": {
+    "works": "Works",
+    "writing": "Writing",
+    "guestbook": "Guestbook",
+    "about": "About",
+    "openMenu": "Open navigation",
+    "switchToOther": "切换到中文"
+  },
+  "footer": {
+    "github": "GitHub",
+    "x": "X",
+    "email": "Email"
+  },
+  "home": {
+    "heroLine1": "Code, documentary,",
+    "heroLine2": "and writing",
+    "heroLine3": "by",
+    "rec": "REC",
+    "watching": "You are being watched.",
+    "worksTitle": "Works",
+    "writingTitle": "Writing",
+    "all": "all"
+  },
+  "blog": {
+    "title": "Writing",
+    "filterAll": "All writing",
+    "filterTutorial": "Tutorials",
+    "filterNotes": "Notes",
+    "ariaFilter": "Filter writing",
+    "newer": "newer",
+    "older": "older",
+    "tutorialBadge": "tutorial",
+    "tableOfContents": "Contents",
+    "tocAria": "Table of contents",
+    "previousPost": "Previous",
+    "nextPost": "Next",
+    "pageDescription": "Writing archive, page {page}.",
+    "tagsTitle": "Tags",
+    "tagDescription": "Posts tagged {tag} — {count} in total.",
+    "emptyEnglish": "No English posts yet.",
+    "emptyEnglishLink": "Back to the Chinese archive",
+    "earlyContent": "// early content — written years ago, kept for archive completeness; tone & opinions may be dated."
+  },
+  "works": {
+    "title": "Works",
+    "emptyEnglish": "No English work pages yet.",
+    "emptyEnglishLink": "Back to the Chinese works archive"
+  },
+  "guestbook": {
+    "title": "Guestbook",
+    "intro": "Notes, thoughts, criticism, collaboration ideas — all welcome."
+  },
+  "about": {
+    "title": "About",
+    "readingTitle": "Reading",
+    "contactTitle": "Contact",
+    "contactEmail": "Email",
+    "contactGithub": "GitHub",
+    "contactX": "X"
+  },
+  "errors": {
+    "notFoundTitle": "404",
+    "notFoundHeading": "Page not here",
+    "notFoundDescription": "Page not found.",
+    "notFoundBackHome": "Back home",
+    "fiveHundred": "500",
+    "retry": "Retry"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "writing": "Writing",
+    "works": "Works",
+    "tags": "Tags",
+    "guestbook": "Guestbook",
+    "about": "About",
+    "page": "Page {page}"
+  }
+}
