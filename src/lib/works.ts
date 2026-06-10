@@ -18,3 +18,7 @@ export function getVisibleWorks() {
 export function getVisibleWorkSlugs() {
   return new Set(VISIBLE_WORK_SLUGS)
 }
+
+export function getWorkBySlug(slug: string) {
+  return allWorks.find((work) => work.slug === slug) ?? null
+}
