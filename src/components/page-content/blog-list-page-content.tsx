@@ -1,6 +1,8 @@
+import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
 import { BlogFilter } from '@/components/blog-filter'
-import type { Locale } from '@/i18n/config'
+import { SectionHeader } from '@/components/section-header'
+import { defaultLocale, type Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
 import { getBlogPageCount, getBlogPagePosts, getPublishedPosts } from '@/lib/posts'
@@ -32,14 +34,26 @@ export function BlogListPageContent({ locale, page = 1 }: { locale: Locale; page
           ]),
         ]}
       />
-      <BlogFilter
-        allPosts={allPosts}
-        dict={dict}
-        page={page}
-        pageCount={pageCount}
-        pagedPosts={pagedPosts}
-        pathPrefix={prefix}
-      />
+      {allPosts.length === 0 && locale !== defaultLocale ? (
+        <div>
+          <SectionHeader>{dict.blog.title}</SectionHeader>
+          <p className="text-muted-foreground text-sm">
+            {dict.blog.emptyEnglish}{' '}
+            <Link href="/blog" className="text-accent">
+              {dict.blog.emptyEnglishLink}
+            </Link>
+          </p>
+        </div>
+      ) : (
+        <BlogFilter
+          allPosts={allPosts}
+          dict={dict}
+          page={page}
+          pageCount={pageCount}
+          pagedPosts={pagedPosts}
+          pathPrefix={prefix}
+        />
+      )}
     </>
   )
 }

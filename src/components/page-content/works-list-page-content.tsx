@@ -1,7 +1,8 @@
+import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
 import { SectionHeader } from '@/components/section-header'
 import { WorksFilter } from '@/components/works-filter'
-import type { Locale } from '@/i18n/config'
+import { defaultLocale, type Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
 import { createBreadcrumbJsonLd, createCollectionPageJsonLd } from '@/lib/seo'
@@ -29,7 +30,16 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
       />
       <div>
         <SectionHeader>{dict.works.title}</SectionHeader>
-        <WorksFilter works={works} pathPrefix={prefix} />
+        {works.length === 0 && locale !== defaultLocale ? (
+          <p className="text-muted-foreground text-sm">
+            {dict.works.emptyEnglish}{' '}
+            <Link href="/works" className="text-accent">
+              {dict.works.emptyEnglishLink}
+            </Link>
+          </p>
+        ) : (
+          <WorksFilter works={works} pathPrefix={prefix} />
+        )}
       </div>
     </>
   )
