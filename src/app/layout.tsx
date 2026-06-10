@@ -40,7 +40,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
         <HtmlLangSync />
-        <JsonLd data={[createPersonJsonLd(), createWebSiteJsonLd()]} />
+        <JsonLd data={[createPersonJsonLd(), createWebSiteJsonLd('zh')]} />
         <ThemeProvider>
           <SiteHeader />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 md:px-8 md:py-8">

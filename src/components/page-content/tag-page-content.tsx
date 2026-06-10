@@ -23,6 +23,7 @@ export function TagPageContent({ locale, tag }: { locale: Locale; tag: string })
             name: `${dict.breadcrumb.tags}: ${tag}`,
             description: `${tag}`,
             path: `${prefix}/tags/${encodeURIComponent(tag)}`,
+            locale,
           }),
           createBreadcrumbJsonLd([
             { name: dict.breadcrumb.home, path: prefix === '' ? '/' : prefix },

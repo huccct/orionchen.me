@@ -20,6 +20,7 @@ export function TagsListPageContent({ locale }: { locale: Locale }) {
             name: dict.blog.tagsTitle,
             description: dict.site.tagsDescription,
             path: `${prefix}/tags`,
+            locale,
           }),
           createBreadcrumbJsonLd([
             { name: dict.breadcrumb.home, path: prefix === '' ? '/' : prefix },

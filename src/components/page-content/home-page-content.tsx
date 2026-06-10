@@ -28,6 +28,7 @@ export function HomePageContent({ locale }: { locale: Locale }) {
             name: 'Orion Chen',
             description: dict.site.homeCollectionDescription,
             path: prefix === '' ? '/' : prefix,
+            locale,
           }),
           createBreadcrumbJsonLd([
             { name: dict.breadcrumb.home, path: prefix === '' ? '/' : prefix },

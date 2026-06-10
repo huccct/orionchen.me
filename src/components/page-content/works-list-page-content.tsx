@@ -21,6 +21,7 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
             name: dict.works.title,
             description: dict.site.worksDescription,
             path: `${prefix}/works`,
+            locale,
           }),
           createBreadcrumbJsonLd([
             { name: dict.breadcrumb.home, path: prefix === '' ? '/' : prefix },

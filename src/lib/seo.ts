@@ -184,7 +184,7 @@ export function createPersonJsonLd(): Thing {
   }
 }
 
-export function createWebSiteJsonLd(): Thing {
+export function createWebSiteJsonLd(locale: Locale = 'zh'): Thing {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -192,7 +192,7 @@ export function createWebSiteJsonLd(): Thing {
     url: siteConfig.url,
     name: siteConfig.name,
     description: siteConfig.description,
-    inLanguage: 'zh-CN',
+    inLanguage: htmlLang[locale],
     publisher: {
       '@id': PERSON_ID,
     },
@@ -216,10 +216,12 @@ export function createCollectionPageJsonLd({
   name,
   description,
   path,
+  locale = 'zh',
 }: {
   name: string
   description: string
   path: string
+  locale?: Locale
 }): Thing {
   return {
     '@context': 'https://schema.org',
@@ -227,7 +229,7 @@ export function createCollectionPageJsonLd({
     name,
     description,
     url: absoluteUrl(path),
-    inLanguage: 'zh-CN',
+    inLanguage: htmlLang[locale],
     isPartOf: {
       '@id': WEBSITE_ID,
     },
@@ -238,7 +240,8 @@ export function createCollectionPageJsonLd({
 }
 
 export function createBlogPostingJsonLd(post: CollectionPost): Thing {
-  const image = absoluteUrl(`/blog/${post.slug}/opengraph-image`)
+  const localePath = `${localePathPrefix[post.lang]}/blog/${post.slug}`
+  const image = absoluteUrl(`${localePath}/opengraph-image`)
 
   return {
     '@context': 'https://schema.org',
@@ -254,19 +257,20 @@ export function createBlogPostingJsonLd(post: CollectionPost): Thing {
     publisher: {
       '@id': PERSON_ID,
     },
-    mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
-    url: absoluteUrl(`/blog/${post.slug}`),
+    mainEntityOfPage: absoluteUrl(localePath),
+    url: absoluteUrl(localePath),
     keywords: post.tags ?? [],
-    inLanguage: inferLanguage(post.tags),
+    inLanguage: htmlLang[post.lang],
   }
 }
 
 export function createWorkJsonLd(work: CollectionWork): Thing {
+  const localePath = `${localePathPrefix[work.lang]}/works/${work.slug}`
   const base = {
     '@context': 'https://schema.org',
     name: work.title,
     description: work.summary,
-    url: absoluteUrl(`/works/${work.slug}`),
+    url: absoluteUrl(localePath),
     image: absoluteUrl(work.cover),
     datePublished: work.publishedAt,
     dateModified: work.updatedAt ?? work.publishedAt,
@@ -277,7 +281,7 @@ export function createWorkJsonLd(work: CollectionWork): Thing {
     author: {
       '@id': PERSON_ID,
     },
-    inLanguage: 'zh-CN',
+    inLanguage: htmlLang[work.lang],
   }
 
   if (work.type === 'documentary') {
@@ -302,10 +306,4 @@ export function createWorkJsonLd(work: CollectionWork): Thing {
     ...base,
     '@type': 'CreativeWork',
   }
-}
-
-function inferLanguage(tags: string[] | undefined) {
-  if (tags?.some((tag) => tag.toLowerCase() === 'english')) return 'en'
-
-  return 'zh-CN'
 }

@@ -27,6 +27,7 @@ export function BlogListPageContent({ locale, page = 1 }: { locale: Locale; page
             name: dict.blog.title,
             description: dict.site.writingDescription,
             path: `${prefix}/blog`,
+            locale,
           }),
           createBreadcrumbJsonLd([
             { name: dict.breadcrumb.home, path: prefix === '' ? '/' : prefix },
