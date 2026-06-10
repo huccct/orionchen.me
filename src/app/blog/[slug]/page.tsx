@@ -1,13 +1,49 @@
+import type { Metadata } from 'next'
 import { MDXContent } from '@content-collections/mdx/react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { EarlyContentBanner } from '@/components/early-content-banner'
+import { JsonLd } from '@/components/json-ld'
 import { mdxComponents } from '@/components/mdx/mdx-components'
 import type { TableOfContentsItem } from '@/lib/post-metadata'
-import { getPostWithNeighbors, getPublishedPosts, type PublishedPost } from '@/lib/posts'
+import {
+  getPostWithNeighbors,
+  getPublishedPost,
+  getPublishedPosts,
+  type PublishedPost,
+} from '@/lib/posts'
+import {
+  createBlogPostingJsonLd,
+  createBreadcrumbJsonLd,
+  createMetadata,
+} from '@/lib/seo'
 
 export function generateStaticParams() {
   return getPublishedPosts().map((post) => ({ slug: post.slug }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const post = getPublishedPost(slug)
+
+  if (!post) notFound()
+
+  return createMetadata({
+    title: post.seoTitle ?? post.title,
+    description: post.seoDescription ?? post.summary ?? post.title,
+    path: `/blog/${post.slug}`,
+    keywords: post.seoKeywords.length > 0 ? post.seoKeywords : post.tags,
+    image: `/blog/${post.slug}/opengraph-image`,
+    type: 'article',
+    publishedTime: post.date,
+    modifiedTime: post.date,
+    authors: ['Orion Chen'],
+    tags: post.tags,
+  })
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -18,13 +54,23 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="mx-auto grid w-full max-w-5xl gap-10 lg:grid-cols-[minmax(0,42rem)_14rem] lg:items-start lg:justify-center">
+      <JsonLd
+        data={[
+          createBlogPostingJsonLd(post),
+          createBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Writing', path: '/blog' },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+        ]}
+      />
       <article className="mx-auto w-full max-w-2xl min-w-0 lg:mx-0">
         <header className="mb-8 space-y-3">
           <h1 className="font-serif text-3xl leading-tight text-balance break-words sm:text-4xl">
             {post.title}
           </h1>
           <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs">
-            <time>{post.date}</time>
+            <time dateTime={post.date}>{post.date}</time>
             <span aria-hidden="true">/</span>
             <span>{post.readingTime.text}</span>
           </div>
@@ -109,7 +155,9 @@ function PostNavigationLink({
     >
       <div className="text-muted-foreground font-mono text-xs">{label}</div>
       <div className="mt-2 font-serif text-base break-words">{post.title}</div>
-      <time className="text-muted-foreground mt-1 block font-mono text-xs">{post.date}</time>
+      <time dateTime={post.date} className="text-muted-foreground mt-1 block font-mono text-xs">
+        {post.date}
+      </time>
     </Link>
   )
 }

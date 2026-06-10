@@ -1,35 +1,73 @@
-import { allPosts } from 'content-collections'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { JsonLd } from '@/components/json-ld'
 import { PostCard } from '@/components/post-card'
 import { SectionHeader } from '@/components/section-header'
+import {
+  getPublishedPostsByTag,
+  getPublishedTags,
+} from '@/lib/posts'
+import {
+  createBreadcrumbJsonLd,
+  createCollectionPageJsonLd,
+  createMetadata,
+} from '@/lib/seo'
 
 export function generateStaticParams() {
-  const tags = new Set<string>()
+  return [...getPublishedTags().keys()].map((tag) => ({ tag }))
+}
 
-  for (const post of allPosts) {
-    for (const tag of post.tags ?? []) tags.add(tag)
-  }
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ tag: string }>
+}): Promise<Metadata> {
+  const { tag: rawTag } = await params
+  const tag = decodeURIComponent(rawTag)
+  const posts = getPublishedPostsByTag(tag)
 
-  return [...tags].map((tag) => ({ tag }))
+  if (posts.length === 0) notFound()
+
+  return createMetadata({
+    title: `Tag: ${tag}`,
+    description: `${tag} 相关文章归档，共 ${posts.length} 篇。`,
+    path: `/tags/${encodeURIComponent(tag)}`,
+    keywords: [tag],
+    noIndex: true,
+  })
 }
 
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
   const { tag: rawTag } = await params
   const tag = decodeURIComponent(rawTag)
-  const posts = allPosts
-    .filter((post) => (post.tags ?? []).includes(tag))
-    .sort((a, b) => b.date.localeCompare(a.date))
+  const posts = getPublishedPostsByTag(tag)
 
   if (posts.length === 0) notFound()
 
   return (
-    <div>
-      <SectionHeader>{`tag: ${tag}`}</SectionHeader>
+    <>
+      <JsonLd
+        data={[
+          createCollectionPageJsonLd({
+            name: `Tag: ${tag}`,
+            description: `${tag} 相关文章归档，共 ${posts.length} 篇。`,
+            path: `/tags/${encodeURIComponent(tag)}`,
+          }),
+          createBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Tags', path: '/tags' },
+            { name: tag, path: `/tags/${encodeURIComponent(tag)}` },
+          ]),
+        ]}
+      />
       <div>
-        {posts.map((post) => (
-          <PostCard key={post.slug} post={post} />
-        ))}
+        <SectionHeader>{`tag: ${tag}`}</SectionHeader>
+        <div>
+          {posts.map((post) => (
+            <PostCard key={post.slug} post={post} />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 }

@@ -1,6 +1,12 @@
 import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
+import { JsonLd } from '@/components/json-ld'
 import { BlogFilter } from '@/components/blog-filter'
+import {
+  createBreadcrumbJsonLd,
+  createCollectionPageJsonLd,
+  createMetadata,
+} from '@/lib/seo'
 import { getBlogPageCount, getBlogPagePosts, getPublishedPosts } from '@/lib/posts'
 
 function parsePageParam(value: string) {
@@ -25,7 +31,14 @@ export async function generateMetadata({
   const page = parsePageParam((await params).page)
 
   return {
-    title: page ? `Writing · Page ${page}` : 'Writing',
+    ...createMetadata({
+      title: page ? `Writing · Page ${page}` : 'Writing',
+      description: page
+        ? `Writing 归档第 ${page} 页。`
+        : '技术教程、AI 观察和个人写作归档。',
+      path: page ? `/blog/page/${page}` : '/blog',
+      noIndex: true,
+    }),
   }
 }
 
@@ -43,6 +56,22 @@ export default async function BlogPageNumber({ params }: { params: Promise<{ pag
   const posts = getBlogPagePosts(page, allPosts)
 
   return (
-    <BlogFilter allPosts={allPosts} page={page} pageCount={pageCount} pagedPosts={posts} />
+    <>
+      <JsonLd
+        data={[
+          createCollectionPageJsonLd({
+            name: `Writing Page ${page}`,
+            description: `Writing 归档第 ${page} 页。`,
+            path: `/blog/page/${page}`,
+          }),
+          createBreadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'Writing', path: '/blog' },
+            { name: `Page ${page}`, path: `/blog/page/${page}` },
+          ]),
+        ]}
+      />
+      <BlogFilter allPosts={allPosts} page={page} pageCount={pageCount} pagedPosts={posts} />
+    </>
   )
 }

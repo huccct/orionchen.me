@@ -1,19 +1,34 @@
-import { allPosts } from 'content-collections'
+import type { Metadata } from 'next'
 import Link from 'next/link'
+import { JsonLd } from '@/components/json-ld'
 import { PostCard } from '@/components/post-card'
 import { SectionHeader } from '@/components/section-header'
 import { WorkCard } from '@/components/work-card'
+import { createBreadcrumbJsonLd, createCollectionPageJsonLd, createMetadata } from '@/lib/seo'
+import { getPublishedPosts } from '@/lib/posts'
 import { getVisibleWorks } from '@/lib/works'
+
+export const metadata: Metadata = createMetadata({
+  description: 'Orion Chen 的个人站点，记录代码、纪录片和写作。',
+  keywords: ['Orion Chen', '图南', 'blog', 'writing', 'frontend', 'AI'],
+})
 
 export default function Home() {
   const featured = getVisibleWorks().filter((work) => work.featured).slice(0, 6)
-  const latest = allPosts
-    .filter((post) => !post.draft)
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 5)
+  const latest = getPublishedPosts().slice(0, 5)
 
   return (
     <div className="space-y-12 md:space-y-16">
+      <JsonLd
+        data={[
+          createCollectionPageJsonLd({
+            name: 'Orion Chen',
+            description: '代码、纪录片和写作的个人站点首页。',
+            path: '/',
+          }),
+          createBreadcrumbJsonLd([{ name: 'Home', path: '/' }]),
+        ]}
+      />
       <section className="py-10 sm:py-14 md:py-16">
         <h1 className="font-serif text-4xl leading-tight text-balance sm:text-5xl md:text-6xl">
           Code, documentary,
