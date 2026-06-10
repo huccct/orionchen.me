@@ -1,19 +1,26 @@
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/json-ld'
 import { Plausible } from '@/components/plausible'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { ThemeProvider } from '@/components/theme-provider'
 import { geistMono, geistSans, newsreader, notoSerifSC } from '@/lib/fonts'
-import { siteConfig } from '@/lib/site-config'
+import { createMetadata, createPersonJsonLd, createWebSiteJsonLd } from '@/lib/seo'
 import './globals.css'
 
 export const metadata: Metadata = {
+  ...createMetadata(),
   title: {
-    default: siteConfig.name,
-    template: `%s — ${siteConfig.name}`,
+    default: 'Orion Chen',
+    template: `%s — Orion Chen`,
   },
-  description: siteConfig.description,
-  metadataBase: new URL(siteConfig.url),
+  applicationName: 'Orion Chen',
+  alternates: {
+    canonical: '/',
+    types: {
+      'application/rss+xml': '/rss.xml',
+    },
+  },
 }
 
 export default function RootLayout({
@@ -28,6 +35,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        <JsonLd data={[createPersonJsonLd(), createWebSiteJsonLd()]} />
         <ThemeProvider>
           <SiteHeader />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 md:px-8 md:py-8">
