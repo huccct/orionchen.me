@@ -1,4 +1,5 @@
 import { allPosts } from 'content-collections'
+import { localePathPrefix } from '@/i18n/config'
 import { siteConfig } from '@/lib/site-config'
 
 export const dynamic = 'force-static'
@@ -23,7 +24,9 @@ export function GET() {
 
   const items = posts
     .map((post) => {
-      const url = `${siteConfig.url}/blog/${post.slug}`
+      // URL must include the locale prefix for non-default locales,
+      // otherwise EN posts would link to /blog/<slug> which 404s.
+      const url = `${siteConfig.url}${localePathPrefix[post.lang]}/blog/${post.slug}`
 
       return `
     <item>
