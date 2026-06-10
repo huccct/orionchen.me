@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { allWorks } from 'content-collections'
 import { notFound } from 'next/navigation'
 import { WorkPageContent } from '@/components/page-content/work-page-content'
-import { getWorkBySlug } from '@/lib/works'
+import { getWorkAvailableLocales, getWorkBySlug } from '@/lib/works'
 import { createMetadata } from '@/lib/seo'
 
 export const dynamicParams = false
@@ -27,7 +27,7 @@ export async function generateMetadata({
     path: `/en/works/${work.slug}`,
     keywords: work.tags,
     image: work.cover,
-    availableLocales: [work.lang],
+    availableLocales: getWorkAvailableLocales(slug),
   })
 }
 

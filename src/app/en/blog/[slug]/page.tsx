@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { PostPageContent } from '@/components/page-content/post-page-content'
-import { getPublishedPost, getPublishedPosts } from '@/lib/posts'
+import { getPostAvailableLocales, getPublishedPost, getPublishedPosts } from '@/lib/posts'
 import { createMetadata } from '@/lib/seo'
 
 export function generateStaticParams() {
@@ -29,7 +29,7 @@ export async function generateMetadata({
     modifiedTime: post.date,
     authors: ['Orion Chen'],
     tags: post.tags,
-    availableLocales: [post.lang],
+    availableLocales: getPostAvailableLocales(slug),
   })
 }
 

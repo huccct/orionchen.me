@@ -1,5 +1,5 @@
 import { allPosts } from 'content-collections'
-import type { Locale } from '@/i18n/config'
+import { type Locale, locales } from '@/i18n/config'
 
 export const POSTS_PER_PAGE = 10
 
@@ -70,4 +70,15 @@ export function getPostWithNeighbors(slug: string, locale: Locale = DEFAULT_LOCA
     newerPost: posts[index - 1] ?? null,
     olderPost: posts[index + 1] ?? null,
   }
+}
+
+/**
+ * Locales for which a published post with this slug exists. Used by the
+ * per-post route to emit hreflang alternates only for URLs that 200 —
+ * Google drops the entry otherwise. See `createMetadata.availableLocales`.
+ */
+export function getPostAvailableLocales(slug: string): Locale[] {
+  return locales.filter((locale) =>
+    allPosts.some((post) => !post.draft && post.lang === locale && post.slug === slug)
+  )
 }

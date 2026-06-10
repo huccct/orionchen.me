@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { allPosts, allWorks } from 'content-collections'
 import { htmlLang, locales, localePathPrefix } from '@/i18n/config'
+import { getPostAvailableLocales } from '@/lib/posts'
+import { getWorkAvailableLocales } from '@/lib/works'
 import { siteConfig } from '@/lib/site-config'
 
 type SitemapEntry = MetadataRoute.Sitemap[number]
@@ -79,6 +81,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .filter((post) => !post.draft)
     .map((post) => {
       const localePath = `${localePathPrefix[post.lang]}/blog/${post.slug}`
+      const available = getPostAvailableLocales(post.slug)
 
       return withAlternates(
         {
@@ -88,9 +91,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
           priority: 0.8,
           images: [url(`/blog/${post.slug}/opengraph-image`)],
         },
-        // Each post belongs to exactly one locale; the alternate map only
-        // lists that locale (no fake cross-language pairing).
-        (alt) => (alt === post.lang ? localePath : null)
+        // List every locale with a published version of this slug, so
+        // <xhtml:link> pairs zh ↔ en when both exist. When only one
+        // locale has the post the alternate map collapses to that one.
+        (alt) =>
+          available.includes(alt) ? `${localePathPrefix[alt]}/blog/${post.slug}` : null
       )
     })
 
@@ -98,6 +103,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .filter((work) => work.hasDetail)
     .map((work) => {
       const localePath = `${localePathPrefix[work.lang]}/works/${work.slug}`
+      const available = getWorkAvailableLocales(work.slug)
 
       return withAlternates(
         {
@@ -107,7 +113,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
           priority: 0.7,
           images: [url(work.cover)],
         },
-        (alt) => (alt === work.lang ? localePath : null)
+        (alt) =>
+          available.includes(alt) ? `${localePathPrefix[alt]}/works/${work.slug}` : null
       )
     })
 

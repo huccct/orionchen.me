@@ -1,5 +1,5 @@
 import { allWorks } from 'content-collections'
-import type { Locale } from '@/i18n/config'
+import { type Locale, locales } from '@/i18n/config'
 
 const VISIBLE_WORK_SLUGS = ['documentary-ep01'] as const
 const DEFAULT_LOCALE: Locale = 'zh'
@@ -26,4 +26,14 @@ export function getVisibleWorkSlugs() {
 
 export function getWorkBySlug(slug: string, locale: Locale = DEFAULT_LOCALE) {
   return allWorks.find((work) => work.slug === slug && work.lang === locale) ?? null
+}
+
+/**
+ * Locales for which a work entry with this slug exists. See
+ * `getPostAvailableLocales` for the rationale.
+ */
+export function getWorkAvailableLocales(slug: string): Locale[] {
+  return locales.filter((locale) =>
+    allWorks.some((work) => work.lang === locale && work.slug === slug)
+  )
 }
