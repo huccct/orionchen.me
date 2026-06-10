@@ -11,7 +11,7 @@ import { createBreadcrumbJsonLd, createCollectionPageJsonLd } from '@/lib/seo'
 export function TagPageContent({ locale, tag }: { locale: Locale; tag: string }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const posts = getPublishedPostsByTag(tag)
+  const posts = getPublishedPostsByTag(tag, locale)
 
   if (posts.length === 0) notFound()
 

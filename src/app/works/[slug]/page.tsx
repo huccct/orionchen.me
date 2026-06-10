@@ -17,7 +17,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const work = getWorkBySlug(slug)
+  const work = getWorkBySlug(slug, 'zh')
 
   if (!work || !work.hasDetail) notFound()
 

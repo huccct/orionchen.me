@@ -17,8 +17,8 @@ import { getVisibleWorks } from '@/lib/works'
 export function HomePageContent({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const featured = getVisibleWorks().filter((work) => work.featured).slice(0, 6)
-  const latest = getPublishedPosts().slice(0, 5)
+  const featured = getVisibleWorks(locale).filter((work) => work.featured).slice(0, 6)
+  const latest = getPublishedPosts(locale).slice(0, 5)
 
   return (
     <div className="space-y-12 md:space-y-16">

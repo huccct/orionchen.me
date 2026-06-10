@@ -1,4 +1,3 @@
-import { allWorks } from 'content-collections'
 import { MDXContent } from '@content-collections/mdx/react'
 import { notFound } from 'next/navigation'
 import { JsonLd } from '@/components/json-ld'
@@ -8,11 +7,12 @@ import type { Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
 import { createBreadcrumbJsonLd, createWorkJsonLd } from '@/lib/seo'
+import { getWorkBySlug } from '@/lib/works'
 
 export function WorkPageContent({ locale, slug }: { locale: Locale; slug: string }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const work = allWorks.find((item) => item.slug === slug)
+  const work = getWorkBySlug(slug, locale)
 
   if (!work || !work.hasDetail) notFound()
 

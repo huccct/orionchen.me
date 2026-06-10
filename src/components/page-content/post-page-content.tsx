@@ -20,7 +20,7 @@ import {
 export function PostPageContent({ locale, slug }: { locale: Locale; slug: string }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const { post, newerPost, olderPost } = getPostWithNeighbors(slug)
+  const { post, newerPost, olderPost } = getPostWithNeighbors(slug, locale)
 
   if (!post) notFound()
 

@@ -13,7 +13,7 @@ import { createBreadcrumbJsonLd, createCollectionPageJsonLd } from '@/lib/seo'
 export function BlogListPageContent({ locale, page = 1 }: { locale: Locale; page?: number }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const allPosts = getPublishedPosts()
+  const allPosts = getPublishedPosts(locale)
   const pageCount = getBlogPageCount(allPosts)
   const pagedPosts = getBlogPagePosts(page, allPosts)
 

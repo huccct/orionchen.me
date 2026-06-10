@@ -8,7 +8,7 @@ import { createMetadata } from '@/lib/seo'
 const dict = getDictionary('en')
 
 export function generateStaticParams() {
-  return [...getPublishedTags().keys()].map((tag) => ({ tag }))
+  return [...getPublishedTags('en').keys()].map((tag) => ({ tag }))
 }
 
 export async function generateMetadata({
@@ -18,7 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { tag: rawTag } = await params
   const tag = decodeURIComponent(rawTag)
-  const posts = getPublishedPostsByTag(tag)
+  const posts = getPublishedPostsByTag(tag, 'en')
 
   if (posts.length === 0) notFound()
 

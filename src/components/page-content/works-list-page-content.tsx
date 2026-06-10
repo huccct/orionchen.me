@@ -10,7 +10,7 @@ import { getVisibleWorks } from '@/lib/works'
 export function WorksListPageContent({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const works = getVisibleWorks()
+  const works = getVisibleWorks(locale)
 
   return (
     <>

@@ -10,7 +10,7 @@ import { createBreadcrumbJsonLd, createCollectionPageJsonLd } from '@/lib/seo'
 export function TagsListPageContent({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale)
   const prefix = localePathPrefix[locale]
-  const sorted = [...getPublishedTags().entries()].sort((a, b) => b[1] - a[1])
+  const sorted = [...getPublishedTags(locale).entries()].sort((a, b) => b[1] - a[1])
 
   return (
     <>

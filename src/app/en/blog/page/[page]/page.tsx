@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { BlogListPageContent } from '@/components/page-content/blog-list-page-content'
 import { format, getDictionary } from '@/i18n/get-dictionary'
-import { getBlogPageCount } from '@/lib/posts'
+import { getBlogPageCount, getPublishedPosts } from '@/lib/posts'
 import { createMetadata } from '@/lib/seo'
 
 const dict = getDictionary('en')
@@ -14,7 +14,7 @@ function parsePageParam(value: string) {
 }
 
 export function generateStaticParams() {
-  const pageCount = getBlogPageCount()
+  const pageCount = getBlogPageCount(getPublishedPosts('en'))
 
   return Array.from({ length: Math.max(0, pageCount - 1) }, (_, index) => ({
     page: String(index + 2),
@@ -48,7 +48,7 @@ export default async function EnBlogPageNumber({
   if (!page) notFound()
   if (page === 1) redirect('/en/blog')
 
-  const pageCount = getBlogPageCount()
+  const pageCount = getBlogPageCount(getPublishedPosts('en'))
 
   if (page > pageCount) notFound()
 

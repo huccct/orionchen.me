@@ -5,7 +5,7 @@ import { getPublishedPost, getPublishedPosts } from '@/lib/posts'
 import { createMetadata } from '@/lib/seo'
 
 export function generateStaticParams() {
-  return getPublishedPosts().map((post) => ({ slug: post.slug }))
+  return getPublishedPosts('en').map((post) => ({ slug: post.slug }))
 }
 
 export async function generateMetadata({
@@ -14,7 +14,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const post = getPublishedPost(slug)
+  const post = getPublishedPost(slug, 'en')
 
   if (!post) notFound()
 
