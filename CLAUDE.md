@@ -9,7 +9,7 @@
 - Install heavy animation libs (framer-motion ok if used minimally; no GSAP, no lottie)
 - Touch `/blog/[slug]` URL shape - SEO depends on it
 - Add a chatbot widget, "Site Agent", or floating help bubble
-- Auto-translate posts; i18n is deferred per spec section 7
+- Auto-translate posts; post bodies are hand-written per locale (see `docs/superpowers/specs/2026-06-10-i18n-unfreeze.md`)
 - Re-export types or leave dead code "for backwards compat"
 
 ## ALWAYS
