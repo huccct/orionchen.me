@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import type { Post as CollectionPost, Work as CollectionWork } from 'content-collections'
+import { htmlLang, locales, localePathPrefix } from '@/i18n/config'
+import { getLocaleFromPath, stripLocale } from '@/i18n/get-locale'
 import { siteConfig } from '@/lib/site-config'
 
 type MetadataOptions = {
@@ -22,8 +24,36 @@ const DEFAULT_OG_IMAGE = '/opengraph-image'
 const PERSON_ID = `${siteConfig.url}/#person`
 const WEBSITE_ID = `${siteConfig.url}/#website`
 
+const OG_LOCALE: Record<string, string> = {
+  zh: 'zh_CN',
+  en: 'en_US',
+}
+
 export function absoluteUrl(path = '/') {
   return new URL(path, siteConfig.url).toString()
+}
+
+/**
+ * Build the hreflang -> URL map for a given canonical path. The path may
+ * already carry a locale prefix; we strip it and rebuild for every locale.
+ *
+ * Returns an entry per locale plus an x-default pointing at the zh URL.
+ */
+function buildLanguageAlternates(path: string): Record<string, string> {
+  const stripped = stripLocale(path)
+
+  const entries: Record<string, string> = {}
+
+  for (const locale of locales) {
+    const prefix = localePathPrefix[locale]
+    const localePath = stripped === '/' ? prefix === '' ? '/' : prefix : `${prefix}${stripped}`
+
+    entries[htmlLang[locale]] = absoluteUrl(localePath)
+  }
+
+  entries['x-default'] = entries[htmlLang.zh]!
+
+  return entries
 }
 
 export function createMetadata({
@@ -41,6 +71,8 @@ export function createMetadata({
 }: MetadataOptions = {}): Metadata {
   const canonical = absoluteUrl(path)
   const ogImage = absoluteUrl(image)
+  const locale = getLocaleFromPath(path)
+  const languages = buildLanguageAlternates(path)
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -52,6 +84,7 @@ export function createMetadata({
     publisher: siteConfig.name,
     alternates: {
       canonical,
+      languages,
       types: {
         'application/rss+xml': absoluteUrl('/rss.xml'),
       },
@@ -62,7 +95,7 @@ export function createMetadata({
       title: title ?? siteConfig.name,
       description,
       siteName: siteConfig.name,
-      locale: 'zh_CN',
+      locale: OG_LOCALE[locale] ?? 'zh_CN',
       images: [
         {
           url: ogImage,

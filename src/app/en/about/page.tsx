@@ -27,7 +27,7 @@ export default function EnAboutPage() {
         <SectionHeader>{dict.about.title}</SectionHeader>
         <div className="space-y-5 text-base leading-relaxed">
           <p>
-            I'm Orion Chen — engineer, writer, and aspiring documentarian. This
+            I&apos;m Orion Chen — engineer, writer, and aspiring documentarian. This
             English page is a placeholder; the {' '}
             <Link href="/about" className="text-accent">
               Chinese version
