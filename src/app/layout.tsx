@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { HtmlLangSync } from '@/components/html-lang-sync'
 import { JsonLd } from '@/components/json-ld'
 import { Plausible } from '@/components/plausible'
 import { SiteFooter } from '@/components/site-footer'
@@ -35,6 +36,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-screen flex-col" suppressHydrationWarning>
+        <HtmlLangSync />
         <JsonLd data={[createPersonJsonLd(), createWebSiteJsonLd()]} />
         <ThemeProvider>
           <SiteHeader />
