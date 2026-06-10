@@ -1,17 +1,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { JsonLd } from '@/components/json-ld'
-import { PostCard } from '@/components/post-card'
-import { SectionHeader } from '@/components/section-header'
-import {
-  getPublishedPostsByTag,
-  getPublishedTags,
-} from '@/lib/posts'
-import {
-  createBreadcrumbJsonLd,
-  createCollectionPageJsonLd,
-  createMetadata,
-} from '@/lib/seo'
+import { TagPageContent } from '@/components/page-content/tag-page-content'
+import { format, getDictionary } from '@/i18n/get-dictionary'
+import { getPublishedPostsByTag, getPublishedTags } from '@/lib/posts'
+import { createMetadata } from '@/lib/seo'
+
+const dict = getDictionary('zh')
 
 export function generateStaticParams() {
   return [...getPublishedTags().keys()].map((tag) => ({ tag }))
@@ -29,8 +23,8 @@ export async function generateMetadata({
   if (posts.length === 0) notFound()
 
   return createMetadata({
-    title: `Tag: ${tag}`,
-    description: `${tag} 相关文章归档，共 ${posts.length} 篇。`,
+    title: `${dict.breadcrumb.tags}: ${tag}`,
+    description: format(dict.blog.tagDescription, { tag, count: posts.length }),
     path: `/tags/${encodeURIComponent(tag)}`,
     keywords: [tag],
     noIndex: true,
@@ -40,34 +34,6 @@ export async function generateMetadata({
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
   const { tag: rawTag } = await params
   const tag = decodeURIComponent(rawTag)
-  const posts = getPublishedPostsByTag(tag)
 
-  if (posts.length === 0) notFound()
-
-  return (
-    <>
-      <JsonLd
-        data={[
-          createCollectionPageJsonLd({
-            name: `Tag: ${tag}`,
-            description: `${tag} 相关文章归档，共 ${posts.length} 篇。`,
-            path: `/tags/${encodeURIComponent(tag)}`,
-          }),
-          createBreadcrumbJsonLd([
-            { name: 'Home', path: '/' },
-            { name: 'Tags', path: '/tags' },
-            { name: tag, path: `/tags/${encodeURIComponent(tag)}` },
-          ]),
-        ]}
-      />
-      <div>
-        <SectionHeader>{`tag: ${tag}`}</SectionHeader>
-        <div>
-          {posts.map((post) => (
-            <PostCard key={post.slug} post={post} />
-          ))}
-        </div>
-      </div>
-    </>
-  )
+  return <TagPageContent locale="zh" tag={tag} />
 }

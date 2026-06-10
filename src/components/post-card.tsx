@@ -1,12 +1,18 @@
 import Link from 'next/link'
 import type { Post } from '@/content/schemas'
 
-export function PostCard({ post }: { post: Post & { _meta?: { path: string } } }) {
+export function PostCard({
+  post,
+  pathPrefix = '',
+}: {
+  post: Post & { _meta?: { path: string } }
+  pathPrefix?: string
+}) {
   const isTutorial = post.tags?.includes('tutorial')
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={`${pathPrefix}/blog/${post.slug}`}
       className="group border-border hover:border-accent block border-b py-4"
     >
       <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">

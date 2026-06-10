@@ -44,9 +44,9 @@ function CardInner({ work, badge }: { work: Work; badge?: string }) {
   )
 }
 
-export function WorkCard({ work }: { work: Work }) {
+export function WorkCard({ work, pathPrefix = '' }: { work: Work; pathPrefix?: string }) {
   const externalHref = firstExternalLink(work)
-  const internalHref = work.hasDetail ? `/works/${work.slug}` : null
+  const internalHref = work.hasDetail ? `${pathPrefix}/works/${work.slug}` : null
   const href = internalHref ?? externalHref
   const external = !internalHref && externalHref?.startsWith('http')
 

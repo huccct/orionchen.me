@@ -36,8 +36,8 @@ export function getBlogPagePosts(page: number, posts: PublishedPost[] = getPubli
   return posts.slice(start, start + POSTS_PER_PAGE)
 }
 
-export function getBlogPageHref(page: number) {
-  return page <= 1 ? '/blog' : `/blog/page/${page}`
+export function getBlogPageHref(page: number, prefix = '') {
+  return page <= 1 ? `${prefix}/blog` : `${prefix}/blog/page/${page}`
 }
 
 export function getPostWithNeighbors(slug: string) {

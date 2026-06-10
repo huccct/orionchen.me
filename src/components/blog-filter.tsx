@@ -4,28 +4,35 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { PostCard } from '@/components/post-card'
 import { SectionHeader } from '@/components/section-header'
+import type { Dictionary } from '@/i18n/get-dictionary'
 import { getBlogPageHref, POSTS_PER_PAGE, type PublishedPost } from '@/lib/posts'
 import { cn } from '@/lib/utils'
 
-const FILTERS = [
-  { value: 'all', label: 'All writing' },
-  { value: 'tutorial', label: 'Tutorials' },
-  { value: 'notes', label: 'Notes' },
-] as const
-type Kind = (typeof FILTERS)[number]['value']
+type Kind = 'all' | 'tutorial' | 'notes'
 
 export function BlogFilter({
   allPosts,
+  dict,
   page,
   pageCount,
   pagedPosts,
+  pathPrefix = '',
 }: {
   allPosts: PublishedPost[]
+  dict: Dictionary
   page: number
   pageCount: number
   pagedPosts: PublishedPost[]
+  /** Locale path prefix, e.g. '' for zh or '/en' for en. */
+  pathPrefix?: string
 }) {
   const [kind, setKind] = useState<Kind>('all')
+
+  const filters: Array<{ value: Kind; label: string }> = [
+    { value: 'all', label: dict.blog.filterAll },
+    { value: 'tutorial', label: dict.blog.filterTutorial },
+    { value: 'notes', label: dict.blog.filterNotes },
+  ]
 
   const tutorials = allPosts.filter((post) => post.tags?.includes('tutorial'))
   const notes = allPosts.filter((post) => !post.tags?.includes('tutorial'))
@@ -50,13 +57,13 @@ export function BlogFilter({
 
   return (
     <div>
-      <SectionHeader action={<span>{listMeta}</span>}>Writing</SectionHeader>
+      <SectionHeader action={<span>{listMeta}</span>}>{dict.blog.title}</SectionHeader>
 
       <nav
-        aria-label="Filter writing"
+        aria-label={dict.blog.ariaFilter}
         className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs"
       >
-        {FILTERS.map((filter) => {
+        {filters.map((filter) => {
           const active = kind === filter.value
 
           return (
@@ -95,21 +102,21 @@ export function BlogFilter({
       {showPager && (
         <nav className="border-border mt-8 flex items-center justify-between border-t pt-4 font-mono text-xs">
           {page > 1 ? (
-            <Link href={getBlogPageHref(page - 1)} className="hover:text-accent">
-              newer
+            <Link href={getBlogPageHref(page - 1, pathPrefix)} className="hover:text-accent">
+              {dict.blog.newer}
             </Link>
           ) : (
-            <span className="text-muted-foreground">newer</span>
+            <span className="text-muted-foreground">{dict.blog.newer}</span>
           )}
           <span className="text-muted-foreground">
             {`${firstPostNumber}-${lastPostNumber} / ${totalPosts}`}
           </span>
           {page < pageCount ? (
-            <Link href={getBlogPageHref(page + 1)} className="hover:text-accent">
-              older
+            <Link href={getBlogPageHref(page + 1, pathPrefix)} className="hover:text-accent">
+              {dict.blog.older}
             </Link>
           ) : (
-            <span className="text-muted-foreground">older</span>
+            <span className="text-muted-foreground">{dict.blog.older}</span>
           )}
         </nav>
       )}

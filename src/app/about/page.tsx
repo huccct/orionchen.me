@@ -1,7 +1,15 @@
+import type { Metadata } from 'next'
 import { SectionHeader } from '@/components/section-header'
+import { getDictionary } from '@/i18n/get-dictionary'
 import { siteConfig } from '@/lib/site-config'
+import { createMetadata } from '@/lib/seo'
 
-export const metadata = { title: 'About' }
+const dict = getDictionary('zh')
+
+export const metadata: Metadata = createMetadata({
+  title: dict.about.title,
+  path: '/about',
+})
 
 export default function AboutPage() {
   return (

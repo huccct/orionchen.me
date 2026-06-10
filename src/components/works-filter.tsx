@@ -7,7 +7,7 @@ import { WorkCard } from './work-card'
 
 const KINDS = ['all', 'code', 'documentary', 'writing'] as const
 
-export function WorksFilter({ works }: { works: Work[] }) {
+export function WorksFilter({ works, pathPrefix = '' }: { works: Work[]; pathPrefix?: string }) {
   const [kind, setKind] = useState<(typeof KINDS)[number]>('all')
   const visibleKinds = KINDS.filter((item) =>
     item === 'all' ? true : works.some((work) => work.type === item)
@@ -33,7 +33,7 @@ export function WorksFilter({ works }: { works: Work[] }) {
       )}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((work) => (
-          <WorkCard key={work.slug} work={work} />
+          <WorkCard key={work.slug} work={work} pathPrefix={pathPrefix} />
         ))}
       </div>
     </>

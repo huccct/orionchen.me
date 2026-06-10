@@ -1,21 +1,17 @@
 import type { Metadata } from 'next'
-import { GiscusComments } from '@/components/giscus-comments'
-import { SectionHeader } from '@/components/section-header'
+import { GuestbookPageContent } from '@/components/page-content/guestbook-page-content'
+import { getDictionary } from '@/i18n/get-dictionary'
 import { createMetadata } from '@/lib/seo'
 
+const dict = getDictionary('zh')
+
 export const metadata: Metadata = createMetadata({
-  title: 'Guestbook',
-  description: '留言、想法、批评和合作意向。',
+  title: dict.guestbook.title,
+  description: dict.site.guestbookDescription,
   path: '/guestbook',
   noIndex: true,
 })
 
 export default function GuestbookPage() {
-  return (
-    <div className="mx-auto max-w-2xl">
-      <SectionHeader>Guestbook</SectionHeader>
-      <p className="text-muted-foreground mb-8">留言、想法、批评、合作意向，都欢迎。</p>
-      <GiscusComments term="guestbook" />
-    </div>
-  )
+  return <GuestbookPageContent locale="zh" />
 }
