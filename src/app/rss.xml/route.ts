@@ -32,6 +32,7 @@ export function GET() {
       <guid>${xmlEscape(url)}</guid>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
       <description>${cdata(post.summary ?? '')}</description>
+      <author>${xmlEscape(siteConfig.email)} (${xmlEscape(siteConfig.name)})</author>
     </item>`
     })
     .join('')
@@ -41,6 +42,7 @@ export function GET() {
   <title>${xmlEscape(siteConfig.name)}</title>
   <link>${xmlEscape(siteConfig.url)}</link>
   <description>${xmlEscape(siteConfig.description)}</description>
+  <language>zh-CN</language>
   ${items}
 </channel></rss>`
 
