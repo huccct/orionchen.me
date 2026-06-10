@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { MenuIcon } from 'lucide-react'
 import { Drawer } from '@base-ui/react/drawer'
+import { LanguageToggle } from './language-toggle'
 import { ThemeToggle } from './theme-toggle'
 
 const NAV = [
@@ -44,6 +45,7 @@ export function SiteHeader() {
             ))}
           </nav>
           <ThemeToggle />
+          <LanguageToggle />
         </div>
       </div>
     </header>
