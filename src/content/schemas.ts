@@ -1,5 +1,12 @@
 import { z } from 'zod'
 
+/**
+ * Locale of the post or work body. Defaults to 'zh' so existing content
+ * needs no frontmatter migration. English entries opt in with `lang: en`.
+ * See docs/superpowers/specs/2026-06-10-i18n-unfreeze.md §5.
+ */
+export const langSchema = z.enum(['zh', 'en']).optional().default('zh')
+
 export const postSchema = z.object({
   title: z.string(),
   date: z.string(),
@@ -13,6 +20,7 @@ export const postSchema = z.object({
   draft: z.boolean().optional().default(false),
   earlyContent: z.boolean().optional().default(false),
   cover: z.string().optional(),
+  lang: langSchema,
 })
 
 export type Post = z.infer<typeof postSchema>
@@ -58,6 +66,7 @@ export const workSchema = z.object({
       wordCount: z.number().optional(),
     })
     .optional(),
+  lang: langSchema,
 })
 
 export type Work = z.infer<typeof workSchema>
