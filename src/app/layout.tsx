@@ -9,14 +9,17 @@ import { geistMono, geistSans, newsreader, notoSerifSC } from '@/lib/fonts'
 import { createMetadata, createPersonJsonLd, createWebSiteJsonLd } from '@/lib/seo'
 import './globals.css'
 
+const baseMetadata = createMetadata()
+
 export const metadata: Metadata = {
-  ...createMetadata(),
+  ...baseMetadata,
   title: {
     default: 'Orion Chen',
     template: `%s — Orion Chen`,
   },
   applicationName: 'Orion Chen',
   alternates: {
+    ...baseMetadata.alternates,
     canonical: '/',
     types: {
       'application/rss+xml': '/rss.xml',
