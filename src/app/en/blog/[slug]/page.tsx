@@ -29,6 +29,7 @@ export async function generateMetadata({
     modifiedTime: post.date,
     authors: ['Orion Chen'],
     tags: post.tags,
+    availableLocales: [post.lang],
   })
 }
 

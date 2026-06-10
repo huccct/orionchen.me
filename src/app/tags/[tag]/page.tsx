@@ -28,6 +28,7 @@ export async function generateMetadata({
     path: `/tags/${encodeURIComponent(tag)}`,
     keywords: [tag],
     noIndex: true,
+    availableLocales: ['zh'],
   })
 }
 

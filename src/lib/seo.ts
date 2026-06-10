@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import type { Post as CollectionPost, Work as CollectionWork } from 'content-collections'
-import { htmlLang, locales, localePathPrefix } from '@/i18n/config'
+import { htmlLang, type Locale, locales, localePathPrefix } from '@/i18n/config'
 import { getLocaleFromPath, stripLocale } from '@/i18n/get-locale'
 import { siteConfig } from '@/lib/site-config'
 
@@ -16,6 +16,15 @@ type MetadataOptions = {
   authors?: string[]
   tags?: string[]
   noIndex?: boolean
+  /**
+   * Locales for which the *same logical page* exists (i.e. has a 200
+   * response with translated content). Defaults to all locales — correct
+   * for shared chrome routes like the home page or list pages, where
+   * /foo and /en/foo are both valid. For per-content routes
+   * (/blog/[slug], /works/[slug]) pass [post.lang] only — listing a
+   * cross-language alternate to a 404 violates Google's hreflang rules.
+   */
+  availableLocales?: readonly Locale[]
 }
 
 type Thing = Record<string, unknown>
@@ -34,24 +43,32 @@ export function absoluteUrl(path = '/') {
 }
 
 /**
- * Build the hreflang -> URL map for a given canonical path. The path may
- * already carry a locale prefix; we strip it and rebuild for every locale.
+ * Build the hreflang -> URL map for a given canonical path. Only locales
+ * listed in `available` are included — listing a hreflang URL that 404s
+ * gets the entry dropped by Google.
  *
- * Returns an entry per locale plus an x-default pointing at the zh URL.
+ * x-default points at zh when zh is available, otherwise at the first
+ * available locale.
  */
-function buildLanguageAlternates(path: string): Record<string, string> {
+function buildLanguageAlternates(
+  path: string,
+  available: readonly Locale[]
+): Record<string, string> {
   const stripped = stripLocale(path)
-
   const entries: Record<string, string> = {}
 
   for (const locale of locales) {
+    if (!available.includes(locale)) continue
+
     const prefix = localePathPrefix[locale]
     const localePath = stripped === '/' ? prefix === '' ? '/' : prefix : `${prefix}${stripped}`
 
     entries[htmlLang[locale]] = absoluteUrl(localePath)
   }
 
-  entries['x-default'] = entries[htmlLang.zh]!
+  const fallback = entries[htmlLang.zh] ?? Object.values(entries)[0]
+
+  if (fallback) entries['x-default'] = fallback
 
   return entries
 }
@@ -68,11 +85,12 @@ export function createMetadata({
   authors,
   tags,
   noIndex = false,
+  availableLocales = locales,
 }: MetadataOptions = {}): Metadata {
   const canonical = absoluteUrl(path)
   const ogImage = absoluteUrl(image)
   const locale = getLocaleFromPath(path)
-  const languages = buildLanguageAlternates(path)
+  const languages = buildLanguageAlternates(path, availableLocales)
 
   return {
     metadataBase: new URL(siteConfig.url),

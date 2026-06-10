@@ -27,6 +27,7 @@ export async function generateMetadata({
     path: `/en/works/${work.slug}`,
     keywords: work.tags,
     image: work.cover,
+    availableLocales: [work.lang],
   })
 }
 
