@@ -178,7 +178,7 @@ Each film is a Work card with poster, title, one-line summary, and external link
 | Deployment      | Vercel                                                                                                                                                                          |
 | Lint / Format   | `eslint-config-next` + `prettier` (not antfu — that's for movorca / 虾聊)                                                                                                       |
 | TypeScript      | strict                                                                                                                                                                          |
-| i18n            | **Not in v1.** Single language (Chinese-primary, English allowed in posts where the author chose to write in English). Add only when there is concrete English audience demand. |
+| i18n            | **Active (unfrozen 2026-06-10).** Two locales: `zh` (default, no path prefix — `/blog/foo`) and `en` (path-prefixed — `/en/blog/foo`). Chinese is primary; English chrome (nav / footer / list pages / metadata) is hand-translated. Posts and works are language-tagged via `lang` frontmatter; **no auto-translation of post bodies** — author writes English versions deliberately. See `docs/superpowers/specs/2026-06-10-i18n-unfreeze.md` for trigger and rollback notes. |
 
 ## 8. Cadence & Content Mechanics
 
@@ -266,7 +266,7 @@ Each step reversible:
 
 ### Open / deferred
 
-- **i18n**: deferred until concrete English audience signals. Re-evaluate annually.
+- **i18n**: ~~deferred until concrete English audience signals. Re-evaluate annually.~~ **Unfrozen 2026-06-10**; see section 7 and `2026-06-10-i18n-unfreeze.md`.
 - **GitHub stars auto-refresh**: deferred; manual quarterly update is fine for v1.
 - **Film embedded player**: deferred until first film exists.
 - **Newsletter / RSS-to-email**: not planned, but technical RSS feed is preserved.
@@ -277,7 +277,7 @@ Each step reversible:
 - [leerob.com](https://leerob.com), [simonwillison.net](https://simonwillison.net), [overreacted.io](https://overreacted.io), [karpathy.ai](https://karpathy.ai) — main-job engineer IP archetypes
 - [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) — DESIGN.md format authority
 - [content-collections](https://www.content-collections.dev/) — content layer choice
-- [next-intl](https://next-intl-docs.vercel.app/) — deferred i18n option
+- [next-intl](https://next-intl-docs.vercel.app/) — evaluated and not adopted; native Next 16 dictionary pattern is sufficient for two locales (see `2026-06-10-i18n-unfreeze.md`)
 
 ---
 
