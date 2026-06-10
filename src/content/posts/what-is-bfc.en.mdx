@@ -1,0 +1,192 @@
+---
+title: A Quick Look at BFC
+date: '2025-07-01'
+slug: what-is-bfc
+summary: >-
+  A practical look at BFC (Block Formatting Context) — the concept, the
+  characteristics, and where it shows up in real development, including
+  clearing floats and preventing margin collapse.
+seoTitle: 'What Is BFC? A Clear Guide to Block Formatting Context and Its Common Uses'
+seoDescription: From the concept to trigger conditions to clearing floats and preventing margin collapse — a systematic look at how BFC (Block Formatting Context) plays out in frontend development.
+seoKeywords:
+  - what is BFC
+  - BFC
+  - Block Formatting Context
+  - clear float
+  - CSS layout
+tags:
+  - css
+  - frontend
+draft: false
+lang: en
+---
+
+# What is BFC?
+
+BFC (Block Formatting Context) is an independent rendering region on a web page with its own set of rules:
+
+1. Boxes inside it stack vertically, one after another.
+2. Adjacent elements within the same BFC have their vertical margins collapse.
+3. A BFC region won't overlap with floated elements.
+4. When calculating a BFC's height, floated children are included.
+
+## How to create a BFC?
+
+Any of these will create a BFC:
+
+```css
+.bfc {
+  /* 1. float other than none */
+  float: left;
+  
+  /* 2. position absolute or fixed */
+  position: absolute;
+  position: fixed;
+  
+  /* 3. display set to inline-block, flex, grid, etc. */
+  display: inline-block;
+  display: flex;
+  display: grid;
+  
+  /* 4. overflow other than visible */
+  overflow: hidden;
+  overflow: auto;
+  overflow: scroll;
+  
+  /* 5. the recommended way: flow-root */
+  display: flow-root;
+}
+```
+
+## Where BFC shows up
+
+### 1. Clearing floats
+
+When children are floated, the parent's height collapses. Creating a BFC fixes this:
+
+```html
+<div class="container">
+  <div class="float-box">I'm a floated box</div>
+</div>
+
+<style>
+.container {
+  border: 2px solid #333;
+  /* create a BFC */
+  display: flow-root;
+}
+
+.float-box {
+  float: left;
+  width: 200px;
+  height: 100px;
+  background-color: #f0f0f0;
+  margin: 10px;
+}
+</style>
+```
+
+Result: the parent contains the floated child and its height doesn't collapse.
+![iamge1](https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.8hgr4djgpf.webp)
+
+### 2. Preventing margin collapse
+
+In normal document flow, adjacent elements' margins collapse. Wrapping one in a new BFC prevents that:
+
+```html
+<!-- margins collapse -->
+<div class="box blue"></div>
+<div class="box red"></div>
+
+<!-- use BFC to prevent collapse -->
+<div class="box blue"></div>
+<div class="bfc">
+  <div class="box red"></div>
+</div>
+
+<style>
+.box {
+  width: 100px;
+  height: 100px;
+  margin: 20px;
+}
+
+.blue {
+  background: blue;
+}
+
+.red {
+  background: red;
+}
+
+.bfc {
+  /* create a new BFC */
+  display: flow-root;
+}
+</style>
+```
+
+![iamge2](https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.1zijb2arbv.webp)
+
+### 3. Adaptive two-column layout
+
+Using "a BFC region won't overlap with floats," you can build an adaptive two-column layout:
+
+```html
+<div class="layout">
+  <div class="left">left fixed width</div>
+  <div class="right">
+    a long line of text a long line of text a long line of text<br/>
+    a long line of text a long line of text a long line of text<br/>
+    a long line of text a long line of text a long line of text<br/>
+    a long line of text a long line of text a long line of text<br/>
+    a long line of text a long line of text a long line of text<br/>
+  </div>
+</div>
+
+
+
+<style>
+.layout {
+  background: #f0f0f0;
+}
+
+.left {
+  float: left;
+  width: 200px;
+  background: #ff9999;
+  padding: 20px;
+}
+
+.right {
+  /* comment this out to see the difference */
+  display: flow-root;
+  background: #99ff99;
+  padding: 20px;
+}
+</style>
+```
+![image3](https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/image.sz82hp8bl.webp)
+
+## Best practices
+
+1. **Prefer `display: flow-root`**
+   - It's the cleanest approach, designed specifically for creating BFCs.
+   - No side effects (unlike `overflow: hidden`, which can hide content).
+   - Clear semantics, easier to maintain.
+
+2. **Avoid `overflow: hidden`**
+   - It's a common workaround, but it risks hiding content.
+   - If you have to use it, leave a comment explaining why.
+
+3. **Use BFC sensibly**
+   - Don't overuse it.
+   - For simple layout problems, prefer modern layout tools first (Flexbox, Grid).
+
+## Wrap-up
+
+BFC is a key concept in CSS — it provides an isolated layout context that solves a lot of common layout problems. Used properly, it lets you:
+
+1. Clear floats and prevent parent height collapse.
+2. Prevent margin collapse.
+3. Build adaptive two-column layouts.

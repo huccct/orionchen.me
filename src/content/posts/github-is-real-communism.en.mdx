@@ -1,0 +1,319 @@
+---
+title: GitHub Is the Real Communism
+date: '2026-05-29'
+slug: github-is-real-communism
+summary: The Soviet Union fell, Eastern Europe collapsed, Cambodia became a punchline — but every failed communist experiment happened in the material domain, never once in the cognitive domain. As it happens, in the 21st century there's a community with no political label that quietly built the "association of free individuals" the Communist Manifesto described — using nothing but cognitive labor. It's called GitHub.
+tags:
+  - thinking
+  - github
+draft: false
+lang: en
+---
+
+### 1. A claim that's been mocked for a hundred years
+
+"Communism" is a word that's been worn out, cursed at, and laughed at for a century.
+
+Bring it up and most people picture Soviet citizens in bread queues, useless pig iron from People's Commune furnaces, the mass graves of the Khmer Rouge, East Germans shot dead at the border while trying to climb the wall. The accumulated images form a consensus: **this idea was falsified by reality, repeatedly, thoroughly, brutally.**
+
+The Soviet Union dissolved in 1991. Eastern Europe collapsed in '89. China pivoted to a market economy in 1978. Cambodia became a cautionary tale. Cuba and North Korea live as jokes. Venezuela took a new version and arrived at the same old conclusion.
+
+Pile up these corpses and you'll notice something they have in common:
+
+**Every failed communist experiment took place in the material domain.**
+
+Agriculture, industry, light industry, heavy industry, distribution, allocation — wherever it broke down, the thing breaking was always physical stuff. Grain over-requisitioned and people starve. Steel rushed and you get scrap. Shoes planned too rigidly and you produce the same model for ten years. Material things are scarce, they degrade, they have transport costs, they're bound by space and time. Hand material production over to central allocation and, in theory, you cannot beat distributed decision-making — Hayek already worked this out in his 1945 paper *The Use of Knowledge in Society*.
+
+But in the entire century, not one communist experiment was run in the **cognitive domain**.
+
+As it happens, at the start of the 21st century, a community with no political label at all — quietly, without fanfare — grew the thing the Communist Manifesto described, in cognitive labor.
+
+It's called GitHub.
+
+### 2. What Marx actually predicted
+
+To check whether GitHub really achieved anything, we have to go back to the original text and see what Marx wrote and didn't write.
+
+What people carry in their heads as "communism" is actually a mash-up of several lines, often misremembered. Let me pull out the two most-quoted ones.
+
+**First**, from chapter two of the *Manifesto of the Communist Party* (1848):
+
+> "In place of the old bourgeois society, with its classes and class antagonisms, we shall have an association in which **the free development of each is the condition for the free development of all**."
+>
+> — *Manifest der Kommunistischen Partei*, 1848
+
+**Second**, from *Critique of the Gotha Programme* (1875):
+
+> "From each according to his ability, to each according to his needs."
+>
+> — *Kritik des Gothaer Programms*, 1875
+
+In Chinese discussions these two often get blended together as if both came from the *Manifesto*. They're actually 27 years apart — Marx wrote the first at 30, the second at 57. The first is a young man's manifesto, the second is the older Marx's correction. Read them together and you see a clean blueprint:
+
+1. **An association of free individuals** (not people forcibly herded together)
+2. **The free development of each** is the **condition** of others' free development (not its cost)
+3. **Contribution by ability** (whoever can do it does it)
+4. **Consumption by need** (not by birth, not by rank, not by purchasing power)
+
+Together they describe a **mode of cooperation**. Marx wasn't writing about "what the state should look like" — that's the later interpretation by Lenin, Stalin, and Mao. Marx was writing about **the ideal structure of human cooperation.**
+
+Now we have a benchmark. Let's go back and look at the Soviet Union, and at GitHub.
+
+### 3. Knowledge isn't scarce
+
+Why was material communism doomed? The root cause isn't politics, isn't corruption, isn't the leaders — those are surface phenomena. The root cause is physics.
+
+Material things have a property economists call **rivalrous consumption**:
+
+- If you eat this bowl of rice, I can't eat this bowl of rice.
+- If you wear these shoes, I can't wear these shoes.
+- A ton of steel made into tanks can't also be made into farm tools.
+
+All allocation of material is fundamentally a **zero-sum game**. Give A more, B necessarily gets less. That's why material production needs prices — prices are signals of scarcity, telling everyone "this thing is this tight". Cut the price signal and replace it with central allocation and you lose all the information; the system has to crash.
+
+Knowledge is the opposite. It has a property economists call **non-rivalrous**:
+
+- I teach you the Pythagorean theorem; the Pythagorean theorem in my head is not one bit smaller.
+- I push code to GitHub; the code on my hard drive is not one bit smaller.
+- A Linux kernel runs on three billion devices; the kernel on Linus's machine is not one bit smaller.
+
+The marginal cost of copying knowledge is zero. One piece of code can serve ten thousand people, or ten billion, with no extra labor from the author.
+
+That's the fundamental physical difference between matter and knowledge.
+
+And historically, "private property" was designed only for material things. Roman law's property rights covered land, slaves, livestock — a finite, zero-sum collection. **Knowledge privatization was invented later**: patents emerged in 15th-century Venice, copyright was first legislated in England in 1710, trade secrets came even later.
+
+Humans took "private", a tool tailor-made for matter, and bolted it onto knowledge. But knowledge itself doesn't demand to be private — the law forces it to be.
+
+> An interesting counter-example: mathematical theorems are forever public. Nobody can patent the Pythagorean theorem. So humanity's two-thousand-year collaboration on mathematics has been terrifyingly efficient — every formula you used today rests on free contributions stacked up over hundreds of generations of mathematicians.
+
+This is the most important hint in the essay. **Remember it**: math has no patents, so math advances fastest.
+
+### 4. Stallman's legal hack
+
+The man who turned that counterintuitive hint into a real-world weapon was Richard Stallman.
+
+On 27 September 1983, he posted to the net.unix-wizards forum. The subject line was two words:
+
+> **"Free Unix!"**
+>
+> "Starting this Thanksgiving I am going to write a complete Unix-compatible software system called GNU (for Gnu's Not Unix)…"
+>
+> — Richard Stallman, 1983-09-27
+
+He was 30 that year, watching from inside MIT's lab as the ecosystem he'd grown up in — a co-op of hackers patching and debugging each other's code for free — was carved up by commercial companies and locked away under NDAs. He decided to write a free operating system from scratch: GNU.
+
+But Stallman's real subversion wasn't writing code. His subversion was **realizing one thing clearly: "free sharing" alone wasn't enough**.
+
+Free sharing alone gets sponged off by capital. You write the code, I take it, tweak it, drop it into my proprietary product, and sell it. You can't stop me. That was the fate of the BSD license: Berkeley open-sourced it, and Apple, Sony, and almost every commercial company took it, baked it into closed-source products, and the contributors saw not a cent.
+
+In 1989 Stallman invented something called **Copyleft**. The spirit of it can be condensed into one line:
+
+> **Use capitalism's copyright law to enforce code commonization, in reverse.**
+
+How? He wrote the GNU General Public License (GPL), and the core logic is two clauses:
+
+1. **Anyone is free to use, modify, and redistribute this code.**
+2. **Any modified version must be released under the same GPL terms.**
+
+The second clause is the key. It isn't "we encourage you to publish" — it's **the law forcing you to publish**. If you take GPL code, change a function, and put it in your product, your entire product has to be open-sourced. Don't open-source it and you're infringing — you can be sued.
+
+In GPL circles this is nicknamed the "viral clause" — it "infects" any code that touches it, turning it open.
+
+This is a more aggressive design than plain "public domain". **Public domain is passive — you give up ownership and anyone can take it, including fence it off. Copyleft is active — you keep your copyright, but you turn that copyright into a knife and use it to force every derivative to stay open.**
+
+Copyleft isn't a weakening of copyright. Copyleft is **copyright weaponized for the public**.
+
+It takes capitalism's sharpest tool of privatization, flips the blade around, and uses it to enforce common ownership. This is a legal hack. By scale, it's probably the most successful hack of the late 20th century.
+
+### 5. Linus and the facts
+
+Stallman wrote most of GNU's components, but didn't finish the most critical one: the kernel. GNU's own kernel, Hurd, dragged on for decades without shipping.
+
+On 25 August 1991, a 21-year-old student at the University of Helsinki, Linus Torvalds, posted to comp.os.minix:
+
+> "Hello everybody out there using minix - I'm doing a (free) operating system (**just a hobby, won't be big and professional like gnu**) for 386(486) AT clones."
+>
+> — Linus Torvalds, 1991-08-25
+
+"Just a hobby, won't be big and professional like gnu." This may be the most famously wrong self-assessment in human history.
+
+Linus picked the GPL for his kernel. All of GNU's userland tools plus this Linux kernel formed a complete free operating system: GNU/Linux.
+
+35 years later, in 2026, the facts are these:
+
+- **Top500 supercomputers** are 100% on Linux, eight years running (since November 2017).<sup>[1]</sup>
+- **Web servers** running Unix-likes (almost all Linux) account for 91.5%.<sup>[2]</sup>
+- **Android** in December 2025, at 38.94% share, became the world's most-used operating system, surpassing Windows — and Android's kernel is Linux.<sup>[3]</sup>
+- A 2024 Harvard Business School study estimates that if every company had to rewrite the open-source software it currently uses, **the world would have to spend an extra $8.8 trillion** — open source saves enterprises **2,120×** what it costs to produce ($4.15 billion supply-side).<sup>[4]</sup>
+
+35 years after Linus sent his "hobby" email, **code he and a bunch of strangers wrote together runs the entire digital civilization of humanity**.
+
+Pause here. Sit with this:
+
+The Soviet Union spent 70 years, mobilized 300 million people, and burned countless lives, and **failed** to deliver Marx's "from each according to ability, to each according to need".
+
+Linus, with one hobby project, the legal tool of GPL, and a BBS forum, recruited tens of thousands of strangers across more than 100 countries (no contracts, no time clocks, mostly never meeting face-to-face) — and **did it**.
+
+From each according to ability — you want to add a feature? Submit it. You don't? No one forces you.
+
+To each according to need — anyone, any country, any income level, free, no permission required.
+
+Free development of each — what you commit, your name stays on. Don't commit and no one fires you.
+
+Free development of each is the condition for free development of others — your patch makes my kernel more stable; my patch makes your app possible.
+
+This isn't a metaphor. It's literally the "association of free individuals". Marx's 1848 line, 143 years after he died, became reality in Linus's email — not in the material domain he predicted, but in the cognitive domain he didn't.
+
+### 6. Soviet failure vs GitHub success: a side-by-side
+
+Put the two experiments next to each other and the contrast pops:
+
+| Dimension | Soviet-style communism | GitHub / open source ecosystem |
+|---|---|---|
+| **Domain** | Material production (zero-sum) | Cognitive production (positive-sum) |
+| **Scarcity** | High, finite resources | Near zero, marginal copy cost is 0 |
+| **Coordination** | Central planning committee (Gosplan) | Decentralized, P2P collaboration |
+| **Incentive** | State rewards / forced labor | Reputation, curiosity, technical thrill, job credentials |
+| **Right of exit** | None (Iron Curtain, hukou, internal passports) | Total freedom (anyone unhappy can fork) |
+| **Decision rights** | Concentrated in the Politburo | Distributed across each maintainer |
+| **Failure / restart cost** | National-scale catastrophe | Just fork and start again |
+| **"To each according to need" delivery** | Queues, ration tickets, connections | Anyone runs git clone |
+| **"From each according to ability" delivery** | Forced assignment | Entirely voluntary |
+
+The biggest contrast is in the bottom two rows.
+
+**The Soviet model was "everyone becomes property of the state"** — you stopped being a free individual and became a screw planned into the system. The collective vanished and so did the individual.
+
+**The Copyleft model is "everyone becomes a free collaborator"** — you keep 100% of your right to exit, modify, and fork. If you don't like where Linux is going, fork it and run your own. Linus can't fire you. You don't have to please anyone.
+
+This is exactly the point Hayek was making against central planning: **information is dispersed across every individual, and no center can fully grasp it**. The Soviet Union tried to centralize, so it broke. Copyleft doesn't try to centralize — it just sets one minimum property rule ("if you modify it, you must open it"), and leaves everything else to individual decisions.
+
+The Soviet Union shoved people into a system.
+Copyleft shoved a rule into a protocol.
+
+These are two completely different kinds of "public". The first kind eliminated "private", and so eliminated "the individual" too. The second kind protected "private" (copyright) and used "private" to enforce "public" in reverse.
+
+That's why I say GitHub is the real communism — not that it's the version Marx imagined, but that it's **closer to Marx's stated goal than the version Marx imagined was**.
+
+### 7. But the story isn't over
+
+If the essay ended here, it would be a hymn. A hymn isn't what this essay wants to be. The truth is, act two has already started — and it doesn't smell good.
+
+#### 1. Microsoft bought GitHub in 2018
+
+On 4 June 2018, Microsoft announced a $7.5 billion all-stock acquisition of GitHub. Satya Nadella in the press release:
+
+> "Microsoft is a developer-first company, and by joining forces with GitHub we strengthen our commitment to developer freedom, openness and innovation."
+>
+> — Satya Nadella, 2018-06-04
+
+Pretty words. The fact: **the largest commons humanity has ever collaborated on was bought by a private company**.
+
+Most code in GitHub repos is open source (GPL/MIT/Apache and so on); the code itself doesn't belong to Microsoft. But **the platform that hosts the code** — the issue tracker, the PR flow, the social graph, code search, Actions, Codespaces — does belong to Microsoft. Microsoft controls who sees what, what gets recommended, which countries get blocked (in 2019 GitHub briefly restricted Iranian users from private repos, drawing controversy).
+
+The commons are still there. The fence around them was sold off.
+
+There's a historical analog called the **Enclosure Movement**. Between the 15th and 19th centuries in England, nobles used the law to fence off pastures that everyone had previously shared, turning them into private land. Peasants who had grazed sheep, picked mushrooms, and gathered firewood there for centuries — overnight, gone. The primitive accumulation of capitalism started here.
+
+The GitHub acquisition is the digital-age enclosure movement. Act one.
+
+#### 2. The big AI companies hoovered up all open-source code
+
+Act two is more thorough.
+
+GitHub launched Copilot in 2021. ChatGPT exploded in 2022. For the next three years, every big-model company — OpenAI, Anthropic, Google, Meta, Alibaba — trained on the same dataset: **the world's open-source code**.
+
+That code was published under GPL, MIT, Apache, and similar licenses. Each license clearly says: **derivative works must keep the author's attribution; commercial use must follow specific conditions**.
+
+But AI training, fundamentally, sidesteps these clauses. The model doesn't copy your code; it "learns" your code and emits "stylistically similar" new code. No license has ever covered this — because no one in 1989, when the GPL was written, could anticipate 2022.
+
+The result:
+
+- **Millions of open-source contributors** poured tens of millions of unpaid hours into a commons.
+- **A handful of private AI companies** trained models worth hundreds of billions of dollars on that commons.
+- **Almost no consideration** flowed back to the original contributors — no attribution, no royalties, no licensing fees.
+
+The GPL "viral clause" doesn't bite here. Stallman's legal hack doesn't plug this new hole.
+
+Starting in 2023, lawsuits trickled in: developers suing GitHub Copilot for violating open-source licenses; writers and artists suing AI companies for unauthorized training. As of 2026, no decisive win at the law-of-the-land level. Model companies use one simple rationale — "training is learning, learning isn't copying" — to walk around every license.
+
+This is act two of the digital-era enclosure. **It's more thorough than act one**: act one only built the fence; act two is hollowing out the commons and trucking it away.
+
+#### 3. Aaron Swartz died in this war
+
+On 11 January 2013, a 26-year-old programmer hanged himself in his Brooklyn apartment. His name was Aaron Swartz.
+
+Things he'd done: at 14, contributed to the RSS 1.0 spec; co-founded Reddit; pushed for Creative Commons; built Open Library; drafted the Guerilla Open Access Manifesto.
+
+What got him prosecuted: from September 2010 to January 2011, he slipped into the MIT campus network and **downloaded 4.8 million papers from the JSTOR academic database, 80% of the entire database**.<sup>[5]</sup>
+
+He didn't sell, didn't use, didn't redistribute. JSTOR settled with him in summer 2011, **JSTOR itself didn't want to prosecute**. But federal prosecutor Carmen Ortiz piled on 13 felony charges including wire fraud and computer fraud, **maximum 35 years in prison and a $1 million fine**.
+
+He refused the plea deal (six months prison time). Three months before trial, he killed himself.
+
+In his 2008 *Guerilla Open Access Manifesto*, Aaron wrote:
+
+> "Information is power. But like all power, there are those who want to keep it for themselves. The world's entire scientific and cultural heritage, published over centuries in books and journals, is increasingly being digitized and locked up by a handful of private corporations."
+>
+> — Aaron Swartz, 2008
+
+He tried to use the spirit of open source to unlock a piece of human public knowledge that had been privatized. The legal system used its heaviest weapons to push him to death.
+
+JSTOR later opened up a bit. MIT later put out an apology report. Aaron didn't come back.
+
+**He's the earliest, and youngest, body in this new enclosure movement** — under-27 contributor to half of the internet's open protocols, dead inside a legal system that wouldn't allow openness.
+
+Remember him. He's one of the reasons this isn't a hymn.
+
+### 8. Closing
+
+Humanity's largest, longest-running, most successful experiment in collaborative public ownership is running on your computer right now. It's called GitHub. It's been running for 17 years. Its predecessor — the open source movement — has been running for 43.
+
+It never raised a red flag, never wrote a constitution, never declared itself "communist". But it did the thing the Soviet Union failed at over 70 years: **getting a group of strangers to jointly produce, with no coercion, no monetary incentive, and no central planning, the critical infrastructure modern civilization runs on**.
+
+It pulled this off not because the participants were morally elevated, and not because it "represented the future" — it pulled it off because it picked the right medium. **Knowledge isn't scarce, so "common" is its natural form; matter is scarce, so "private" is its natural form.**
+
+Apply the wrong method to the wrong medium and you get the Soviet tragedy.
+Apply the right method to the right medium and you get Linux.
+
+But this isn't the endpoint. Today's GitHub has had its shell bought up by capital. Today's open-source code is being scooped out by AI companies. Today's Aaron Swartzes still stand on the wrong side of the law. The second round of enclosure isn't over — it just started.
+
+Maybe humanity will find the next method, and **truly, permanently** keep "knowledge", a thing naturally suited to the commons, in the commons. Maybe it'll fail, plot by plot, and the commons will get fenced off until none is left.
+
+There's no answer to that. This essay just wants to leave one fact on record:
+
+**The most successful communist experiment in human history is running on your computer right now.**
+
+**And you've probably never thought of it as a political experiment.**
+
+If you do, you'll start asking the next question:
+
+> Knowledge can do this. **What about everything else?**
+>
+> Can writing? Can research? Can medicine? Can design? Can education?
+>
+> How many things, that could naturally be commons, are still waiting for their GPL?
+
+That's the sharpest part of the GitHub experiment. **It's not the endpoint, it's a reference implementation** — telling everyone still stuck in the rubble of material communism:
+
+Cooperative public ownership is possible. What it needs isn't a revolution, it's the right protocol.
+
+---
+
+### References
+
+- *The Communist Manifesto*, Karl Marx & Friedrich Engels, 1848. https://www.marxists.org/archive/marx/works/1848/communist-manifesto/
+- *Critique of the Gotha Programme*, Karl Marx, 1875. https://www.marxists.org/archive/marx/works/1875/gotha/
+- *The Use of Knowledge in Society*, Friedrich Hayek, *American Economic Review*, 1945.
+- Stallman, R. *Initial GNU Announcement*, net.unix-wizards, 1983-09-27. https://www.gnu.org/gnu/initial-announcement.en.html
+- Stallman, R. *What is Copyleft?*. https://www.gnu.org/licenses/copyleft.en.html
+- Torvalds, L. *What would you like to see most in minix?*, comp.os.minix, 1991-08-25.
+- [1] *Linux in TOP500 Supercomputers Statistics 2026*. https://commandlinux.com/statistics/linux-in-top500-supercomputers-statistics/
+- [2] *Usage Statistics and Market Share of Linux for Websites*, W3Techs, May 2026. https://w3techs.com/technologies/details/os-linux
+- [3] *Usage share of operating systems*, Wikipedia, accessed 2026-05. https://en.wikipedia.org/wiki/Usage_share_of_operating_systems
+- [4] Hoffmann, M., Nagle, F., Zhou, Y. *The Value of Open Source Software*, Harvard Business School Working Paper, 2024-01-16. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4693148
+- *Microsoft to acquire GitHub for $7.5 billion*, Microsoft News, 2018-06-04. https://news.microsoft.com/2018/06/04/microsoft-to-acquire-github-for-7-5-billion/
+- [5] *Aaron Swartz*, Wikipedia. https://en.wikipedia.org/wiki/Aaron_Swartz
+- *Report to the President: MIT and the Prosecution of Aaron Swartz*, MIT, 2013-07-30. https://swartz-report.mit.edu/
+- Swartz, A. *Guerilla Open Access Manifesto*, 2008. https://archive.org/stream/GuerillaOpenAccessManifesto/Goamjuly2008_djvu.txt

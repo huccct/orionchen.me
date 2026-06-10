@@ -1,0 +1,130 @@
+---
+title: Autocommit Robot
+date: '2023-10-31'
+slug: autocommit-robot
+summary: I want to focus on prepping for IELTS, but as a heavy GitHub user I also want to keep my repo green — so a GitHub Action is the obvious move.
+tags:
+  - others
+draft: false
+lang: en
+---
+
+Intro: **✍️ I just got a Conditional Offer from St Andrews. It requires IELTS 7.0, so I'm going all in on prep. But as a heavy GitHub user I also want to keep my contribution graph green, so let me set up a repo to do it for me.**
+
+## 1. Create a Repo
+
+![reponame](https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/20240214/截屏2024-02-14-21.54.12.24dmgvlprfkw.webp)
+
+Pick a name. I called mine autocommit-robot. Then clone it locally to do the rest.
+
+## 2. Initialize the Project
+
+> Step 1
+
+`npm init`
+
+> Step 2
+
+`Set up a GitHub workflow that runs the action on a daily schedule.`
+
+```yaml
+ame: autocommit-robot
+
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+jobs:
+  bots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout code'
+        uses: actions/checkout@v1
+
+      - name: 'Set node'
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+
+      - name: 'Install'
+        run: npm install
+
+      - name: 'Run bash'
+        run: node index.js
+
+      - name: 'Commit'
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: huccct
+          author_email: 2972223145@qq.com
+          message: 'feat: save robot'
+          add: 'pictures/*'
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+```
+
+> **Note: one thing to watch out for here**
+
+`To get the secrets token (and protect your privacy), go to your GitHub profile's Developer Settings, find Personal Access Tokens, and create one.`
+
+## 3. Write the Script
+
+1. Import modules:
+
+- request: module for sending HTTP requests and getting responses.
+- path: module for handling file paths.
+- fs: module for interacting with the file system.
+
+2. Generate a random number:
+
+- The `id` variable uses `Math.random()` to generate a random number between 0 and 1.
+- Multiply by 100000 and floor it (`~~`) to convert to an integer between 0 and 99999.
+- Use `toString()` to convert the integer to a string.
+
+3. Build the URL:
+
+- The `url` variable uses the generated random number as a parameter to build a URL. This URL fetches a randomly generated robot avatar.
+
+4. Set the file path:
+
+- The `dirPath` variable uses `path.resolve()` to resolve a relative path into an absolute one.
+- `__dirname` is a Node.js global that represents the current module's directory path.
+- `pictures` is the folder name used to store downloaded image files.
+
+5. Handle the date:
+
+- The `dateArr` variable uses `new Date().toLocaleDateString()` to get the current date as a localized string.
+- `toLocaleDateString()` returns a date string in a format determined by locale. In this code the format is "month/day/year".
+- `split('/')` splits the date string by slash into an array of strings.
+- `pop()` removes the last element from the array and returns it.
+- `unshift()` adds one or more elements to the beginning of the array.
+- `join('-')` joins the array elements with hyphens into a single string.
+
+6. Send the HTTP request and save the file:
+
+- `request(url)` makes a GET request and gets the response data for that URL.
+- `pipe(fs.createWriteStream())` pipes the response data into a writable file stream.
+- `fs.createWriteStream()` creates a writable stream pointed at the given file path and filename.
+- The file path is composed of `dirPath` and `date`, with a filename like "year-month-day.png", e.g. "2023-06-16.png".
+- The response data gets written to the file as a PNG image.
+
+In short, this code sends an HTTP request to https://robohash.org/, gets a randomly generated robot avatar, and saves it as a PNG file. The save path is the current-date-named file inside the specified folder.
+
+Here's the code:
+
+```js
+const request = require('request')
+const path = require('path')
+const fs = require('fs')
+const id = (~~(Math.random() * 100000)).toString() // get a number under 100k
+const url = `https://robohash.org/${id}`
+const dirPath = path.resolve(__dirname, 'pictures')
+// GitHub's timezone is US, so the date format you get is 6/16/2023. Split it and move the year to the front to get the filename format we want.
+const dateArr = new Date().toLocaleDateString().split('/') // when debugging locally use .toLocaleDateString("en")
+dateArr.unshift(dateArr.pop())
+const date = dateArr.join('-')
+request(url).pipe(fs.createWriteStream(`${dirPath}/${date}.png`))
+```
+
+that's so cool, done.

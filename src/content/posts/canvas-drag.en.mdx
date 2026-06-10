@@ -1,0 +1,166 @@
+---
+title: 'Frontend Essentials: Canvas Drag'
+date: '2023-10-22'
+slug: canvas-drag
+summary: >-
+  Canvas is a powerful HTML5 element that gives you the ability to draw graphics and animations. Drag is one of its most common interactions. This post walks through how to implement drag in Canvas.
+seoTitle: 'Canvas Drag Tutorial: How to Implement Shape Dragging on the Frontend'
+seoDescription: From the approach to the code, a clear walkthrough of how to drag rectangles and shapes in HTML5 Canvas — a practical entry point into frontend graphics interaction.
+seoKeywords:
+  - Canvas drag
+  - HTML5 Canvas
+  - frontend drag
+  - Canvas tutorial
+  - graphics interaction
+tags:
+  - frontend
+draft: false
+lang: en
+---
+
+Intro: **✍️ Welcome to the `canvas drag` chapter. Picking up Canvas drag will add interactivity and a better user experience to your frontend work.**
+
+## 1. Overview
+
+Picking up where we left off — this time we'll talk about how to create a rectangle in `canvas` and drag it around. Other shapes work the same way.
+
+`Preview:`
+![canvas drag](https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/20240214/截屏2024-02-14-22.21.45.2cbrdnazhgw0.webp)
+
+## 2. The approach
+
+> Step 1: Set up the `Canvas` environment. Create a `Canvas` element and grab its context. Use the `<canvas>` tag in `HTML` and the `getContext()` method in JavaScript.
+
+Start with a canvas area and a colorPicker.
+
+```html
+<input type="color" class="color" />
+<canvas></canvas>
+```
+
+Initialize a 500\*300 canvas. Don't forget the clarity handling — see this <a href="https://juejin.cn/post/7067415002289799205">reference article</a>.
+
+```js
+const colorPicker = document.querySelector('input')
+const cvs = document.querySelector('canvas')
+const ctx = cvs.getContext('2d')
+
+function init() {
+  const w = 500,
+    h = 300
+  cvs.width = w * devicePixelRatio
+  cvs.height = h * devicePixelRatio
+  cvs.style.width = w + 'px'
+  cvs.style.height = h + 'px'
+}
+
+init()
+```
+
+> Step 2: Draw the initial shape. Draw a starting shape on the `Canvas` — could be a rectangle, a circle, or anything else. Use the `Canvas` drawing API like `fillRect(), strokeRect(), arc()`.
+
+Define a `shapes` array to hold the drawn shapes, and a `Rectangle` class to construct the params for drawing them.
+
+```js
+class Rectangle {
+  constructor(color, startX, startY) {
+    this.color = color;
+    this.startX = startX;
+    this.startY = startY;
+    this.endX = startX;
+    this.endY = startY;
+  }
+
+  get minX() {
+    return Math.min(this.startX, this.endX);
+  }
+
+  get maxX() {
+    return Math.max(this.startX, this.endX);
+  }
+
+  get minY() {
+    return Math.min(this.startY, this.endY);
+  }
+
+  get maxY() {
+    return Math.max(this.startY, this.endY);
+  }
+
+  draw() {
+    // todo
+    // simple drawing
+    ctx.beginPath();
+    ctx.moveTo(this.minX * devicePixelRatio, this.minY * devicePixelRatio);
+    ctx.lineTo(this.maxX * devicePixelRatio, this.minY * devicePixelRatio);
+    ctx.lineTo(this.maxX * devicePixelRatio, this.maxY * devicePixelRatio);
+    ctx.lineTo(this.minX * devicePixelRatio, this.maxY * devicePixelRatio);
+    ctx.lineTo(this.minX * devicePixelRatio, this.minY * devicePixelRatio);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+
+    ctx.strokeStyle = '#fff';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 3 * devicePixelRatio;
+    ctx.stroke();
+  }
+
+  isInside(x, y) {
+    return x >= this.minX && x <= this.maxX && y >= this.minY && y <= this.maxY;
+  }
+}
+```
+
+> Step 3: Listen for mouse events. Use JavaScript to listen for `mousedown`, `mousemove`, and `mouseup`. These power the drag.
+
+- Attach a `mousedown` handler to the Canvas element. It fires when the mouse is pressed on the Canvas.
+- Get the Canvas position and size relative to the viewport, store it in `rect`. Used later to compute click coordinates.
+- Call `getShape` with the click coordinates. It checks whether the click landed on an existing shape.
+- If `shape` exists, the click is on a shape — start a drag. Otherwise, create a new rectangle.
+- For the drag case, capture `startX`, `startY`, `endX`, `endY`. In `window.onmousemove`, compute the displacement (`disX`, `disY`) and update the shape's coordinates to drag it.
+- For the create case, build a new `Rectangle` from the click position and the current color (via `colorPicker.value`) and push it into `shapes`.
+- Finally, cancel the drag.
+
+```js
+cvs.onmousedown = e => {
+  const rect = cvs.getBoundingClientRect();
+  const clickX = e.clientX - rect.left;
+  const clickY = e.clientY - rect.top;
+  const shape = getShape(clickX, clickY);
+  if (shape) {
+    // drag
+    const { startX, startY, endX, endY } = shape;
+    window.onmousemove = e => {
+      const disX = e.clientX - rect.left - clickX;
+      const disY = e.clientY - rect.top - clickY;
+      shape.startX = startX + disX;
+      shape.endX = endX + disX;
+      shape.startY = startY + disY;
+      shape.endY = endY + disY;
+    };
+  } else {
+    const shape = new Rectangle(colorPicker.value, clickX, clickY);
+    shapes.push(shape);
+    window.onmousemove = e => {
+      shape.endX = e.clientX - rect.left;
+      shape.endY = e.clientY - rect.top;
+    };
+  }
+
+  window.onmouseup = () => {
+    window.onmousemove = null;
+    window.onmouseup = null;
+  };
+};
+
+```
+
+Full code: https://code.juejin.cn/pen/7292697822456905768
+
+## 3. Wrap-up
+
+That's the basic skeleton of canvas drag. It's easy to extend from here. Canvas drag is a common frontend interaction — listen for mouse events, update shape positions, and the drag works. Mind the details: boundary detection, redrawing, and so on.
+
+## 4. Recommended project
+
+- https://github.com/vangleer/es-drager

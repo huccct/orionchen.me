@@ -1,0 +1,61 @@
+---
+title: 'The Ins and Outs of preinstall'
+date: 2024-04-23
+slug: preinstall
+summary: Spent some time digging through the preinstall hook in a project and found there's more nuance than I expected. Here's a quick recap.
+seoTitle: 'What is npm preinstall? A Deep Dive Into preinstall and postinstall'
+seoDescription: A clear walkthrough of the npm preinstall, install, and postinstall lifecycle hooks — execution order, typical uses, and gotchas in real projects.
+seoKeywords:
+  - preinstall
+  - npm preinstall
+  - postinstall
+  - npm scripts
+  - Node.js
+tags:
+  - node
+draft: false
+lang: en
+---
+
+### 1. Overview
+
+`preinstall` is a hook in npm scripts. There's also `postinstall`. Their execution order is as follows — easier to compare side by side:
+
+- preinstall
+- install
+- postinstall
+
+### 2. preinstall vs postinstall
+
+> Differences and what each is for
+
+- The names are self-explanatory: `post` runs after `npm install`, `pre` runs before `npm install`.
+- `preinstall` only runs on `npm install`, not on other npm commands. `postinstall` runs not only on `npm install` but also on `npm install xxx` and `npm update`.
+- `preinstall` is good for setup work — checking the Node and npm environment, installing related dependencies, and so on. `postinstall` is good for compilation and initialization scripts.
+
+### 3. Some Optimizations
+
+> Adding a Shebang (Hashbang)
+
+- In [computing](https://en.wikipedia.org/wiki/Computing), a **Shebang** (also known as a **Hashbang**) is the character sequence consisting of a [number sign](https://en.wikipedia.org/wiki/Number_sign) and an [exclamation mark](https://en.wikipedia.org/wiki/Exclamation_mark) — *`#!`* — that appears as the first two characters on the first line of a text file. When a Shebang is present, the [program loader](https://en.wikipedia.org/wiki/Loader_(computing)) on a [Unix-like operating system](https://en.wikipedia.org/wiki/Unix-like) parses what comes after the Shebang as an interpreter directive, invokes that interpreter, and passes the path of the file containing the Shebang as an argument to the interpreter. For example, a file starting with `#!/bin/sh` will, when executed, actually invoke the */bin/sh* program (typically the [Bourne shell](https://en.wikipedia.org/wiki/Bourne_shell) or a compatible [shell](https://en.wikipedia.org/wiki/Unix_shell) such as [bash](https://en.wikipedia.org/wiki/Bash_(Unix_shell)), [dash](https://en.wikipedia.org/wiki/Almquist_shell), and so on) to execute it. This line is also the standard first line of a [shell script](https://en.wikipedia.org/wiki/Shell_script). Since `#` is a comment marker in many [scripting languages](https://en.wikipedia.org/wiki/Scripting_language), the Shebang content is automatically ignored by their interpreters. In languages where `#` isn't a comment marker — like [Scheme](https://en.wikipedia.org/wiki/Scheme_(programming_language)) — interpreters may still ignore a leading `#!` line for compatibility with Shebangs. The name "Shebang" or "Hashbang" is sometimes also used for [fragment identifiers](https://en.wikipedia.org/wiki/Fragment_identifier) in [Ajax](https://en.wikipedia.org/wiki/Ajax_(programming)) applications, used by browsers for state preservation; Google Webmaster Central noted that fragment identifiers starting with an exclamation mark (i.e., `...url#!state...`) would be indexed by Google's crawler.
+
+Add `#!/usr/bin/env node` to the front of the script.
+
+Adding `#!/usr/bin/env node` as the first line of a script tells the operating system to use the Node.js interpreter to execute it. The benefit is that you can run the script directly without explicitly specifying the interpreter on the command line — making the script more convenient and self-executable.
+
+For example, with `#!/usr/bin/env node`, you can run `./script.js` directly instead of `node script.js`.
+
+> `main` only runs when the script is executed, not when it's imported via `require`
+
+```js
+if (require.main === module) {
+  main()
+}
+// main 中执行你需要执行的相关逻辑
+```
+
+### 4. Further Reading
+
+- https://www.ruanyifeng.com/blog/2016/10/npm_scripts.html
+
+- https://learnku.com/articles/26231

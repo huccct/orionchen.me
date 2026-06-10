@@ -1,0 +1,637 @@
+---
+title: 'A Recap of Component Communication Patterns in Vue 3'
+date: '2024-11-23'
+slug: vue3-component-communication
+summary: A summary of the various component communication patterns in Vue 3, including Props, Emits, v-model, provide/inject, and more.
+seoTitle: 'Vue 3 Component Communication Patterns: Props, Emits, v-model, provide/inject'
+seoDescription: A systematic overview of common Vue 3 component communication patterns — Props, Emits, v-model, provide/inject, slots, and ref — great for review and filling in gaps.
+seoKeywords:
+  - Vue 3 component communication
+  - Vue 3 Props
+  - Vue 3 Emits
+  - provide inject
+  - Vue 3 tutorial
+tags:
+  - vue.js
+  - frontend
+draft: false
+lang: en
+---
+
+✍️ Quick update — I've been writing some `Vue` for an assignment lately, and since I haven't touched it in a while, I'd forgotten almost everything. Jotting this down as a refresher.
+
+- > repo: https://github.com/huccct/vue3-communication
+- > site: https://vue3-communication.vercel.app
+
+### 1. Component Communication in Vue 2
+
+- **props**: parent-to-child, child-to-parent, even sibling component communication
+- **custom events**: child-to-parent communication
+- **global event bus $bus**: communication between any components
+- **pubsub**: publish-subscribe pattern for any-to-any communication
+- **vuex**: centralized state management container, communication across any components
+- **ref**: parent gets the child component's instance VC, accessing reactive data and methods on the child
+- **slot**: slots (default, named, scoped) for parent-to-child communication
+
+### 2. Component Communication in Vue 3
+
+#### 1. Props
+
+Props are the main way to pass data from parent to child in Vue 3. Usage is similar to Vue 2, but Vue 3 has stronger type checking and richer features around props.
+
+**Basic usage:**
+
+```js
+<!-- Parent -->
+<script setup lang="ts">
+import { ref } from 'vue'
+import Child from './components/Child.vue'
+
+const msg = ref('Hello from Parent')
+const count = ref(0)
+const userInfo = ref({
+  name: 'Zhang San',
+  age: 18,
+})
+
+function increment() {
+  count.value++
+}
+</script>
+
+<template>
+  <div class="props-demo">
+    <h2>Props 传值示例(readonly)</h2>
+    <div class="parent">
+      <h3>父组件数据：</h3>
+      <p>消息：{{ msg }}</p>
+      <p>计数：{{ count }}</p>
+      <p>用户：{{ userInfo.name }} - {{ userInfo.age }}岁</p>
+      <button class="btn" @click="increment">计数+1</button>
+    </div>
+
+    <Child :message="msg" :counter="count" :user="userInfo" />
+  </div>
+</template>
+```
+
+```js
+<!-- Children -->
+<script setup lang="ts">
+interface Props {
+  message?: string
+  counter?: number
+  user?: {
+    name: string
+    age: number
+  }
+}
+
+defineProps<Props>()
+</script>
+
+<template>
+  <div class="child">
+    <h3>子组件接收到的数据：</h3>
+    <p>消息：{{ message }}</p>
+    <p>计数：{{ counter }}</p>
+    <p>用户：{{ user?.name }} - {{ user?.age }}岁</p>
+  </div>
+</template>
+```
+
+`Note:`
+
+- The core idea behind props is one-way data flow. Parent data can flow down to the child via props, but the child can't directly modify it.
+- If the child needs to change the data, it typically notifies the parent via an event, and the parent updates the data.
+
+#### 2. Custom Events
+
+In Vue, events come in two flavors: native DOM events, and custom events.
+Native DOM events let users interact with the page — `click`, `change`, `mouseenter`, `mouseleave`, and so on.
+Custom events let a child component pass data up to its parent.
+
+**Basic usage of custom events:**
+
+In Vue 2, the child triggers events with `$emit` and the parent listens for them to receive data. In Vue 3, you can still declare emitted custom events with `emits`.
+
+```js
+<!-- Parent -->
+<script setup lang="ts">
+import { ref } from 'vue'
+import Child from './components/Child.vue'
+
+const count = ref(0)
+const message = ref('')
+
+function handleIncrement(step: number) {
+  count.value += step
+}
+
+function handleSendMsg(msg: string) {
+  message.value = msg
+}
+</script>
+
+<template>
+  <div class="custom-event-demo">
+    <h2>自定义事件示例</h2>
+    <div class="parent">
+      <h3>父组件数据：</h3>
+      <p>计数：{{ count }}</p>
+      <p>收到的消息：{{ message }}</p>
+    </div>
+
+    <Child
+      @increment="handleIncrement"
+      @send-message="handleSendMsg"
+    />
+  </div>
+</template>
+```
+
+```js
+<!-- Children -->
+<script setup lang="ts">
+const emit = defineEmits<{
+  increment: [step: number]
+  sendMessage: [msg: string]
+}>()
+
+function sendMsg() {
+  emit('sendMessage', 'Hello from Child')
+}
+</script>
+
+<template>
+  <div class="child">
+    <h3>子组件：</h3>
+    <button class="btn" @click="emit('increment', 1)">
+      通知父组件+1
+    </button>
+    <button class="btn" @click="emit('increment', 2)">
+      通知父组件+2
+    </button>
+    <button class="btn" @click="sendMsg">
+      发送消息
+    </button>
+  </div>
+</template>
+```
+
+`Note:`
+
+- In Vue 2, all events on a component — whether native DOM events or custom events triggered by the child — are automatically bound to the component instance. That means even a common `@click` was implemented as a custom event in Vue 2.
+
+```js
+<ChildComponent @click="handleClick" />
+```
+
+- In Vue 3, event behavior is clearer and more standardized:
+
+  - Native DOM events: bound directly to the component's root element. For example, `@click` defaults to the DOM `click` event.
+  - Custom events: must be declared explicitly.
+
+```js
+<ChildComponent @click="handleClick" />
+```
+
+Here `@click` defaults to the DOM event on the child's root element, not a custom event on the child component.
+
+#### 3. Global Event Bus
+
+A global event bus allows communication between any components. In Vue 2, you can derive a global event bus from the relationship between `VM` and `VC`.
+In Vue 3 there are no Vue hook functions, so no `Vue.prototype`, and the Composition API has no `this`. If you want a global event bus in Vue 3, you can use the <a href="https://www.npmjs.com/package/mitt">mitt</a> plugin.
+
+A global event bus is a common way to enable communication between any two components in Vue 2. By using a Vue instance as an event hub, components can publish and subscribe to events, achieving decoupled communication.
+
+In Vue 2, the global event bus is typically built by mounting a Vue instance onto `Vue.prototype`:
+
+```js
+// main.js
+Vue.prototype.$bus = new Vue()
+```
+
+In Vue 3 you implement the event bus with `mitt`:
+
+```js
+// src/utils/eventBus.js
+import mitt from 'mitt'
+export const eventBus = mitt()
+```
+
+Vue 2 vs Vue 3 comparison:
+
+- Publishing events:
+
+```js
+// vue2
+this.$bus.$emit('custom-event', payload)
+
+// vue3
+import { eventBus } from '@/utils/eventBus'
+
+eventBus.emit('custom-event', { key: 'value' })
+```
+
+- Subscribing to events:
+
+```js
+// vue2
+this.$bus.$on('custom-event', (payload) => {
+  console.log('收到数据：', payload)
+})
+
+// vue3
+import { eventBus } from '@/utils/eventBus'
+
+eventBus.on('custom-event', (payload) => {
+  console.log('收到数据：', payload)
+})
+```
+
+- Removing events:
+
+```js
+// vue2
+this.$bus.$off('custom-event')
+
+// vue3
+import { eventBus } from '@/utils/eventBus'
+
+eventBus.off('custom-event')
+```
+
+#### 4. v-model
+
+v-model is a common form of two-way data binding in Vue, mainly used for parent-child communication. In Vue 2, v-model is essentially syntactic sugar — it binds a `value` prop and listens for the `input` event.
+In Vue 3, v-model received a major overhaul, supporting multiple bindings and custom binding names.
+
+**v-model in Vue 2**
+
+In Vue 2, v-model is equivalent to:
+
+```js
+<!-- 父组件 -->
+<ChildComponent v-model="message" />
+
+<!-- 等价于 -->
+<ChildComponent :value="message" @input="message = $event" />
+```
+
+**Improvements to v-model in Vue 3:**
+
+- In Vue 3, v-model no longer defaults to binding `value` and listening for `input`. Instead, you must explicitly declare the prop and event names being bound:
+
+```js
+<!-- 父组件 -->
+<ChildComponent v-model="message" />
+
+<!-- 子组件 -->
+<template>
+  <input :modelValue="modelValue" @update:modelValue="$emit('update:modelValue', $event)" />
+</template>
+```
+
+- Multiple v-models are supported:
+  Vue 3 lets you bind multiple v-models simultaneously by giving each a custom name:
+
+```js
+<!-- 父组件 -->
+<ChildComponent v-model:title="title" v-model:content="content" />
+
+<!-- 子组件 -->
+<template>
+  <input :value="title" @input="$emit('update:title', $event)" />
+  <textarea :value="content" @input="$emit('update:content', $event)" />
+</template>
+```
+
+#### 5. useAttrs
+
+In Vue 3, `useAttrs` is a Composition API utility for handling non-`props` attributes — attributes that aren't explicitly declared in the component's props. These are usually passed through to the component's root element, or you might need to grab them explicitly to forward to a child component.
+
+`useAttrs` gives you a flexible way to access and process these non-`props` attributes dynamically.
+
+**Using `useAttrs`, you can explicitly access these non-`props` attributes and forward them dynamically to other elements or child components:**
+
+```js
+<!-- Parent -->
+<MyButton
+  type="primary"
+  size="large"
+  :disabled="false"
+  @click="showMessage('info')"
+>
+  Primary Button
+</MyButton>
+
+<!-- Children -->
+<ElButton v-bind="attrs">
+  <slot />
+</ElButton>
+```
+
+This is especially useful when building generic components — like form component libraries — where useAttrs lets the component dynamically adapt to any incoming attributes.
+
+`Note:`
+
+- In Vue 3, when the parent passes data via both props and non-prop attributes (the ones useAttrs catches), props take priority. That's because props are explicitly declared by the component, so Vue binds them to the named props first. Undeclared attributes get bucketed into `attrs`, which `useAttrs` exposes.
+
+#### 6. ref and $parent
+
+- Using ref
+
+In Vue 3, `ref` is still the main way for the parent to get a reference to a child instance, though the implementation is refined. By adding `ref` to a child in the parent, you can access the child's instance and call its methods or read its data.
+
+- Using $parent
+
+`$parent` is Vue's built-in way for a child to access its parent's instance. With `$parent`, the child can directly call parent methods or read parent data. Note: heavy use of `$parent` increases coupling between components.
+
+```js
+<!-- Parent -->
+<script setup lang="ts">
+import { ref } from 'vue'
+import Child from './components/Child.vue'
+
+const childRef = ref()
+const count = ref(0)
+
+function increment() {
+  count.value++
+}
+
+function callChildMethod() {
+  childRef.value?.showMessage('来自父组件的消息')
+}
+
+defineExpose({
+  increment,
+})
+</script>
+
+<template>
+  <div class="ref-demo">
+    <h2>ref、$parent示例</h2>
+    <div class="parent">
+      <h3>父组件：</h3>
+      <p>计数：{{ count }}</p>
+      <button class="btn" @click="increment">
+        计数+1
+      </button>
+      <button class="btn" @click="callChildMethod">
+        调用子组件方法
+      </button>
+    </div>
+
+    <Child
+      ref="childRef"
+      :counter="count"
+    />
+  </div>
+</template>
+```
+
+```js
+<!-- Children -->
+<script setup lang="ts">
+import { ElMessage } from 'element-plus'
+
+defineProps<{
+  counter: number
+}>()
+
+function showMessage(msg: string) {
+  ElMessage.success(msg)
+}
+
+function handleParentIncrement($parent: any) {
+  // 通过 $parent 调用父组件方法
+  $parent.increment()
+  ElMessage.info('已调用父组件的 increment 方法')
+}
+
+defineExpose({
+  showMessage,
+})
+</script>
+
+<template>
+  <div class="child">
+    <h3>子组件：</h3>
+    <p>从父组件接收的计数：{{ counter }}</p>
+    <button class="btn" @click="handleParentIncrement($parent)">
+      通过$parent调用父组件方法
+    </button>
+  </div>
+</template>
+```
+
+#### 7. provide and inject
+
+`provide` and `inject` are Vue's solution for cross-level component communication. They're commonly used by an ancestor to pass data to descendants at any depth without manually drilling through props and emits at each level. They're great for data sharing and decoupling, especially in larger projects.
+
+- Provide
+
+The ancestor provides data via `provide` for descendants to consume.
+
+```js
+<!-- Parent -->
+<template>
+  <ChildComponent />
+</template>
+
+<script setup>
+import { provide } from 'vue';
+
+provide('message', '来自祖先组件的消息');
+</script>
+```
+
+- Inject
+
+The descendant injects the data the ancestor provided via `inject`.
+
+```js
+<!-- Children -->
+<template>
+  <p>{{ message }}</p>
+</template>
+
+<script>
+import { inject } from 'vue';
+
+const message = inject('message');
+```
+
+#### 7. pinia
+
+Pinia is the official state management library for Vue 3 — a lightweight, modern alternative to Vuex. Pinia offers a simple, intuitive API and reactive data management, making it well-suited for cross-component communication and global state. Compared to Vuex, Pinia is more flexible and takes full advantage of Vue 3's Composition API and Proxy features.
+
+**Defining and using a Store**
+
+```js
+// src/stores/module/counter.js
+import { defineStore } from 'pinia'
+
+export const useCounterStore = defineStore('counter', {
+  state: () => ({
+    count: 0,
+    name: 'Pinia',
+  }),
+  getters: {
+    doubleCount: (state) => state.count * 2,
+  },
+  actions: {
+    increment() {
+      this.count++
+    },
+  },
+})
+```
+
+- state: stores reactive data.
+- getters: like computed properties, used to derive state.
+- actions: define business logic for mutating state or performing async operations.
+
+```js
+<template>
+  <div>
+    <p>Count: {{ counter.count }}</p>
+    <p>Double Count: {{ counter.doubleCount }}</p>
+    <button @click="counter.increment">Increment</button>
+  </div>
+</template>
+
+<script>
+import { useCounterStore } from '@/stores/module/counter';
+
+const counter = useCounterStore(); // 引入 Store
+</script>
+```
+
+#### 8. Slots
+
+Slot categories
+
+Vue slots come in a few flavors:
+
+- 1. Default slot
+  - The parent inserts content directly inside the child component's tag, and the child renders that content via a `<slot>` tag.
+- 2. Named slot
+  - Multiple slots are distinguished by name, so the parent can pass different content to different slots.
+- 3. Scoped slot
+  - The parent can access context data from the child and use it to render content dynamically.
+
+1. Default slot
+
+The default slot is the most basic form. Content the parent passes is inserted directly at the `<slot>` tag in the child.
+
+```js
+<!-- 子组件 -->
+<template>
+  <div>
+    <slot>默认内容</slot> <!-- 如果父组件未传递内容，则显示默认内容 -->
+  </div>
+</template>
+```
+
+```js
+<!-- 父组件 -->
+<template>
+  <ChildComponent>
+    <p>这是默认插槽的内容</p>
+  </ChildComponent>
+</template>
+```
+
+2. Named slot
+
+Named slots let the child define multiple slots distinguished by their `name` attribute, so the parent can target each one with different content.
+
+```js
+<!-- 子组件 -->
+<template>
+  <header>
+    <slot name="header">默认标题</slot>
+  </header>
+  <main>
+    <slot>默认内容</slot>
+  </main>
+  <footer>
+    <slot name="footer">默认页脚</slot>
+  </footer>
+</template>
+```
+
+```js
+<!-- 父组件 -->
+<template>
+  <ChildComponent>
+    <template #header>
+      <h1>自定义标题</h1>
+    </template>
+    <template #footer>
+      <p>自定义页脚</p>
+    </template>
+  </ChildComponent>
+</template>
+```
+
+3. Scoped slot
+
+Scoped slots let the child pass its internal data up to the parent, leaving the parent in charge of how to render that data.
+
+```js
+<!-- 子组件 -->
+<template>
+  <div>
+    <slot :data="info"></slot>
+  </div>
+</template>
+
+<script>
+const info = ref({ message: '这是作用域插槽的数据' });
+</script>
+```
+
+```js
+<template>
+  <ChildComponent>
+    <template #default="{ data }">
+      <p>{{ data.message }}</p>
+    </template>
+  </ChildComponent>
+</template>
+```
+
+### 3. Summary
+
+Overview of Vue 3 component communication patterns:
+
+1. **Parent-child communication**
+
+   - Props (parent -> child)
+   - Emits (child -> parent)
+   - v-model (two-way binding)
+   - ref/expose (parent accesses child)
+   - $parent (child accesses parent)
+
+2. **Cross-level communication**
+
+   - provide/inject (ancestor -> descendant)
+   - Slots (parent -> content distribution into child)
+     - Default slots
+     - Named slots
+     - Scoped slots
+
+3. **Global communication**
+   - Pinia (state management)
+   - mitt (event bus)
+
+Recommendations:
+
+- Prefer props/emits for parent-child relationships
+- Use provide/inject for deeply nested trees
+- Use Pinia for complex state management
+- Use mitt for ad-hoc cross-component communication

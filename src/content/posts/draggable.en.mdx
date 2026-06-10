@@ -1,0 +1,145 @@
+---
+title: 'Frontend Essentials: Drag-and-Drop Sorting'
+date: '2023-09-26'
+slug: draggable
+summary: Drag-and-drop sorting gives users a direct, interactive way to rearrange and organize content — better UX, faster operations.
+seoTitle: 'Frontend Drag Sorting Tutorial: How to Implement List Drag and Reorder'
+seoDescription: A practical walkthrough of frontend drag sorting, useful if you want to implement list reordering, card dragging, or smoother interactions.
+seoKeywords:
+  - drag sorting
+  - frontend drag
+  - draggable
+  - list reorder
+  - interactive UI
+tags:
+  - frontend
+draft: false
+lang: en
+---
+
+Intro: **✍️ It's been a while. Quick post today on a frontend essential — drag-and-drop sorting. `it's very important!`**
+
+## 1. Overview
+
+Frontend evolves fast. New tech keeps shipping, you can't keep up, you really can't (sob)~~~~. History marches on, and the frontend `"Moore's Law"` is that `every 18 months`, the bar for becoming a frontend engineer doubles.
+
+haha, no pressure, back to the topic. The inspiration came from some recent work — drag interactions show up everywhere. Take the Transition Group demo on the Vue.js site:
+
+![drag sorting](https://cdn.jsdelivr.net/gh/huccct/picx-images-hosting@master/20240214/demo.1v483mcdjk9s.gif)
+
+So how do we build that? Let's take a look.
+
+## 2. Drag-and-drop sorting
+
+### Drag
+
+> Step 1: To make something draggable, use the HTML `draggable` attribute and set it to `true`. That alone gives you the drag effect.
+
+```html
+<div class="list">
+  <div draggable="true" class="list-item">1</div>
+  <div draggable="true" class="list-item">2</div>
+  <div draggable="true" class="list-item">3</div>
+  <div draggable="true" class="list-item">4</div>
+  <div draggable="true" class="list-item">5</div>
+</div>
+```
+
+> Step 2: Add some CSS. Set up a `.moving` style that we'll add dynamically with JS.
+
+```css
+.list-item.moving {
+  background: transparent;
+  color: transparent;
+  border: 1px dashed #ccc;
+}
+```
+
+### Sorting
+
+**The basic setup is done. Two more things to handle:**
+
+- **`insert up`**
+- **`insert down`**
+
+> Step 1: When the drag starts, add the `.moving` class.
+
+```js
+const list = document.querySelector('.list')
+// track the element currently being dragged
+let sourceNode = ''
+
+list.ondragstart = (e) => {
+  setTimeout(() => {
+    e.target.classList.add('moving')
+  }, 0)
+  sourceNode = e.target
+}
+```
+
+> Step 2: When the dragged element enters a target element, figure out the insert position.
+
+```js
+list.ondragenter = (e) => {
+  // exclude two cases: the element itself, and the parent
+  if (e.target === list || e.target === sourceNode) {
+    return
+  }
+  // turn children into an array
+  const children = [...list.children]
+  // find target index and source index
+  const sourceIndex = children.indexOf(sourceNode)
+  const targetIndex = children.indexOf(e.target)
+
+  // if source is before target
+  if (sourceIndex < targetIndex) {
+    console.log('down')
+    // todo
+  } else {
+    console.log('up')
+    // todo
+  }
+}
+```
+
+> Step 3: When the drag ends, remove the `.moving` class.
+
+```js
+list.ondragend = (e) => {
+  e.target.classList.remove('moving')
+}
+```
+
+## 3. FLIP animation
+
+**FLIP animation is another fun piece. I won't dive too deep here — I'll sketch the idea, and the full code is in the code block below.**
+
+**The idea:**
+
+FLIP (First, Last, Invert, Play) is an animation optimization technique for smooth animations and better performance.
+
+- **First: before the animation starts, capture the element's initial state (position, size, etc.).**
+
+- **Last: based on the final animation state, compute the element's target position, size, etc.**
+
+- **Invert: apply the last frame's state to the element, using CSS or JavaScript to position it directly at the final state — this `avoids triggering layout reflow during the animation`. (In short: compute the offset.)**
+
+- **Play: add a CSS transition or animation to move the element from the first frame state to the last frame state, producing a smooth animation.**
+
+Full code: https://code.juejin.cn/pen/7282991337383657511
+
+## 4. Wrap-up
+
+**Quick recap. Two main ideas, both very common in practice:**
+
+- **Drag-and-drop sorting**
+
+- **FLIP animation**
+
+**Recommended:**
+
+- <a href="https://github.com/SortableJS/Sortable">SortableJS</a>
+
+- <a href="https://github.com/react-dnd/react-dnd">react-dnd</a>
+
+`Happy Mid-Autumn Festival and National Day, everyone!`

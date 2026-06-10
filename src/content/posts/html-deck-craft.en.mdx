@@ -1,0 +1,279 @@
+---
+title: 'Crafting a "Web-Native" Deck — A Methodology for Single-File HTML PPTs'
+date: '2026-05-27'
+slug: html-deck-craft
+summary: >-
+  Not for people rushing a report. This is for creators who want to make a "portfolio-grade" deck — PMs, popular-science writers, indie designers, anyone wanting a personal portfolio page. I'll walk through how a single-file HTML PPT actually comes together, and why 90% of AI's straight-shot outputs look ugly.
+seoTitle: "HTML PPT Tutorial: How to Make a Web-Native Single-File Deck"
+seoDescription: A methodology for HTML PPTs aimed at PMs, science writers, and indie designers. What single-file web decks are good for, when they fit, and why AI-generated decks tend to look bad.
+seoKeywords:
+  - HTML PPT
+  - web-based PPT
+  - single-file PPT
+  - presentation design
+  - HTML slides
+tags:
+  - tutorial
+  - AI
+draft: false
+lang: en
+---
+
+Up front: who this isn't for.
+
+If you need a deck your boss will edit in WPS, **close this tab**. HTML PPT can't be edited by coworkers, can't go through internal OA, can't be used as a .pptx. For that, take the [Kimi Slides route](/blog/html-ppt-with-ai).
+
+This one is for:
+
+- PMs wanting a deck they can project for the team
+- Science writers wanting to turn an article into a swipeable "story deck"
+- Indie designers wanting a personal portfolio page
+- Teachers and trainers wanting class materials that stand out
+- Any creator who wants to "project, present, and be remembered"
+
+If you're willing to tweak code, willing to fuss over visuals, and you only need to share a link — not a file — single-file HTML PPT is the sweet spot.
+
+## Why 90% of AI-generated HTML PPTs look ugly
+
+Just tell an AI to "make a PPT" and you'll almost certainly get some combination of these:
+
+- Rounded cards with a colored bar on the left and three bullet points inside
+- Emoji as icons
+- AI-drawn cartoon people / notebooks / lightbulb SVGs
+- "Professional" gradient orbs floating in the top right
+- Every page using the same layout
+
+These aren't bugs. They're **the statistical optimum** — the AI has seen millions of PPTs, and on average that's what they look like. If you don't tell it "what not to do," you'll get all of that piled on.
+
+**The key to making something good has never been the tool's capability. It's how strict your design brief is.** The methodology below works whether you're using Claude, Kimi, or Cursor.
+
+## 1. Mindset: you're not making a PPT, you're writing a design brief
+
+A general-purpose LLM is not a designer. It's an intern who has seen a lot of code.
+
+A designer can decide on their own "should this context use serif or sans-serif?" An LLM can't. You have to **lock in** these five things for it:
+
+1. **Canvas spec** (1920×1080 / 16:9 / how much whitespace)
+2. **Type scale** (specific pixel values for title, subtitle, body)
+3. **Typeface** (which Chinese face, which English face — don't let it default)
+4. **Color** (specific hex values for primary / accent / neutral grays)
+5. **The "intent" of each page** (quote / data / comparison / process / quotation)
+
+Skip one and it'll fall back to average. **Hit all five and the output quality jumps a tier.**
+
+## 2. Tool ranking: which LLMs actually output something good
+
+Here's the real picture as of 2026:
+
+| Tool | Visual Quality | Access in China | Notes |
+|---|---|---|---|
+| **Claude.ai Artifacts** | Current ceiling | Needs VPN and account | Same prompt, Claude's output is a tier prettier |
+| **Cursor / Trae + Claude API** | Close to Claude.ai | Available domestically (needs API key) | Local writing, local iteration, can keep editing the code |
+| **Kimi raw HTML output** | Mid-to-upper | Free, available domestically | Tell it to "write an HTML file," not use Slides mode |
+| **DeepSeek** | Mediocre visuals | Free, available domestically | Strong at code, weak at PPT |
+
+**Recommended combo**: use Claude.ai if you can; otherwise default to Kimi (have it generate raw HTML); don't use DeepSeek for this.
+
+**Advanced move**: if you don't want to write a design brief every time, install the open-source [jiji262/claude-design-skill](https://github.com/jiji262/claude-design-skill) Claude Skill. It packages Claude.ai's internal design system prompt, anti-AI-Slop rules, and type/typeface specs into a portable skill — works in local Claude Code or Cursor — auto-injecting the manual brief from sections 3-5 of this post. Chinese breakdown: [Liu Damao's analysis](https://liduos.com/posts/claude-design-system-prompt).
+
+## 3. Design tokens: the "swatch" you give to the AI
+
+Before starting any new deck, fill in this swatch first. It's your "design constitution" — every prompt below is built on it.
+
+```
+[Canvas]
+- 16:9, canvas 1920×1080, the whole page transform:scale to fit the window
+- Inner padding ≥80px on all sides
+
+[Type scale]
+- Main title ≥72px
+- Subtitle ≥40px
+- Body ≥24px
+- Never use anything below 24px
+
+[Typeface]
+- Chinese: Noto Serif SC (for "formal") or Noto Sans SC (for "modern")
+- English: **avoid Inter / Roboto / Fraunces — the three "default-aesthetic" fonts AI overuses**. Prefer Geist / Space Grotesk / IBM Plex Sans / Söhne. Fall back to Helvetica Neue if licensing's an issue.
+- Numbers: SF Pro or Inter Tight tabular variant (numerals are the exception, because alignment matters)
+
+[Color] (example, swap as needed)
+- Primary #1a3a5c (deep navy)
+- Accent #c9a961 (warm gold)
+- Neutral background #f5f0e6 (cream)
+- Neutral text #1f1410 (ink black)
+- Use no more than these 4 colors plus their opacity steps across the whole deck
+
+[Whitespace]
+- ≥40px between elements
+- ≥48px between title and body
+- ≥24px card padding
+```
+
+Write this once, copy it to your clipboard. Paste it before every prompt below.
+
+## 4. Anti-AI-Slop checklist: lock in "what not to do"
+
+This section is the most valuable part of this post. The list below shuts down every shortcut the AI will take that produces "AI smell":
+
+```
+[Absolutely do not do]
+- No rounded cards with a left color bar — overdone combo
+- No emoji as bullets (for icons, use lucide-style minimal line SVGs)
+- No AI-drawn cartoon people / notebooks / lightbulbs / lightboxes
+- No "professional" gradient orbs / glassmorphism / glow effects
+- No same layout on every page
+- No rainbow gradients; if you must, only same-hue different-lightness
+- No center-aligned everything (only quote pages); body copy is left-aligned
+- No outlines / shadows / glow on data charts
+- No Material Design default blue
+- No CSS strokes or box-shadow simulating product images (telltale: a rounded rectangle on a light gray background claiming to be a "product screenshot")
+- No gradient orbs on "AI / intelligence" themed pages — that's the biggest tell of AI's self-portrait
+- No `text-align: center` for whole body paragraphs — quote pages can; body paragraphs must be left-aligned
+```
+
+Paste this with the design tokens every time. AI responds noticeably better to this kind of negative-constraint phrasing.
+
+## 5. Per-page "intent": the layout rhythm a deck should have
+
+A beginner mistake: letting AI produce a "title + three bullets × 8 pages" rundown.
+
+A good deck's rhythm is **each page does one job**, with layout variation between pages:
+
+| Layout | Use | Visual character |
+|---|---|---|
+| Cover | Page 1 | Big title + subtitle + decorative element |
+| Section divider | Major transition | One large word + section number watermark |
+| Quote page | Emphasize a point | One sentence centered, large type, lots of whitespace |
+| Data page | Key number | One huge number dominates the page, with one annotation |
+| Timeline | History/process | Horizontal or vertical timeline with nodes |
+| Comparison | Two options | Two columns aligned side by side |
+| Quotation | Quote / customer voice | Left vertical bar + light tinted block + small attribution |
+| Flowchart | Steps | SVG-drawn connectors + nodes |
+| Closing | End | Quote + call to action + signature |
+
+Write directly in the prompt: "these 8 pages are: cover / data / timeline / quote / comparison / process / quote / closing" — and the AI immediately knows **each page is different** and won't give you 8 templates of the same shape.
+
+## 6. A long prompt you can copy verbatim
+
+All the rules above, blended into one runnable prompt. Paste into Claude Artifacts or Kimi, swap the topic for your own:
+
+```
+You are a senior presentation designer (not a programmer). Generate a 16:9 deck as a single HTML+CSS+JS file.
+
+[Topic]
+[Your topic here, e.g. "A retrospective on building an indie product from 0 to 1"]
+
+[Factual constraint]
+For specific company names, products, or numbers, WebSearch first. Don't invent figures / company names / product features from impression. Use [placeholder] when uncertain.
+
+[Canvas]
+- 16:9, canvas 1920×1080, full page transform:scale to fit window, with letterbox
+- Inner padding ≥80px on all sides
+
+[Type scale]
+- Main title ≥72px, subtitle ≥40px, body ≥24px, never below 24px
+
+[Typeface]
+- Chinese: Noto Serif SC (titles) + Noto Sans SC (body)
+- English: Geist or Space Grotesk or IBM Plex Sans; avoid Inter / Roboto / Fraunces
+- Numbers: SF Pro / Inter Tight tabular
+
+[Color]
+- Primary #1a3a5c, accent #c9a961, background #f5f0e6, text #1f1410
+- Only these 4 colors plus opacity steps; no rainbow gradients
+
+[Absolutely do not]
+- No rounded cards with left color bar
+- No emoji as bullets
+- No AI-drawn cartoon people / notebooks / lightbulbs
+- No "professional" gradient orbs / glassmorphism / glow
+- No same layout on every page
+- No Material Design default blue
+- No CSS strokes simulating product images
+- No gradient orbs to represent AI / algorithms
+
+[Structure (10 pages)]
+1. Cover: topic + subtitle + decorative element
+2. Section divider "I": big word "Why"
+3. Data page: one core number + one annotation
+4. Timeline: 5 horizontal key milestones
+5. Section divider "II": big word "How"
+6. Process page: 3 steps + SVG connections
+7. Comparison page: two columns
+8. Section divider "III": big word "What we learned"
+9. Quote page: the single most important insight
+10. Closing: quote + signature + year
+
+[Deliverable]
+- Single HTML file, fully inline, no external dependencies
+- Keyboard ← → to navigate, F for fullscreen, P for print mode
+- Page number "01 / 10" in lower left of each page
+- Thin progress bar at the top
+- Sizing script: use `transform: scale(min(vw/1920, vh/1080))` + `transform-origin: top left`, with the outer `<body>` black to create letterbox. **Do not use percent / vw / vh for internal sizing** — every element is positioned in absolute 1920×1080 pixels so type size stays stable.
+
+[Important]
+- First, list each page in one sentence and let me confirm before you write code.
+- Don't dump everything at once. Outline first, then implementation.
+```
+
+That last line, "outline first, then implementation," is the real lever in this prompt — **don't let it generate the full HTML; review the outline first**. This step alone saves 30 minutes of regeneration ping-pong.
+
+## 7. Single-case iteration: how to make it better, not worse
+
+Iteration isn't random rollback. It has a loop structure. Borrowing [Bao Yu's 5-step prompt engineering](https://baoyu.io/blog/why-people-struggle-with-prompt-engineering):
+
+**GOAL (specific enough to verify) → IDEA (pick a direction) → PROMPT (write, don't overthink) → TEST (run it) → EVALUATE (compare against GOAL, find the gap) → back to GOAL to revise.**
+
+Beginners get stuck rewriting at the PROMPT step. Pros realize at EVALUATE that the GOAL wasn't clear — so before each iteration, ask yourself "what change do I want to see right now?" then revise the prompt.
+
+The most common reason iterations get worse: **rewriting the whole thing from scratch**.
+
+Follow up like this:
+
+```
+Good. Please change only the following items, keep everything else exactly as is:
+1. On page 3, change the number from 86,000 to 92,000
+2. On page 6, change the connectors in the flowchart to dashed lines
+3. On page 9, replace the quoted person's name with [Name] placeholder
+```
+
+Each item ends with "everything else stays." The AI will diff against the previous version and only touch the spots you call out.
+
+By round 5-6, you'll notice the deck is increasingly close to what was in your head. **Not because the AI got smarter — because your brief got more specific.**
+
+## 8. Saving and projecting
+
+The AI will give you a block of code from `<!DOCTYPE html>` to `</html>`.
+
+**To save:**
+
+- Mac: open TextEdit → `Shift + Cmd + T` to switch to plain text → paste → save as `deck.html`
+- Windows: Notepad → paste → Save As, filename `deck.html`, **encoding UTF-8**
+
+Double-click to open. Arrow keys to navigate. F for fullscreen.
+
+**Projecting:**
+
+- Copy to USB → conference room PC double-clicks to open → Edge / Chrome both work
+- Get there 10 minutes early and run it once
+- Keep a PDF backup (Ctrl+P in browser, save as PDF)
+
+## 9. Where this method extends to
+
+Once you've got it down, **HTML PPT is just one application of this skill**. The same "AI + design brief + anti-AI-Slop" approach can produce:
+
+- **Personal site landing page** — swap "10-page deck" for "5 single-page scroll sections"
+- **Resume webpage** — one .html, HR opens it in a browser
+- **Portfolio** — one HTML per project, links as navigation
+- **Story deck** — turn a blog post into a swipeable visual experience
+- **Class material** — web-based slides students can scan a QR for during projection
+
+Swap the "topic" and "structure"; the rest of the spec carries over. **That's the real value here — this isn't teaching you to make a PPT, it's teaching you how to get AI to make any "web-native" visual artifact.**
+
+## 10. Last note
+
+AI is a lever, not a replacement. **Taste, judgment, and depth of content are still your core assets.** AI does the typing-and-layout grunt work; the rest is what's uniquely yours.
+
+Action right now: open Claude.ai or Kimi, paste the long prompt from section 6, swap the topic for your next real project, hit send.
+
+Don't read the whole post. **Run it once first.**

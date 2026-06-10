@@ -1,0 +1,436 @@
+---
+title: 'Notes on the React Component Lifecycle'
+date: 2025-03-31
+slug: react-lifecycle
+summary: A walk through the React component lifecycle — mount, update, unmount — using a ScrollView component as the running example.
+seoTitle: 'React Component Lifecycle Explained: Mount, Update, Unmount'
+seoDescription: A concrete walkthrough of the React component lifecycle, covering mount, update, and unmount stages and the role of each lifecycle method.
+seoKeywords:
+  - React lifecycle
+  - React component lifecycle
+  - React tutorial
+  - mount update unmount
+  - React basics
+tags:
+  - react
+draft: false
+lang: en
+---
+
+# React component lifecycle
+
+A React component's lifecycle is the full arc from creation to destruction. Along the way, React calls specific methods at specific moments — these are the lifecycle methods. Understanding them is essential for writing solid React apps.
+
+## 1. Lifecycle stages
+
+A React component's lifecycle has three main stages:
+
+1. Mounting: the component is created and inserted into the DOM
+2. Updating: the component's props or state change
+3. Unmounting: the component is removed from the DOM
+
+## 2. Lifecycle methods, in detail
+
+### 1. Mounting
+
+#### constructor(props)
+
+- The first lifecycle method to run
+- Used to initialise state and bind event handlers
+- You must call `super(props)`, otherwise `this.props` won't be available later
+
+```tsx
+constructor(props) {
+  super(props)
+  // initialise state
+  this.state = {
+    count: 0,
+    list: []
+  }
+  // bind event handlers
+  this.handleClick = this.handleClick.bind(this)
+  // debounce
+  this.handleScroll = debounce(this.handleScroll, 200)
+}
+```
+
+#### getDerivedStateFromProps(nextProps, prevState)
+
+- A static method, no access to `this`
+- Used to derive state from prop changes
+- Return an object to update state, or `null` to skip the update
+
+```tsx
+static getDerivedStateFromProps(nextProps, prevState) {
+  if (nextProps.type !== prevState.type) {
+    return { type: nextProps.type }
+  }
+  return null
+}
+```
+
+#### render()
+
+- Required
+- Returns React elements, arrays, Fragments, Portals, strings, or numbers
+- Don't mutate state here — you'll cause an infinite loop
+
+#### componentDidMount()
+
+- Runs after the component is mounted into the DOM
+- Good for:
+  - DOM operations
+  - event listeners
+  - data fetching
+  - setting up timers
+
+```tsx
+componentDidMount() {
+  // add event listener
+  window.addEventListener('resize', this.handleResize)
+  // fetch data
+  this.fetchData()
+  // start a timer
+  this.timer = setInterval(() => {
+    this.tick()
+  }, 1000)
+}
+```
+
+### 2. Updating
+
+#### shouldComponentUpdate(nextProps, nextState)
+
+- Used for performance tuning
+- Return `true` to update, `false` to skip
+- Defaults to `true`
+
+```tsx
+shouldComponentUpdate(nextProps, nextState) {
+  // only update when count or list changes
+  return (
+    this.state.count !== nextState.count ||
+    this.state.list !== nextState.list
+  )
+}
+```
+
+#### getSnapshotBeforeUpdate(prevProps, prevState)
+
+- Capture some info before the DOM is updated
+- The return value is passed as the third argument to `componentDidUpdate`
+- Commonly used for things like saving the scroll position
+
+```tsx
+getSnapshotBeforeUpdate(prevProps, prevState) {
+  // save scroll position before the update
+  return this.containerRef.current?.scrollTop
+}
+```
+
+#### componentDidUpdate(prevProps, prevState, snapshot)
+
+- Runs after the component updates
+- The updated DOM is available here
+- Be careful calling `setState` directly — you can hit an infinite loop
+
+```tsx
+componentDidUpdate(prevProps, prevState, snapshot) {
+  // react to scroll-position change
+  if (snapshot !== null) {
+    const scrollTop = this.containerRef.current?.scrollTop
+    if (scrollTop !== snapshot) {
+      this.handleScrollPositionChange(scrollTop)
+    }
+  }
+}
+```
+
+### 3. Unmounting
+
+#### componentWillUnmount()
+
+- Runs right before the component is unmounted
+- Use for cleanup:
+  - remove event listeners
+  - clear timers
+  - cancel in-flight requests
+
+```tsx
+componentWillUnmount() {
+  // remove event listeners
+  window.removeEventListener('resize', this.handleResize)
+  // clear timers
+  clearInterval(this.timer)
+  // cancel in-flight requests
+  this.abortController.abort()
+}
+```
+
+## 3. Worked example: ScrollView
+
+Let's tie it together with a `ScrollView` implementation:
+
+```tsx
+import React, { Component } from 'react'
+
+interface ScrollViewProps {
+  children: React.ReactNode
+  onScroll?: (scrollTop: number) => void
+  onScrollToBottom?: () => void
+  threshold?: number // threshold to trigger bottom-load
+}
+
+interface ScrollViewState {
+  scrollTop: number
+  isScrolling: boolean
+  isLoading: boolean
+}
+
+class ScrollView extends Component<ScrollViewProps, ScrollViewState> {
+  private containerRef: React.RefObject<HTMLDivElement>
+  private scrollTimeout: NodeJS.Timeout | null = null
+
+  constructor(props: ScrollViewProps) {
+    super(props)
+    console.log('1. constructor')
+
+    this.state = {
+      scrollTop: 0,
+      isScrolling: false,
+      isLoading: false,
+    }
+
+    this.containerRef = React.createRef()
+  }
+
+  static getDerivedStateFromProps(props: ScrollViewProps, state: ScrollViewState) {
+    console.log('2. getDerivedStateFromProps')
+    return null
+  }
+
+  componentDidMount() {
+    console.log('4. componentDidMount')
+    // attach scroll listener
+    this.containerRef.current?.addEventListener('scroll', this.handleScroll)
+    // attach touch listener
+    this.containerRef.current?.addEventListener('touchmove', this.handleTouchMove, {
+      passive: false,
+    })
+  }
+
+  shouldComponentUpdate(nextProps: ScrollViewProps, nextState: ScrollViewState) {
+    console.log('5. shouldComponentUpdate')
+    // only update when scroll position, scrolling state, or loading state changes
+    return (
+      this.state.scrollTop !== nextState.scrollTop ||
+      this.state.isScrolling !== nextState.isScrolling ||
+      this.state.isLoading !== nextState.isLoading
+    )
+  }
+
+  getSnapshotBeforeUpdate(prevProps: ScrollViewProps, prevState: ScrollViewState) {
+    console.log('7. getSnapshotBeforeUpdate')
+    // save scroll position and container height before the update
+    return {
+      scrollTop: this.containerRef.current?.scrollTop,
+      scrollHeight: this.containerRef.current?.scrollHeight,
+    }
+  }
+
+  componentDidUpdate(prevProps: ScrollViewProps, prevState: ScrollViewState, snapshot: any) {
+    console.log('8. componentDidUpdate')
+    // check whether we've scrolled near the bottom
+    if (this.isNearBottom()) {
+      this.handleScrollToBottom()
+    }
+  }
+
+  componentWillUnmount() {
+    console.log('9. componentWillUnmount')
+    // remove listeners
+    this.containerRef.current?.removeEventListener('scroll', this.handleScroll)
+    this.containerRef.current?.removeEventListener('touchmove', this.handleTouchMove)
+    // clear timer
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout)
+    }
+  }
+
+  handleScroll = () => {
+    const scrollTop = this.containerRef.current?.scrollTop || 0
+    this.setState({
+      scrollTop,
+      isScrolling: true,
+    })
+
+    // fire scroll callback
+    this.props.onScroll?.(scrollTop)
+
+    // debounce the scrolling state
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout)
+    }
+    this.scrollTimeout = setTimeout(() => {
+      this.setState({ isScrolling: false })
+    }, 150)
+  }
+
+  handleTouchMove = (e: TouchEvent) => {
+    // touch handling — add any touch-specific logic here
+    e.preventDefault()
+  }
+
+  isNearBottom = () => {
+    const { threshold = 50 } = this.props
+    const container = this.containerRef.current
+    if (!container) return false
+
+    const { scrollTop, scrollHeight, clientHeight } = container
+    return scrollHeight - scrollTop - clientHeight <= threshold
+  }
+
+  handleScrollToBottom = () => {
+    if (this.state.isLoading) return
+    this.setState({ isLoading: true })
+    this.props.onScrollToBottom?.()
+  }
+
+  render() {
+    console.log('3. render')
+    return (
+      <div
+        ref={this.containerRef}
+        style={{
+          height: '300px',
+          overflow: 'auto',
+          border: '1px solid #ccc',
+          padding: '20px',
+          position: 'relative',
+        }}
+      >
+        {this.props.children}
+        {this.state.isLoading && (
+          <div
+            style={{
+              position: 'sticky',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '10px',
+              textAlign: 'center',
+              backgroundColor: 'white',
+              borderTop: '1px solid #eee',
+            }}
+          >
+            Loading...
+          </div>
+        )}
+      </div>
+    )
+  }
+}
+
+export default ScrollView
+```
+
+## 4. Lifecycle execution order
+
+Here's what happens for the `ScrollView` in different scenarios:
+
+### 1. Initial render
+
+```
+1. constructor
+2. getDerivedStateFromProps
+3. render
+4. componentDidMount
+```
+
+### 2. Update (on scroll)
+
+```
+2. getDerivedStateFromProps
+5. shouldComponentUpdate
+3. render
+7. getSnapshotBeforeUpdate
+8. componentDidUpdate
+```
+
+### 3. Unmount
+
+```
+9. componentWillUnmount
+```
+
+## 5. Usage example
+
+```tsx
+function App() {
+  const handleScroll = (scrollTop: number) => {
+    console.log('Scroll position:', scrollTop)
+  }
+
+  const handleScrollToBottom = () => {
+    // simulate async loading
+    setTimeout(() => {
+      // when loading is done, reset loading state via ref
+      scrollViewRef.current?.setState({ isLoading: false })
+    }, 1500)
+  }
+
+  const scrollViewRef = React.useRef()
+
+  return (
+    <ScrollView ref={scrollViewRef} onScroll={handleScroll} onScrollToBottom={handleScrollToBottom}>
+      <div style={{ height: '1000px' }}>
+        <h1>Scroll Content</h1>
+        <p>Scroll down to see lifecycle methods in action!</p>
+      </div>
+    </ScrollView>
+  )
+}
+```
+
+## 6. Wrap-up
+
+The `ScrollView` example shows lifecycle methods at work:
+
+1. Initialise state and refs in `constructor`
+2. Attach event listeners in `componentDidMount`
+3. Optimise renders with `shouldComponentUpdate`
+4. Handle updates with `getSnapshotBeforeUpdate` and `componentDidUpdate`
+5. Clean up in `componentWillUnmount`
+
+Lifecycle methods let you do the right thing at the right moment — initialise, update, and clean up.
+
+### Best practices
+
+1. **State management**
+
+   - Initialise state in `constructor`
+   - Handle prop changes with `getDerivedStateFromProps`
+   - Don't mutate state inside `render`
+
+2. **Performance**
+
+   - Use `shouldComponentUpdate` to skip needless renders
+   - Reach for `React.memo` and `PureComponent` where it makes sense
+   - Avoid heavy computation inside `render`
+
+3. **Side effects**
+
+   - Set up listeners and timers in `componentDidMount`
+   - Tear them down in `componentWillUnmount`
+   - Use `useEffect` for side effects in function components
+
+4. **DOM operations**
+
+   - Touch the DOM in `componentDidMount` and `componentDidUpdate`
+   - Use refs instead of poking the DOM directly
+   - Capture DOM state in `getSnapshotBeforeUpdate`
+
+5. **Error handling**
+   - Catch render errors with `componentDidCatch`
+   - Add proper error handling inside lifecycle methods
+   - Wrap async work in `try-catch`

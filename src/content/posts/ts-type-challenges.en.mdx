@@ -1,0 +1,289 @@
+---
+title: 'TypeScript Type Gymnastics'
+date: '2025-05-10'
+slug: ts-type-challenges
+summary: A walkthrough of beginner TypeScript type-gymnastics problems to get a real grip on the type system.
+seoTitle: 'TypeScript Type Gymnastics: A Beginner Tour Through TS Type System'
+seoDescription: A beginner-friendly TypeScript type-gymnastics tutorial — generics, conditional types, infer — to systematically master the core capabilities of the TS type system.
+seoKeywords:
+  - TypeScript type gymnastics
+  - TypeScript tutorial
+  - conditional types
+  - infer
+tags:
+  - typescript
+draft: false
+lang: en
+---
+
+## 1. What is type gymnastics
+
+Type gymnastics is the practice of building things — array operations, string transforms, object mappings — entirely inside the TypeScript type system, with no runtime code. All the logic lives at the type level.
+
+It takes inspiration from the [type-challenges](https://github.com/type-challenges/type-challenges) repo, which is basically a training ground for advanced TS.
+
+## 2. Prerequisites
+
+Before diving in, make sure you have a working understanding of these TypeScript features:
+
+### 1. Generics
+
+Reusable type definitions parameterised by type arguments.
+
+```ts
+type Wrapper<T> = { value: T }
+```
+
+### 2. Conditional Types
+
+Branch on the relationship between types.
+
+```ts
+type IsString<T> = T extends string ? true : false
+```
+
+### 3. The `infer` keyword
+
+Used inside conditional types to extract a sub-type.
+
+```ts
+type ExtractArrayType<T> = T extends Array<infer U> ? U : never
+```
+
+### 4. Mapped Types
+
+Iterate over the keys of an object type.
+
+```ts
+type Readonly<T> = { readonly [K in keyof T]: T[K] }
+```
+
+### 5. Union distribution
+
+Conditional types distribute over union types automatically.
+
+```ts
+type A = 'a' | 'b' extends U ? X : Y // applied to each member
+```
+
+## 3. Ten beginner type-gymnastics problems
+
+### 1. `Pick<T, K>`: pick a subset of properties
+
+```ts
+type MyPick<T, K extends keyof T> = {
+  [P in K]: T[P]
+}
+
+// usage
+type Todo = { title: string; completed: boolean }
+type TodoTitle = MyPick<Todo, 'title'> // => { title: string }
+```
+
+### 2. `Readonly<T>`: make all properties readonly
+
+```ts
+type MyReadonly<T> = {
+  readonly [P in keyof T]: T[P]
+}
+
+// usage
+type Todo = { title: string; completed: boolean }
+type ReadonlyTodo = MyReadonly<Todo> // => { readonly title: string; readonly completed: boolean }
+```
+
+### 3. `TupleToObject<T>`: tuple to object
+
+```ts
+type TupleToObject<T extends readonly string[]> = {
+  [P in T[number]]: P
+}
+
+// usage
+type Result = TupleToObject<['a', 'b']> // => { a: 'a'; b: 'b' }
+```
+
+### 4. `First<T>`: first element of an array type
+
+```ts
+type First<T extends any[]> = T extends [infer F, ...any[]] ? F : never
+
+// usage
+type Result = First<[1, 2, 3]> // => 1
+```
+
+### 5. `Length<T>`: length of a tuple
+
+```ts
+type Length<T extends readonly any[]> = T['length']
+
+// usage
+type Result = Length<[1, 2, 3]> // => 3
+```
+
+### 6. `Exclude<T, U>`: exclude `U` from `T`
+
+```ts
+type MyExclude<T, U> = T extends U ? never : T
+
+// usage
+type Result = MyExclude<'a' | 'b' | 'c', 'a'> // => 'b' | 'c'
+```
+
+### 7. `Awaited<T>`: unwrap a Promise type
+
+```ts
+type MyAwaited<T> = T extends Promise<infer U> ? MyAwaited<U> : T
+
+// usage
+type Result = MyAwaited<Promise<Promise<string>>> // => string
+```
+
+### 8. `If<C, T, F>`: a ternary at the type level
+
+```ts
+type If<C extends boolean, T, F> = C extends true ? T : F
+
+// usage
+type Result = If<true, 'yes', 'no'> // => 'yes'
+```
+
+### 9. `Concat<T, U>`: concatenate two arrays
+
+```ts
+type Concat<T extends any[], U extends any[]> = [...T, ...U]
+
+// usage
+type Result = Concat<[1, 2], [3, 4]> // => [1, 2, 3, 4]
+```
+
+### 10. `Includes<T, U>`: check if an array contains an element
+
+```ts
+type Includes<T extends readonly any[], U> = T extends [infer F, ...infer R]
+  ? Equal<F, U> extends true
+    ? true
+    : Includes<R, U>
+  : false
+
+// helper: strict type equality
+type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+  ? true
+  : false
+
+// usage
+type Result = Includes<[1, 2, 3], 2> // => true
+```
+
+## 4. The types you'll actually use day-to-day
+
+### 1. Utility types
+
+```ts
+// make all properties optional
+type Partial<T> = {
+  [P in keyof T]?: T[P]
+}
+
+// make all properties required
+type Required<T> = {
+  [P in keyof T]-?: T[P]
+}
+
+// make all properties readonly
+type Readonly<T> = {
+  readonly [P in keyof T]: T[P]
+}
+
+// extract function parameter types
+type Parameters<T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never
+
+// extract function return type
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any
+```
+
+### 2. Practical types
+
+```ts
+// deep partial
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+// deep readonly
+type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P]
+}
+
+// union of all value types in an object
+type ValueOf<T> = T[keyof T]
+
+// union of all keys in an object
+type KeyOf<T> = keyof T
+
+// element type of an array
+type ArrayElement<T> = T extends Array<infer U> ? U : never
+```
+
+### 3. Real-world scenarios
+
+```ts
+// 1. API response type
+type ApiResponse<T> = {
+  data: T
+  code: number
+  message: string
+}
+
+// 2. pagination request params
+type PaginationParams = {
+  page: number
+  pageSize: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+}
+
+// 3. paginated response
+type PaginatedResponse<T> = {
+  list: T[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+// 4. form validation errors
+type ValidationErrors<T> = {
+  [K in keyof T]?: string[]
+}
+
+// 5. state management actions
+type Action<T, P = void> = P extends void ? { type: T } : { type: T; payload: P }
+```
+
+### 4. Type guards
+
+```ts
+// type predicate
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+// assertion function
+function assertIsString(value: unknown): asserts value is string {
+  if (typeof value !== 'string') {
+    throw new Error('Not a string!')
+  }
+}
+
+// usage
+function processValue(value: unknown) {
+  if (isString(value)) {
+    // value is narrowed to string
+    console.log(value.toUpperCase())
+  }
+}
+```
+
+## 5. Wrap-up
+
+TypeScript type gymnastics is a powerful tool — it lets you express complex logic at the type level. But remember: type gymnastics is the means, not the goal. The goal is type-safe, maintainable code. In real codebases, pick the type design that fits the situation and don't over-engineer.
