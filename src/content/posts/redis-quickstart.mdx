@@ -1,0 +1,403 @@
+---
+title: '[后端补课]: 30 分钟拿下 Redis 入门'
+date: '2026-06-11'
+slug: redis-quickstart
+summary: >-
+  从“为什么要用 Redis”讲起，把 5 种核心数据结构、过期与持久化、缓存的三大典型坑串成一条线，配可复制的命令和 ASCII 结构图，30 分钟读完就能上手。
+seoTitle: Redis 入门：5 种数据结构、命令、缓存场景与三大坑（图解版）
+seoDescription: 一篇面向前端/后端工程师的 Redis 入门指南，讲清 String/Hash/List/Set/ZSet 五种结构、TTL 与 RDB/AOF 持久化、缓存穿透/击穿/雪崩，全部命令可直接在 redis-cli 跑通。
+seoKeywords:
+  - Redis 入门
+  - Redis 数据结构
+  - Redis 命令
+  - 缓存穿透 击穿 雪崩
+  - RDB AOF
+tags:
+  - backend
+  - tutorial
+  - chinese
+draft: false
+---
+
+前言：**✍️ 写前端写久了，缓存这一层一直绕不开。这篇把我自己重新捋一遍 Redis 的笔记发出来，目标是：你打开 `redis-cli`，跟着敲一遍，30 分钟之后能跟同事讨论"用哪个数据结构"。**
+
+## 一、Redis 是什么
+
+一句话：**Redis 是一个跑在内存里的 Key-Value 数据库**，所有数据先放在内存，所以读写都是微秒级（μs），比 MySQL 这种盘上数据库快两到三个数量级。
+
+它不止是 key→string，还原生支持 5 种数据结构：`String / Hash / List / Set / Sorted Set`，外加 Stream、Geo、Bitmap 等扩展类型。这点跟 Memcached 一行 string 跑天下完全不同——Redis 是"会几招的内存数据库"，不是"快一点的字典"。
+
+它的位置大致是这样：
+
+```
+┌──────────────┐    读/写         ┌──────────────┐
+│   你的应用    │  ───────────▶   │    Redis     │   内存里的 Key-Value
+│  (Node/Java) │  ◀───────────   │ (μs 级响应)  │
+└──────┬───────┘                  └──────────────┘
+       │ 缓存没命中时回源
+       ▼
+┌──────────────┐
+│   MySQL 等   │   盘上的关系/文档数据库 (ms 级响应)
+└──────────────┘
+```
+
+## 二、为什么需要它
+
+抛开"快"这一条，最常见的真实理由其实是这三个：
+
+- **挡住数据库**：高峰期一秒几万次同样的查询，让 MySQL 全顶住既贵又慢，先去 Redis 看一眼，命中就直接返回
+- **跨进程/跨机器共享状态**：登录态、计数器、排行榜，多个服务实例都要看同一份数据，没法塞在 Node 进程内存里
+- **天然支持几个常见结构**：排行榜要 `Sorted Set`、去重要 `Set`、消息队列要 `List/Stream`，自己拿 SQL 实现都得绕几圈
+
+判断要不要上 Redis 的简单标准：**这份数据是不是被频繁读、能容忍丢一点、且适合用 KV 取**。三个都是 Yes，再考虑加这一层。
+
+## 三、五种核心数据结构
+
+下面所有命令都能在 `redis-cli` 里直接敲。约定：`>` 是命令，没有 `>` 是返回。
+
+### 3.1 String — 万能选手
+
+最普通的"一个 key 对一个值"。值可以是字符串、数字（Redis 会识别成数字以便自增）、甚至序列化后的 JSON。
+
+```
+key                  value
+─────────────────  ─────────────────
+"user:1:name"  ─▶  "orion"
+"page:home:v"  ─▶  42
+"sess:abc123"  ─▶  "{...json...}"
+```
+
+常用操作：
+
+```bash
+> SET user:1:name "orion"
+OK
+> GET user:1:name
+"orion"
+
+# 数字自增，常用做计数器/限流
+> SET page:home:pv 0
+> INCR page:home:pv
+(integer) 1
+> INCRBY page:home:pv 10
+(integer) 11
+
+# 带过期时间，10 秒后自动删
+> SET captcha:18800001234 "5829" EX 10
+> TTL captcha:18800001234
+(integer) 9
+```
+
+**典型场景**：缓存查询结果、PV/UV 计数、验证码、token。
+
+### 3.2 Hash — 一个 key 装多个字段
+
+把对象里的字段平铺成 `field → value`。比起把整个 JSON 塞进 String，Hash 的好处是**可以只改一个字段，不用读出来再写回去**。
+
+```
+key = "user:1"
+┌───────────┬──────────────┐
+│  field    │   value      │
+├───────────┼──────────────┤
+│  name     │  "orion"     │
+│  email    │  "o@x.com"   │
+│  age      │  28          │
+└───────────┴──────────────┘
+```
+
+常用操作：
+
+```bash
+> HSET user:1 name "orion" email "o@x.com" age 28
+(integer) 3
+> HGET user:1 name
+"orion"
+> HGETALL user:1
+1) "name"
+2) "orion"
+3) "email"
+4) "o@x.com"
+5) "age"
+6) "28"
+
+# 只改一个字段，O(1)
+> HINCRBY user:1 age 1
+(integer) 29
+```
+
+**典型场景**：缓存对象（用户、商品、订单），字段多但只改其中一两个。
+
+### 3.3 List — 双向链表
+
+底层是 quicklist（链表 + ziplist 的混合），从两端进出都是 O(1)。**它不是数组，不要按下标随机访问**——`LINDEX i` 在中间是 O(n)。
+
+```
+LPUSH ──▶  ┌───┬───┬───┬───┐  ◀── RPUSH
+           │ A │ B │ C │ D │
+LPOP  ◀──  └───┴───┴───┴───┘  ──▶ RPOP
+           头部                    尾部
+```
+
+常用操作：
+
+```bash
+> RPUSH queue:emails "mail-1" "mail-2" "mail-3"
+(integer) 3
+> LPOP queue:emails
+"mail-1"
+> LRANGE queue:emails 0 -1
+1) "mail-2"
+2) "mail-3"
+
+# 阻塞 pop，做简单任务队列
+> BRPOP queue:emails 5    # 最多等 5 秒
+```
+
+**典型场景**：简单任务队列、最近消息流、用户行为日志。规模上来要做消息队列，建议直接看 Stream（`XADD/XREAD`），List 是入门款。
+
+### 3.4 Set — 无序去重集合
+
+值唯一，无序，支持交并差。看到"去重"、"打标签"、"共同好友"基本就是它。
+
+```
+key = "tag:redis"
+   ┌─────────────────────────┐
+   │  "post:101"             │
+   │  "post:107"             │   无序、自动去重
+   │  "post:200"             │
+   └─────────────────────────┘
+```
+
+常用操作：
+
+```bash
+> SADD tag:redis "post:101" "post:107" "post:200"
+(integer) 3
+> SADD tag:redis "post:101"        # 已经在里面，加不进去
+(integer) 0
+> SISMEMBER tag:redis "post:101"
+(integer) 1
+
+# 共同好友：两个集合的交集
+> SADD friend:alice "bob" "carol" "dave"
+> SADD friend:bob   "alice" "carol" "erin"
+> SINTER friend:alice friend:bob
+1) "carol"
+```
+
+**典型场景**：标签、用户兴趣、共同好友、抽奖去重。
+
+### 3.5 Sorted Set — 带分数的 Set
+
+每个成员多挂一个 `score`，Redis 会按 score 自动排序。**排行榜的标准答案就是它**。底层是 skiplist + hash，按排名取 top-N 是 O(log N)。
+
+```
+key = "rank:weekly"
+   score   member
+   ─────   ──────
+    980    "carol"     ◀── ZRANGE rank:weekly 0 -1 WITHSCORES
+    870    "alice"          会按 score 升序返回
+    760    "bob"
+    420    "dave"
+```
+
+常用操作：
+
+```bash
+> ZADD rank:weekly 870 "alice" 760 "bob" 980 "carol" 420 "dave"
+(integer) 4
+
+# 升序 top 3
+> ZRANGE rank:weekly 0 2 WITHSCORES
+1) "dave"
+2) "420"
+3) "bob"
+4) "760"
+5) "alice"
+6) "870"
+
+# 降序 top 3，更像榜单要的
+> ZREVRANGE rank:weekly 0 2 WITHSCORES
+1) "carol"
+2) "980"
+3) "alice"
+4) "870"
+5) "bob"
+6) "760"
+
+# 给 alice 加 50 分
+> ZINCRBY rank:weekly 50 "alice"
+"920"
+```
+
+**典型场景**：排行榜、按时间线刷流（`score = timestamp`）、延迟队列（`score = 执行时间`）。
+
+一张图收尾，方便回忆：
+
+```
+String  ─▶  一对一       缓存值、计数、token
+Hash    ─▶  字段表       缓存对象，可改单字段
+List    ─▶  双端队列     任务队列、最近消息
+Set     ─▶  去重无序     标签、共同好友
+ZSet    ─▶  带分数排序   排行榜、时间线、延迟队列
+```
+
+## 四、过期与持久化
+
+### 4.1 给 key 设过期
+
+缓存几乎都要过期时间，否则数据陈旧、内存也撑不住。
+
+```bash
+> SET captcha:18800001234 "5829"
+> EXPIRE captcha:18800001234 60      # 60 秒后过期
+(integer) 1
+> TTL captcha:18800001234            # 还剩多久
+(integer) 58
+
+# 一步到位，更常用
+> SET captcha:18800001234 "5829" EX 60
+> SET lock:order:42 "1" NX EX 10     # 不存在才设，常用做分布式锁
+```
+
+注意：Redis 删过期 key 是**惰性删 + 定期采样删**，不是到点就删。所以哪怕 TTL 到了 0，那块内存也可能还要等一会儿才回收。
+
+### 4.2 持久化：RDB vs AOF
+
+Redis 数据在内存，进程一挂内存就空了，所以默认会把数据写一份到磁盘。两种机制可以单开也可以一起开：
+
+```
+            ┌─────────────────────────────────────────┐
+            │                Redis 进程              │
+            │  内存里的 Key-Value                    │
+            └──────────┬───────────────┬──────────────┘
+                       │               │
+              快照(fork)│               │每条写命令追加
+                       ▼               ▼
+                 ┌──────────┐    ┌──────────┐
+                 │  dump.rdb│    │ appendonly.aof │
+                 │  二进制  │    │  文本命令日志  │
+                 │  快照    │    │                │
+                 └──────────┘    └──────────────┘
+                  小、快、易丢   大、慢、丢得少
+```
+
+- **RDB**：定期把内存整段 dump 成二进制文件。**恢复快**，但两次快照之间的数据会丢
+- **AOF**：把每条写命令追加到日志里。**丢得少**（默认每秒 fsync），但文件大，恢复慢
+- **生产实践**：两个都开，RDB 用来快速冷启动，AOF 用来兜底最近几秒的数据
+
+要做"绝对不丢"，只靠单机 Redis 都不行，得上主从复制 + 哨兵或 Cluster。这是另一篇的事了。
+
+## 五、几个真实会用上的场景
+
+挑三个最常踩到的写一下，每个都是面试和真线上都问的。
+
+**1）缓存数据库查询**
+
+最经典的"读穿透"读路径：
+
+```
+请求 ──▶ Redis ──hit──▶ 直接返回
+              │
+            miss
+              ▼
+            MySQL ──▶ 写回 Redis（带 TTL）──▶ 返回
+```
+
+```bash
+# 伪代码
+val = GET user:1
+if val is null:
+    val = SELECT * FROM user WHERE id=1
+    SET user:1 <val> EX 600
+return val
+```
+
+**2）分布式锁（简化版）**
+
+多个进程抢同一个资源，谁先 `SET NX` 成功谁拿到锁。**一定要带过期时间**，否则进程挂了锁永远不释放。
+
+```bash
+> SET lock:order:42 "node-A" NX EX 10
+OK
+# 别的节点这时再 SET NX 会失败：
+> SET lock:order:42 "node-B" NX EX 10
+(nil)
+```
+
+生产里要严谨还得加 lock value（校验"是不是我加的锁，再删"）、看门狗续期，可以再搜 RedLock。
+
+**3）限流（计数器版）**
+
+每个 IP 一分钟最多 60 次：
+
+```bash
+> INCR rate:ip:1.2.3.4
+(integer) 1
+> EXPIRE rate:ip:1.2.3.4 60     # 第一次设 TTL
+# 后续每次再来：
+> INCR rate:ip:1.2.3.4
+(integer) 2
+# > 60 就拒绝
+```
+
+更严格用滑动窗口，那就上 `ZSet` 存时间戳。
+
+## 六、缓存的三大坑
+
+加缓存几乎一定要碰这三个，名字很像，原理不一样。
+
+```
+                    缓存命中？
+                        │
+                ┌───────┴───────┐
+              是│               │否
+                │               │
+              返回         去查 DB
+                                │
+        ┌──────────┬────────────┴────────────┐
+        │          │                         │
+   穿透：DB 也    击穿：某个热 key      雪崩：大批 key
+   没数据，每次   过期瞬间，N 个并发   同时过期，瞬间
+   都打到 DB     一起打到 DB         全部打到 DB
+```
+
+简单对策：
+
+- **穿透**：DB 查不到也写一个 `null` 占位（短 TTL，比如 60s），或者前面挡一层布隆过滤器
+- **击穿**：热 key 永不过期，或者读 miss 时加分布式锁，**只让一个请求去回源**，其它等结果
+- **雪崩**：批量 key 的 TTL 加随机抖动（比如 base + rand(0..300s)），别让一堆 key 同一秒过期
+
+这三个名字记不住没关系，记住底下的本质——**缓存没命中时，请求会原样压到 DB**——三种坑就都能自己推出来。
+
+## 七、自己跑一跑
+
+Mac 上最快的路子：
+
+```bash
+brew install redis
+brew services start redis     # 后台跑
+redis-cli                     # 连上去
+```
+
+Docker 也行：
+
+```bash
+docker run -d --name redis -p 6379:6379 redis:7
+docker exec -it redis redis-cli
+```
+
+进去之后随手敲两条：
+
+```bash
+> SET hello world
+OK
+> GET hello
+"world"
+> KEYS *               # 仅本机调试用，生产不要敲，会扫全库
+1) "hello"
+```
+
+到这里，文章列出的所有命令你都能一条条敲完。**真正记住这些结构的方式，是去想自己手上的某个功能要不要换成 Redis 实现**——计数、排行榜、登录态、限流，几乎都能映射到上面五种结构里的一种。
+
+## ok, 就先到这了 祝大家周四愉快~
