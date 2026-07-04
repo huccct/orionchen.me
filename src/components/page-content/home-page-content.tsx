@@ -67,7 +67,7 @@ export function HomePageContent({ locale }: { locale: Locale }) {
         </SectionHeader>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {featured.map((work) => (
-            <WorkCard key={work.slug} work={work} pathPrefix={prefix} />
+            <WorkCard key={work.slug} labels={dict.works} pathPrefix={prefix} work={work} />
           ))}
         </div>
       </section>
@@ -78,7 +78,12 @@ export function HomePageContent({ locale }: { locale: Locale }) {
         </SectionHeader>
         <div>
           {latest.map((post) => (
-            <PostCard key={post.slug} post={post} pathPrefix={prefix} />
+            <PostCard
+              key={post.slug}
+              pathPrefix={prefix}
+              post={post}
+              tutorialLabel={dict.blog.tutorialBadge}
+            />
           ))}
         </div>
       </section>

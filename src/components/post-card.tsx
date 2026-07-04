@@ -4,9 +4,11 @@ import type { Post } from '@/content/schemas'
 export function PostCard({
   post,
   pathPrefix = '',
+  tutorialLabel = 'tutorial',
 }: {
   post: Post & { _meta?: { path: string } }
   pathPrefix?: string
+  tutorialLabel?: string
 }) {
   const isTutorial = post.tags?.includes('tutorial')
 
@@ -20,7 +22,7 @@ export function PostCard({
           {post.title}
           {isTutorial && (
             <span className="border-accent text-accent ml-2 inline-block translate-y-[-1px] rounded-sm border px-1.5 py-0.5 align-middle font-mono text-xs leading-none">
-              tutorial
+              {tutorialLabel}
             </span>
           )}
         </h3>

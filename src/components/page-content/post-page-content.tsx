@@ -6,7 +6,7 @@ import { JsonLd } from '@/components/json-ld'
 import { mdxComponents } from '@/components/mdx/mdx-components'
 import type { Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
-import { type Dictionary, getDictionary } from '@/i18n/get-dictionary'
+import { format, type Dictionary, getDictionary } from '@/i18n/get-dictionary'
 import type { TableOfContentsItem } from '@/lib/post-metadata'
 import {
   getPostWithNeighbors,
@@ -44,7 +44,7 @@ export function PostPageContent({ locale, slug }: { locale: Locale; slug: string
           <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs">
             <time dateTime={post.date}>{post.date}</time>
             <span aria-hidden="true">/</span>
-            <span>{post.readingTime.text}</span>
+            <span>{format(dict.blog.readingTime, { minutes: post.readingTime.minutes })}</span>
           </div>
         </header>
         {post.earlyContent && <EarlyContentBanner message={dict.blog.earlyContent} />}

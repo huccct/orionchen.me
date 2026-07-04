@@ -7,12 +7,14 @@ const styles = {
   archived: 'border-muted-foreground text-muted-foreground',
 }
 
-export function StatusPill({ kind }: { kind: keyof typeof styles }) {
+export type StatusPillKind = keyof typeof styles
+
+export function StatusPill({ kind, label = kind }: { kind: StatusPillKind; label?: string }) {
   return (
     <span
       className={`inline-block rounded-sm border px-2 py-0.5 font-mono text-xs ${styles[kind]}`}
     >
-      {kind}
+      {label}
     </span>
   )
 }

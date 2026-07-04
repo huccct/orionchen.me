@@ -8,7 +8,9 @@ import { createMetadata } from '@/lib/seo'
 export const dynamicParams = false
 
 export function generateStaticParams() {
-  return allWorks.filter((work) => work.hasDetail).map((work) => ({ slug: work.slug }))
+  return allWorks
+    .filter((work) => work.hasDetail && work.lang === 'zh')
+    .map((work) => ({ slug: work.slug }))
 }
 
 export async function generateMetadata({

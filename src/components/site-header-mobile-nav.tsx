@@ -7,14 +7,14 @@ import { Drawer } from '@base-ui/react/drawer'
 
 type NavItem = { href: string; label: string }
 
-export function SiteHeaderMobileNav({ nav }: { nav: NavItem[] }) {
+export function SiteHeaderMobileNav({ nav, openLabel }: { nav: NavItem[]; openLabel: string }) {
   const [open, setOpen] = useState(false)
 
   return (
     <Drawer.Root open={open} onOpenChange={setOpen}>
       <Drawer.Trigger
         className="hover:bg-muted hover:text-foreground inline-flex size-8 items-center justify-center rounded-md transition-colors"
-        aria-label="Open navigation"
+        aria-label={openLabel}
       >
         <MenuIcon className="size-4" />
       </Drawer.Trigger>

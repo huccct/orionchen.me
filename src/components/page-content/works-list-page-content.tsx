@@ -39,7 +39,7 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
             </Link>
           </p>
         ) : (
-          <WorksFilter works={works} pathPrefix={prefix} />
+          <WorksFilter dict={dict} works={works} pathPrefix={prefix} />
         )}
       </div>
     </>

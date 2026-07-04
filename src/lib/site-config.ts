@@ -1,6 +1,5 @@
 export const siteConfig = {
   name: 'Orion Chen',
-  alias: '图南',
   jobTitle: 'Software Engineer',
   url: 'https://orionchen.me',
   description: '一间用代码、影像和文字开着门的小工作室。',

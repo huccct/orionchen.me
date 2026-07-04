@@ -89,7 +89,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
           lastModified: post.date,
           changeFrequency: 'monthly' as const,
           priority: 0.8,
-          images: [url(`/blog/${post.slug}/opengraph-image`)],
+          images: [url(`${localePath}/opengraph-image`)],
         },
         // List every locale with a published version of this slug, so
         // <xhtml:link> pairs zh ↔ en when both exist. When only one

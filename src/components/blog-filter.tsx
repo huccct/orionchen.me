@@ -53,7 +53,7 @@ export function BlogFilter({
   const listMeta =
     kind === 'all'
       ? `${firstPostNumber}-${lastPostNumber} / ${totalPosts}`
-      : `${visible.length} ${kind}`
+      : `${visible.length} ${filters.find((filter) => filter.value === kind)?.label ?? kind}`
 
   return (
     <div>
@@ -95,7 +95,12 @@ export function BlogFilter({
 
       <div>
         {visible.map((post) => (
-          <PostCard key={post.slug} post={post} />
+          <PostCard
+            key={post.slug}
+            pathPrefix={pathPrefix}
+            post={post}
+            tutorialLabel={dict.blog.tutorialBadge}
+          />
         ))}
       </div>
 

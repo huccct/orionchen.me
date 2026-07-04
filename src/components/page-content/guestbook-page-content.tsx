@@ -10,7 +10,7 @@ export function GuestbookPageContent({ locale }: { locale: Locale }) {
     <div className="mx-auto max-w-2xl">
       <SectionHeader>{dict.guestbook.title}</SectionHeader>
       <p className="text-muted-foreground mb-8">{dict.guestbook.intro}</p>
-      <GiscusComments term="guestbook" />
+      <GiscusComments locale={locale} term="guestbook" />
     </div>
   )
 }

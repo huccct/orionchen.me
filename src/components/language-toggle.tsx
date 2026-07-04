@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { defaultLocale, locales, localeLabel, type Locale } from '@/i18n/config'
+import { getDictionary } from '@/i18n/get-dictionary'
 import { buildLocalePath, getLocaleFromPath } from '@/i18n/get-locale'
 import type { LocaleAvailability } from '@/i18n/locale-availability-types'
 
@@ -22,13 +23,14 @@ export function LanguageToggle({ availability }: { availability: LocaleAvailabil
   const current = getLocaleFromPath(pathname)
   const next: Locale = current === defaultLocale ? other(defaultLocale) : defaultLocale
   const href = buildLocalePath(next, pathname, availability)
+  const dict = getDictionary(current)
 
   return (
     <Link
       href={href}
       hrefLang={next}
       className="hover:text-accent inline-flex h-8 w-8 items-center justify-center font-mono text-xs"
-      aria-label={`Switch to ${localeLabel[next]}`}
+      aria-label={dict.nav.switchToOther}
     >
       {localeLabel[next]}
     </Link>

@@ -6,9 +6,9 @@ export const alt = 'Orion Chen writing'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-export default async function PostOG({ params }: { params: Promise<{ slug: string }> }) {
+export default async function EnPostOG({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const post = getPublishedPost(slug, 'zh')
+  const post = getPublishedPost(slug, 'en')
 
   if (!post) return new Response('not found', { status: 404 })
 

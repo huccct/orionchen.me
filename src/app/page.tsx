@@ -7,7 +7,7 @@ const dict = getDictionary('zh')
 
 export const metadata: Metadata = createMetadata({
   description: dict.site.homeDescription,
-  keywords: ['Orion Chen', '图南', 'blog', 'writing', 'frontend', 'AI'],
+  keywords: ['Orion Chen', 'blog', 'writing', 'frontend', 'AI'],
 })
 
 export default function Home() {

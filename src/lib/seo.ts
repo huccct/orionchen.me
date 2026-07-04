@@ -170,7 +170,6 @@ export function createPersonJsonLd(): Thing {
     '@type': 'Person',
     '@id': PERSON_ID,
     name: siteConfig.name,
-    alternateName: siteConfig.alias,
     url: siteConfig.url,
     image: absoluteUrl(siteConfig.defaultOgImage),
     sameAs: [

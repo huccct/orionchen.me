@@ -1,4 +1,7 @@
 {
+  "common": {
+    "toggleTheme": "Toggle theme"
+  },
   "site": {
     "tagline": "A small studio with the door open, made of code, film, and writing.",
     "homeDescription": "Orion Chen's personal site — code, documentary, and writing.",
@@ -49,12 +52,30 @@
     "tagDescription": "Posts tagged {tag} — {count} in total.",
     "emptyEnglish": "No English posts yet.",
     "emptyEnglishLink": "Back to the Chinese archive",
-    "earlyContent": "// early content — written years ago, kept for archive completeness; tone & opinions may be dated."
+    "earlyContent": "// early content - written years ago, kept for archive completeness; tone & opinions may be dated.",
+    "readingTime": "{minutes} min read"
   },
   "works": {
     "title": "Works",
     "emptyEnglish": "No English work pages yet.",
-    "emptyEnglishLink": "Back to the Chinese works archive"
+    "emptyEnglishLink": "Back to the Chinese works archive",
+    "filters": {
+      "all": "all",
+      "code": "code",
+      "documentary": "documentary",
+      "writing": "writing"
+    },
+    "types": {
+      "code": "code",
+      "documentary": "documentary",
+      "writing": "writing"
+    },
+    "statuses": {
+      "wip": "wip",
+      "live": "live",
+      "archived": "archived"
+    },
+    "comingSoon": "coming soon"
   },
   "guestbook": {
     "title": "Guestbook",
@@ -62,11 +83,70 @@
   },
   "about": {
     "title": "About",
+    "metaDescription": "Orion Chen, an engineer who cares about more than technology.",
+    "eyebrow": "Engineer / Writer / Not Act V",
+    "headline": "An engineer who cares about more than technology.",
+    "intro1": "I'm Orion Chen. Code taught me how to break problems apart; writing and film keep bringing me back to the people inside those problems.",
+    "intro2Prefix": "My Chinese content channel is",
+    "intro2Link": "Not Act V Yet",
+    "intro2Suffix": ": the story is not over, and people are still on the field.",
+    "role": "Software Engineer",
+    "location": "Hangzhou / Web / AI",
+    "coordinatesTitle": "Coordinates",
     "readingTitle": "Reading",
     "contactTitle": "Contact",
     "contactEmail": "Email",
     "contactGithub": "GitHub",
-    "contactX": "X"
+    "contactX": "X",
+    "lenses": [
+      {
+        "label": "Code",
+        "title": "Make things that run",
+        "body": "Break vague problems apart, press them into systems, and make judgment reusable."
+      },
+      {
+        "label": "Writing",
+        "title": "Write about the people technology cannot explain",
+        "body": "AI, work, family, and the shifts of an era eventually land on specific human lives."
+      },
+      {
+        "label": "Film",
+        "title": "Put the problem back on site",
+        "body": "The documentary work is still beginning. I want to film people outside the center of the narrative who are still living seriously."
+      }
+    ],
+    "readingItems": [
+      {
+        "title": "The World Is Both Cruel and Gentle",
+        "href": "https://book.douban.com/subject/26984629/",
+        "note": "A little room for staying unflattened."
+      },
+      {
+        "title": "Binance Life",
+        "href": "https://www.amazon.com/%E5%B9%A3%E5%AE%89%E4%BA%BA%E7%94%9F-%E5%B9%B8%E9%81%8B%E3%80%81%E9%9F%8C%E6%80%A7%E8%88%87%E4%BF%9D%E8%AD%B7%E7%94%A8%E6%88%B6%E7%9A%84%E5%9B%9E%E6%86%B6%E9%8C%84-Traditional-Changpeng-Zhao-ebook/dp/B0GDG6D3WP",
+        "note": "Watching an engineer collide with the third act of an era."
+      },
+      {
+        "title": "Hackers and Painters",
+        "href": "https://book.douban.com/subject/6021440/",
+        "note": "Why people who write code should understand business too."
+      },
+      {
+        "title": "Zen and the Art of Motorcycle Maintenance",
+        "href": "https://book.douban.com/subject/6811366/",
+        "note": "About doing one thing with seriousness."
+      },
+      {
+        "title": "The Mom Test",
+        "href": "https://book.douban.com/subject/26320572/",
+        "note": "How to ask questions without fooling yourself."
+      },
+      {
+        "title": "Capital",
+        "href": "https://book.douban.com/subject/30316487/",
+        "note": "Seeing clearly what I am selling."
+      }
+    ]
   },
   "errors": {
     "notFoundTitle": "404",

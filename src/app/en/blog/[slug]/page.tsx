@@ -23,7 +23,7 @@ export async function generateMetadata({
     description: post.seoDescription ?? post.summary ?? post.title,
     path: `/en/blog/${post.slug}`,
     keywords: post.seoKeywords.length > 0 ? post.seoKeywords : post.tags,
-    image: `/blog/${post.slug}/opengraph-image`,
+    image: `/en/blog/${post.slug}/opengraph-image`,
     type: 'article',
     publishedTime: post.date,
     modifiedTime: post.date,

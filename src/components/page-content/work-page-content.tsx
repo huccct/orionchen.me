@@ -30,8 +30,8 @@ export function WorkPageContent({ locale, slug }: { locale: Locale; slug: string
       />
       <header className="mb-8 space-y-3">
         <div className="flex flex-wrap gap-2">
-          <StatusPill kind={work.type} />
-          <StatusPill kind={work.status} />
+          <StatusPill kind={work.type} label={dict.works.types[work.type]} />
+          <StatusPill kind={work.status} label={dict.works.statuses[work.status]} />
         </div>
         <h1 className="font-serif text-3xl leading-tight text-balance break-words sm:text-4xl">
           {work.title}
