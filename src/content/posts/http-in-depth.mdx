@@ -14,8 +14,6 @@ seoKeywords:
   - 前端网络基础
 tags:
   - internet
-  - chinese
-  - chinese
 draft: false
 ---
 
@@ -104,7 +102,7 @@ HTTP/1.0 的一个主要缺点是无法在一个连接中进行多个请求。�
 
 完成三次握手后，客户端和服务器之间可以开始进行数据共享。需要注意的是，客户端在发送最后一个 ACK 数据包后可以立即开始发送应用程序数据，但服务器仍然需要等待接收到 ACK 数据包才能满足请求。
 
-![](https://i.imgur.com/ohZthqB.png)
+![TCP 三次握手流程](https://i.imgur.com/ohZthqB.png)
 
 然而，一些 HTTP/1.0 的实现尝试通过引入一个名为"Connection: keep-alive"的新头部来克服这个问题，该头部的作用是告诉服务器："嘿，服务器，请不要关闭这个连接，我还需要它"。但是，这个特性并没有得到广泛支持，问题仍然存在。
 
@@ -164,7 +162,7 @@ SPDY 的特性包括多路复用、压缩、优先级设置、安全性等等。
 - **服务器推送 - 单个请求的多个响应**
 - **请求优先级排序**
 - **Security**
-  ![](https://i.imgur.com/X1BT5eX.png)
+  ![HTTP/2 帧与流的关系](https://i.imgur.com/X1BT5eX.png)
 
 ### 1. 二进制协议
 

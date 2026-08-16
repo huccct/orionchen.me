@@ -14,7 +14,6 @@ seoKeywords:
 tags:
   - vue.js
   - frontend
-  - chinese
 draft: false
 ---
 
@@ -23,7 +22,7 @@ draft: false
 - > repo: https://github.com/huccct/vue3-communication
 - > site: https://vue3-communication.vercel.app
 
-### 一、Vue2 中组件通信方式
+## 一、Vue2 中组件通信方式
 
 - **props**: 实现父子组件、子父组件、甚至兄弟组件通信
 - **自定义事件**: 可以实现子父组件通信
@@ -33,9 +32,9 @@ draft: false
 - **ref**: 父组件获取子组件实例 VC，获取子组件的响应式数据及方法
 - **slot**: 插槽(默认插槽、 具名插槽、 作用域插槽) 实现父子组件通信
 
-### 二、Vue3 中组件通信方式
+## 二、Vue3 中组件通信方式
 
-#### 1. Props
+### 1. Props
 
 Props 是 Vue3 中实现父组件向子组件传递数据的主要方式，和 Vue2 的用法类似，但在 Vue3 中对 props 的类型检测和功能扩展更加强大。
 
@@ -105,7 +104,7 @@ defineProps<Props>()
 - props 的核心是单向数据流，父组件的数据可以通过 props 传递给子组件，但子组件不能直接修改这些数据。
 - 如果子组件需要修改数据，通常会通过事件通知父组件，然后由父组件更新数据。
 
-#### 2. 自定义事件
+### 2. 自定义事件
 
 在 Vue 框架中，事件分为两种，一种是原生的 DOM 事件，另一种是自定义事件
 原生 DOM 事件可以让用户与网页进行交互，比如 click, change, mouseenter, mouseleave 等
@@ -198,7 +197,7 @@ function sendMsg() {
 
 这里的 @click 默认绑定为子组件根元素的 DOM 事件，而不是子组件的自定义事件。
 
-#### 3. 全局事件总线
+### 3. 全局事件总线
 
 全局事件总线可以实现任意组件通信，在 vue2 中可以根据 `VM` 与 `VC` 关系推出全局事件总线。
 但是在 vue3 中没有 Vue 钩子函数，也就没有 `Vue.prototype`，同时组合式 API 写法没有 this，如果想在 Vue3 中使用全局事件总线可以使用 <a href="https://www.npmjs.com/package/mitt">mitt</a> 插件实现。
@@ -262,7 +261,7 @@ import { eventBus } from '@/utils/eventBus'
 eventBus.off('custom-event')
 ```
 
-#### 4. v-model
+### 4. v-model
 
 v-model 是 Vue 中一种非常常见的双向数据绑定方式，主要用于父子组件之间的通信。在 Vue2 中，v-model 本质上是一个语法糖，绑定了一个 value 属性并监听 input 事件。
 在 Vue3 中，v-model 进行了重大改进，支持多个绑定和自定义绑定名称。
@@ -307,7 +306,7 @@ v-model 是 Vue 中一种非常常见的双向数据绑定方式，主要用于�
 </template>
 ```
 
-#### 5. useAttrs
+### 5. useAttrs
 
 在 Vue3 中，`useAttrs` 是组合式 API 提供的一个工具，用于处理非 `props` 的属性（即未在组件 props 中显式声明的属性）。这些属性通常会通过组件传递到组件的根节点，或需要显式获取以传递给子组件。
 
@@ -338,7 +337,7 @@ v-model 是 Vue 中一种非常常见的双向数据绑定方式，主要用于�
 
 - 在 Vue3 中，当父组件同时通过 props 和非 props 属性（即 useAttrs 捕获的属性）传递数据到子组件时，props 的优先级更高。这是因为 props 是组件明确声明的属性，Vue 会优先将它们绑定到组件中指定的 props 上，而未声明的属性则会被归为 attrs，由 useAttrs 捕获。
 
-#### 6. ref 与$parent
+### 6. ref 与$parent
 
 - ref 的用法
 
@@ -427,7 +426,7 @@ defineExpose({
 </template>
 ```
 
-#### 7. provide 与 inject
+### 7. provide 与 inject
 
 provide 和 inject 是 Vue 提供的一种跨层级组件通信方式，常用于祖先组件向任意深度的后代组件传递数据，而无需手动逐层通过 props 和 emit 进行传递。这种方式非常适合数据共享和解耦的场景，特别是在大型项目中。
 
@@ -464,7 +463,7 @@ import { inject } from 'vue';
 const message = inject('message');
 ```
 
-#### 7. pinia
+### 7. pinia
 
 Pinia 是 Vue3 的官方状态管理库，是 Vuex 的轻量化和现代化替代方案。Pinia 提供了简单、直观的 API 和响应式的数据管理能力，适合解决跨组件通信和全局状态管理的问题。与 Vuex 相比，Pinia 的使用更加灵活，并充分利用了 Vue3 的组合式 API 和 Proxy 特性。
 
@@ -510,7 +509,7 @@ const counter = useCounterStore(); // 引入 Store
 </script>
 ```
 
-#### 8. 插槽
+### 8. 插槽
 
 插槽的分类
 
@@ -605,7 +604,7 @@ const info = ref({ message: '这是作用域插槽的数据' });
 </template>
 ```
 
-### 三、总结
+## 三、总结
 
 Vue3 组件通信方式总览：
 

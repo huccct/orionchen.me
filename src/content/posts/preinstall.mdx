@@ -1,6 +1,6 @@
 ---
 title: preinstall中的七七八八
-date: 2024-04-23
+date: '2024-04-23'
 slug: preinstall
 summary: 今天看项目中的preinstall感觉有很多的门道，小结一下
 seoTitle: npm preinstall 是什么？preinstall 和 postinstall 机制详解
@@ -13,11 +13,10 @@ seoKeywords:
   - Node.js
 tags:
   - node
-  - chinese
 draft: false
 ---
 
-### 一、概述
+## 一、概述
 
 preinstall 是 npm script 中的钩子，还有个 postinstall，执行顺序如下，两个对比来看
 
@@ -25,7 +24,7 @@ preinstall 是 npm script 中的钩子，还有个 postinstall，执行顺序如
 - install
 - postinstall
 
-### 二、preinstall & postinstall
+## 二、preinstall & postinstall
 
 > 区别及可以做什么
 
@@ -33,7 +32,7 @@ preinstall 是 npm script 中的钩子，还有个 postinstall，执行顺序如
 - preinstall 只会在 npm install 的时候执行，其他 npm 命令不会触发，postinstall 除了在 npm install 的时候触发，还会在 npm install xxx，npm update 的时候执行
 - 在 preinstall 可以做一些前置的准备工作，例如检查 node、npm 的环境，安装相关依赖等，postinstall 可以做一些编译和初始化脚本的工作
 
-### 三、一些优化点
+## 三、一些优化点
 
 > Shebang(Hashbang)的添加
 
@@ -54,7 +53,7 @@ if (require.main === module) {
 // main中执行你需要执行的相关逻辑
 ```
 
-### 四、可以参考的文章
+## 四、可以参考的文章
 
 - https://www.ruanyifeng.com/blog/2016/10/npm_scripts.html
 

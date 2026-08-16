@@ -106,7 +106,7 @@ The three-way handshake, in its simplest form, is how every TCP connection start
 
 After the three-way handshake completes, the client and server can start sharing data. Note that the client can begin sending application data right after the final ACK, but the server still has to wait until it receives that ACK before fulfilling the request.
 
-![](https://i.imgur.com/ohZthqB.png)
+![TCP three-way handshake](https://i.imgur.com/ohZthqB.png)
 
 Some HTTP/1.0 implementations tried to work around this by introducing a header called "Connection: keep-alive", which tells the server: "Hey, don't close the connection yet — I still need it." But this feature wasn't widely supported, and the problem persisted.
 
@@ -166,7 +166,7 @@ By now, you can probably see why we needed another revision of HTTP. HTTP/2 aims
 - **Server push — multiple responses to a single request**
 - **Request prioritization**
 - **Security**
-  ![](https://i.imgur.com/X1BT5eX.png)
+  ![HTTP/2 frames and streams](https://i.imgur.com/X1BT5eX.png)
 
 ### 1. Binary Protocol
 

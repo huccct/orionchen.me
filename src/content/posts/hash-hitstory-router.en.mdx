@@ -20,15 +20,15 @@ draft: false
 lang: en
 ---
 
-### Introduction
+## Introduction
 
 In modern web development, client-side routing has become a crucial aspect of building single-page applications (`SPAs`). Two common methods for handling client-side routing are hash routing and history routing. This article explores the differences between these two approaches, their advantages, and their limitations.
 
-### Hash Routing
+## Hash Routing
 
 Hash routing uses the URL fragment identifier (the part of the URL starting with `#`) to manage navigation. When the hash part of the URL changes, the browser does not reload the page but triggers the `hashchange` event, allowing the application to update the view accordingly.
 
-### How Hash Routing Works
+## How Hash Routing Works
 
 A typical URL using hash routing might look like this:
 
@@ -48,11 +48,11 @@ window.addEventListener('haschange', () => {
 })
 ```
 
-### History Routing
+## History Routing
 
 History routing leverages the HTML5 History API to manage navigation. This approach allows developers to manipulate the browser's history stack without reloading the page, providing cleaner URLs and better integration with browser navigation features.
 
-### How History Routing Works
+## How History Routing Works
 
 Different from the hash route above, this is a typical URL using history routing:
 
@@ -71,7 +71,7 @@ This looks pretty neat. The History API's pushState and replaceState methods are
 - **pushState(obj, title, url)**: Navigates to the specified URL without refreshing the page.
 - **replaceState(obj, title, url)**: Replaces the current route with the specified URL without refreshing the page.
 
-### Conclusion
+## Conclusion
 
 Both hash routing and history routing have their own sets of advantages and limitations. Hash routing is simpler and more compatible with older browsers, making it a good choice for smaller applications or projects where SEO is not a primary concern. On the other hand, history routing offers cleaner URLs and better SEO, making it suitable for larger, more complex applications where user experience and search engine visibility are important.
 
@@ -79,7 +79,7 @@ Ultimately, the choice between hash routing and history routing will depend on t
 
 I hope these can help you~
 
-### References
+## References
 
 - <a href="https://developer.mozilla.org/en-US/docs/Web/API/History">MDN Web Docs on History API</a>
 - <a href="https://segmentfault.com/a/1190000020888923">前端路由Hash与History模式</a>
