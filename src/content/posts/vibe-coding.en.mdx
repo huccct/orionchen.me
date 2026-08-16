@@ -1,8 +1,8 @@
 ---
-title: "Vibe Coding: The Illusion and Reality of the AI Programming Era"
+title: 'Vibe Coding: Speed Is Not a Reason to Skip Verification'
 date: '2025-03-22'
 slug: vibe-coding
-summary: As AI code generation goes mainstream, how does the programmer's role evolve? Vibe Coding seduces us with "magic" while challenging the very nature of programming.
+summary: AI can generate a great deal of code, but how much we need to understand and verify depends on the cost of failure—not on who wrote it.
 tags:
   - AI
   - thinking
@@ -10,24 +10,72 @@ draft: false
 lang: en
 ---
 
-## Vibe Coding: programming or magic?
+## 1. The Term Was Never Meant to Be So Grand
 
-Vibe Coding is a term Andrej Karpathy coined in a recent tweet. It describes a new paradigm of AI-assisted programming — where the programmer no longer rigorously scrutinizes the AI's output but operates on intuition, blindly accepting suggestions, copy-pasting error messages, retrying until the problem "fixes itself." It feels like magic, but it can also be a disaster. The AI's responses gaslight the developer, slowly numbing them to the question of whether the code is even correct.
+In February 2025, Andrej Karpathy used “vibe coding” to describe a very particular state of mind: surrendering to the flow, barely reading the code, pasting errors back into the model, and asking for changes until the program appears to work.
 
-If traditional programming is a rational reasoning game, Vibe Coding is more like groping in a black box. The programmer no longer deeply understands the logic of the code — they trial-and-error their way through AI-supplied snippets until things appear to work, with the underlying logic known to no one.
+The phrase was soon treated as a new programming paradigm, sometimes even as proof that code no longer matters. But Karpathy's original example was a disposable weekend project.
 
-## The philosophical bind of AI-generated code
+That qualification matters. A game that will be abandoned tonight and a change to a payment system, access-control layer, or database schema should not be built under the same engineering standard.
 
-The core problem with AI code generation isn't just the current limits of LLM context windows or memory. It's that it challenges programmers' self-understanding. Under Vibe Coding, programmers gradually lose their attachment to "correctness" and accept the reality that "if it works for now, it's fine."
+## 2. Generating Code and Owning the Outcome Are Different Things
 
-This mirrors the early days of AI image generation — the six-fingered hands. At a glance they look real, but the details are full of glitches. AI-generated code is the same: it can look fine 80% of the time, but the other 20% may hide fatal bugs. And once AI-generated code dominates the codebase to the tune of 90%+ (Dario Amodei predicts this will happen within 3-6 months), the programmer's main job may shift from writing code to filtering AI output like a quality reviewer.
+AI has made code generation cheap. Work that once required searching documentation, wiring APIs together, and writing boilerplate can now take only a few rounds of conversation. People can build useful software without typing every line themselves.
 
-This raises a deeper philosophical question: if AI code is broadly imperfect yet the system still runs, do we still need "perfect" code? Or is the very nature of code shifting — from carefully chiseled craftsmanship to a chaotic stream provided by AI? In a world of fuzzy rules and fluid boundaries, is programming logic itself still valid?
+But who generated the code and who is responsible for the result are separate questions.
 
-## Constant change is the only constant
+When I accept code I have not read, I am making a trade: I gain speed by giving up some understanding, and I accept the risk of errors hidden inside. That trade is not always unreasonable. What matters is whether a failure will be easy to detect, whether it can be reversed, and who it might harm.
 
-Zoom out, and Vibe Coding isn't merely a shift in programming paradigm — it's a snapshot of the era. When news and satire become indistinguishable, when "real" itself is being redefined, we're not just accepting Vibe Coding — we're accepting Vibe as a way of life. We stop chasing stability and start adapting to uncertainty.
+| Scenario | Cost of failure | Appropriate approach |
+| --- | --- | --- |
+| Disposable demo or personal utility | Low; it can usually be discarded | Following the vibe may be perfectly reasonable |
+| Internal team tool | Moderate; it may affect data or workflows | Inspect critical changes and add tests and a rollback path |
+| User-facing production feature | High; it can damage trust and the business | Review, testing, monitoring, and clear ownership |
+| Payments, permissions, security, or data migrations | Extreme; failures may be hard to undo | Do not accept blindly; understand and verify the change |
 
-If industrial-era programming chased structure, modularity, and rigor, AI-era programming is closer to evolution — code is no longer the product of careful human craft, but an ecosystem the AI continually generates and humans filter and revise. In this mode, programming is no longer about constructing a deterministic world; it's about finding order inside chaos.
+Vibe coding is not an identity that is either right or wrong. It is a risk posture.
 
-In the end, we may discover that AI code generation isn't just a technical revolution — it's a cognitive one. It changes not only the nature of code, but how we understand the world.
+## 3. Does AI Actually Make Developers Faster?
+
+The available evidence does not give us one answer that applies to everyone.
+
+In a controlled GitHub study, 202 developers were asked to complete an API endpoint task. Participants using Copilot performed better on some measures of functionality, readability, and code quality. The result suggests that AI can help with bounded tasks, but it was vendor research and covered only one kind of work.
+
+METR ran a different randomized controlled trial with 16 experienced developers working on real tasks in large open-source repositories they already knew well. With early-2025 AI tools, the participants took 19% longer on average—even though they believed the tools had made them faster.
+
+The findings are not necessarily contradictory. A small unfamiliar task and a familiar mature codebase impose different costs, as do novice and expert workflows, code generation and context reconstruction. Turning either number into “AI always improves productivity” or “AI only slows people down” goes beyond the evidence.
+
+AI's value depends on the task and on how much work it takes to verify the result.
+
+## 4. How I Use AI for Programming Now
+
+I ask less often whether I wrote the code myself. I ask what evidence I have that it works.
+
+A simple process is enough:
+
+1. State the goal, the boundaries, and the behavior that must not change.
+2. Ask the AI for small, reviewable changes.
+3. Read the diff instead of checking only whether the final page opens.
+4. Use type checks, tests, static analysis, and security scanning to verify critical assumptions.
+5. For high-risk changes, know how to roll back a failure.
+
+None of this eliminates mistakes; hand-written code cannot promise that either. What it does is replace “it feels like it works” with evidence that can be checked again.
+
+AI programming tools are moving in the same direction, automatically running tests, static analysis, and security checks after generating code. Mature AI-assisted engineering is not about forcing people to inspect every character forever. It is about automating generation and verification together.
+
+## 5. Closing Thoughts
+
+The appeal of vibe coding is that it brings an idea closer to a working object than ever before. Someone with little programming experience can build something interactive in a few hours. That freedom is worth protecting.
+
+But not all software can be shipped under the standards of a weekend experiment. A prototype exists to test an idea; a production system exists to keep a promise. The first may let us ignore why the code works. The second will eventually require someone to answer that question.
+
+More and more code may be generated by AI. Engineering responsibility does not disappear with it.
+
+**Speed should come from removing low-value manual work, not from skipping necessary verification.**
+
+## References
+
+- [Andrej Karpathy's Original Description of Vibe Coding](https://x.com/karpathy/status/1886192184808149383)
+- [GitHub: Does GitHub Copilot Improve Code Quality?](https://github.blog/news-insights/research/does-github-copilot-improve-code-quality-heres-what-the-data-says/)
+- [METR: Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)
+- [GitHub: Copilot Coding Agent Automatically Validates Code Security and Quality](https://github.blog/changelog/2025-10-28-copilot-coding-agent-now-automatically-validates-code-security-and-quality/)

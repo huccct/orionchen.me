@@ -1,58 +1,85 @@
 ---
-title: Tech Is Not the Moat
+title: What Remains After Someone Copies Your Product?
 date: '2026-02-21'
 slug: tech-is-not-the-moat
-summary: A big company can copy your features, but they can't copy your understanding of users or your iteration speed. Tech is the lowest barrier. Business is the real game.
+summary: Features may be easy to copy without making technology worthless; a small team has to turn engineering into workflow, distribution, trust, and the ability to keep delivering.
 tags:
   - startup
+  - thinking
 draft: false
 lang: en
 ---
 
-## 1. A question that makes you anxious
+## 1. What If a Large Company Builds the Same Thing?
 
-I've been chewing on this question lately: if a big company really wanted to copy what we're building, how long would it take them?
+Lately, I have been thinking about our AI presentation product. If a company with far more resources decided that it wanted the same thing, how long would it take for similar features to appear?
 
-The answer is uncomfortable. Not long.
+The answer is not reassuring. It would not have to copy our entire architecture. A comparable experience for generating, editing, and exporting presentations would already be enough to compete.
 
-There's no insurmountable technical wall around AI-generated slide decks. Spec-driven rendering, multi-turn dialogue generation, video export — these are engineering problems, not science problems. Hire a few senior engineers, give them time and resources, and the core features can be replicated.
+I once placed a great deal of confidence in our engineering: specification-driven rendering, multi-round generation, video export. Each took real work. But users are not buying those terms. They are buying a faster way to produce a presentation they can use.
 
-That realization made me anxious for a while. The architecture you spent forever wiring up, the prompts you tuned, the interaction flows you polished — to a big company, that's a one-quarter OKR.
+This does not make technology irrelevant. It means that **difficulty of implementation and competitive defensibility are not the same thing.**
 
-## 2. The thing I worked out: tech is the lowest barrier
+## 2. When Technology Can Become a Moat
 
-But after the anxiety passed, I worked some things out.
+“Technology is never a moat” is too absolute. Patents, proprietary data, extreme performance, infrastructure at scale, and hard-won engineering knowledge can all create genuine advantages.
 
-Tech has never been the real moat. Look back at internet history. Almost no company won on pure technical barriers. Google's search algorithm is strong, but the actual moat is user habit and the ad ecosystem. WeChat's tech isn't notably better than Line's or WhatsApp's, but once the social graph forms, it doesn't move.
+Many application-layer products face a different reality. The underlying models can be purchased, frameworks are openly available, and interface features are easy to observe. Being first with one feature usually buys time, not permanent protection.
 
-For a small team like ours, tech is even less of a moat. The code you can write, others can write. The framework you use, others can use. The model you tune, others can tune.
+The useful question is not whether technology can be a moat, but whether a technical advantage keeps accumulating:
 
-The real barriers are on the business side: who first finds a stable revenue channel, who first finds a user group willing to keep paying, who first wins a vertical scenario decisively.
+- Does usage produce proprietary feedback that improves the result?
+- Does the product become part of a workflow that is difficult to replace?
+- Do reliability, speed, or cost require sustained engineering experience?
+- Can the team understand and deliver real user needs faster than its competitors?
 
-## 3. The actual advantages of a small team
+If the answer to all four is no, shipping the feature alone is unlikely to protect the product.
 
-Once that clicked, I felt lighter. Because small teams have huge advantages on business validation:
+## 3. A Small Team's Advantages Are Not Automatic
 
-**Speed.** Big companies are slow and dragged down by their own weight. A new direction has to clear product review, tech review, resource allocation. By the time they've kicked off, you might have shipped 20 versions.
+Small teams are often described as faster, more focused, and closer to users. These are possibilities, not natural laws.
 
-**Focus.** A vertical product like this is a cannon-vs-mosquito problem for them — the ROI doesn't work. Their attention is spread across dozens of product lines, while you can pour everything into one point.
+Without clear decisions, a small team can spend just as long arguing. Without regular user conversations, being “close to users” may exist only in a founder's imagination. Without trade-offs, focus quickly becomes chasing every piece of feedback at once.
 
-**Closeness to the user.** A small team can talk to users directly, respond to feedback fast, adjust direction off real demand. The PMs at a big company might not even know what their users look like.
+What a small team can exploit is a shorter feedback path: state a hypothesis, make the smallest useful change, observe whether people continue using or paying for it, and decide what to do next. Y Combinator describes a startup idea as a hypothesis and repeatedly emphasizes talking to users because both practices expose mistakes early.
 
-## 4. You don't need to be the leader
+Large companies have distribution, brand, capital, and existing customers. A small team rarely wins by confronting those resources directly. A more realistic opportunity is to notice a specific, neglected problem sooner and continue serving it while the market is still too small to attract everyone else.
 
-Another thing that clicked: you don't need to be number one in the category.
+## 4. Do Not Use a “Vertical Market” as Reassurance
 
-SaaS isn't winner-take-all. It's not the case that only one company in the market survives and the rest die. Land a few thousand paying users in a vertical and the cash flow is healthy. You may not lead the category, but you make money, you stay alive, you keep iterating.
+I used to reassure myself with a sentence: “We do not need to be number one. A few thousand paying users would be enough for a healthy business.”
 
-Same logic as opening a coffee shop. You don't have to kill Starbucks. You just need the people on your block to come to your shop. Find your people, serve them well. That's enough.
+The sentence leaves out the conditions that matter most. The number of paying users says little on its own. Customer acquisition cost, average revenue, retention, service cost, and team size all affect whether the business works. Some software markets support many companies; others concentrate rapidly because of network effects, distribution, or economies of scale.
 
-## 5. So what matters now
+Choosing not to lead a category can be reasonable, but it cannot replace the arithmetic. A small market is worthwhile only if it can support the team's continued delivery, not because it sounds sufficiently vertical.
 
-Once that's all clear, priorities are obvious.
+More useful questions are:
 
-On the tech side, good enough is good enough. No need to chase elegant architecture or beautiful code. Stable runtime and fast iteration are what makes architecture good.
+- Which users need this product most urgently?
+- How do they solve the problem now, and what does that cost them?
+- Why would they switch to us, and why would they stay?
+- Can the revenue cover the cost of reaching and serving them?
 
-What actually deserves time is finding people who'll pay for the product, understanding why they pay, and then driving that point home.
+## 5. What Does “Good Enough” Engineering Mean?
 
-Bluntly: tech is just an implementation tool. Business is the real game. Instead of being anxious about whether a big company will copy you, put the energy into making the revenue model work. Once you have stable revenue and loyal users, whether someone copies you stops mattering.
+“The technology only needs to be good enough” can also become an excuse for careless work.
+
+An early product does not need an elaborate architecture for imagined scale. It still cannot neglect security, data correctness, basic reliability, or maintainability. Fast iteration depends on a system that remains safe to change. If every release causes another failure, speed itself is not an advantage.
+
+I now prefer a simpler technical goal: solve the current problem reliably with the least complexity, while preserving room for the next round of learning.
+
+## 6. What Should We Be Accumulating?
+
+Features can be copied. What needs to accumulate is the connection around them: insight into a specific user problem, a place inside the user's workflow, a way to reach those users, reliable delivery, and the trust built by keeping promises over time.
+
+None of these is a permanent moat either. Users leave, distribution changes, and new technology rewrites workflows. Competitive advantage is closer to a capability that must be maintained than a ditch that can be dug once and forgotten.
+
+Instead of repeatedly asking whether a large company will copy us, I need to ask: if similar features appear tomorrow, why would users still choose to stay?
+
+If the only answer is “because we built it first,” it is not enough.
+
+## References
+
+- [Y Combinator: How to Evaluate Startup Ideas / How to Talk to Users](https://www.ycombinator.com/blog/startup-school-week-1-recap-kevin-hale-and-eric-migicovsky/)
+- [Harvard Business Review: Choosing a Strategy for Your Startup](https://hbr.org/podcast/2018/05/choosing-a-strategy-for-your-startup)
+- [Harvard Business Review: Why Network Effects Matter Less Than They Used To](https://hbr.org/2018/06/why-network-effects-matter-less-than-they-used-to)

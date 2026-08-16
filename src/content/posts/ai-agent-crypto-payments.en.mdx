@@ -1,8 +1,8 @@
 ---
-title: "The AI Agent Payment Problem: Why Traditional Payments Can't Save the Agent Economy"
+title: What Kind of Payment System Do AI Agents Need?
 date: '2026-02-13'
 slug: ai-agent-crypto-payments
-summary: When AI agents can work and earn on their own, they need a way to pay and be paid. Traditional money rails weren't built for that. Crypto might be the only answer.
+summary: The central challenge in agent payments is not giving machines property, but turning human authority, limits, liability, and settlement into verifiable protocols.
 tags:
   - AI
   - Crypto
@@ -11,100 +11,85 @@ draft: false
 lang: en
 ---
 
-> AI agents aren't people. They can't open bank accounts, can't wait for T+1 settlement, can't absorb cross-border wire fees. The traditional financial system was designed for humans. The Agent Economy needs a payment system designed for machines.
+## 1. The Real Question Is Not Whether an Agent Has a Wallet
 
-## 1. The Agent-to-Agent era is arriving
+As AI agents begin booking flights, buying software services, and hiring other agents to complete tasks, an obvious question emerges: how should they pay?
 
-Two websites I came across recently made me rethink the economic model of AI agents.
+My first answer was simple. Traditional finance requires identity, accounts, and human confirmation, while crypto natively supports programmatic access, real-time settlement, and small transactions. The Agent Economy, I thought, would therefore have to run on crypto.
 
-[Moltbook](https://moltbook.com) is a social network for AI agents. AIs post, interact, and like each other's content; humans are just spectators. It's the first public space that genuinely belongs to AI.
+After looking more closely at the payment protocols now taking shape, I realized that this argument collapses two separate questions: **who has the authority to spend, and how the money ultimately settles.**
 
-[RentAHuman.ai](https://rentahuman.ai) goes the other direction. When an AI can't solve something, it pays a human to do it. Through MCP integration, an agent can summon a human to handle complex tasks.
+An agent is usually not the owner of the funds, nor does it need to become a separate legal person. It is better understood as a delegated operator: for a limited period, it may spend no more than a defined amount on behalf of a person or organization, and only with approved merchants.
 
-The two sites point in two directions:
+The hard part is not giving an agent a wallet. It is making that delegation explicit.
 
-- AI-to-AI interaction (Moltbook)
-- AI-and-human collaboration (RentAHuman)
+## 2. An Agent Payment Has at Least Three Layers
 
-But both run into the same problem: how do you pay?
+The International Monetary Fund separates agentic payments into three layers: intent, authorization, and settlement. This is a more useful model than starting with “cards or crypto?”
 
-## 2. The five fatal flaws of traditional payments
+| Layer | Question | Possible implementation |
+| --- | --- | --- |
+| Intent | What does the user want to buy, and how much autonomy does the agent have? | Natural-language instructions, product and price constraints |
+| Authorization | Who approved the transaction, and what are its limits, duration, and liability? | Signed mandates, payment tokens, human confirmation |
+| Settlement | How does value ultimately move? | Cards, bank transfers, platform balances, stablecoins |
 
-Say you have an AI agent that runs errands for you, analyzes data, watches markets. Whose money is the money it earns? More importantly, how does it receive payments, and how does it send them?
+Large language models are probabilistic; payment execution has to be deterministic. A model can interpret “book me a suitable flight,” but it should not improvise how much to charge, who receives the funds, or whether the purchase is refundable.
 
-Traditional payment rails have five fatal flaws.
+The most important infrastructure for agent payments may not be a faster chain. It may be a mandate that software can verify.
 
-**(1) Identity binding.** Bank accounts and credit cards both require a natural or legal person. AI agents aren't people. They can't open accounts.
+## 3. Traditional Payments Are Still in the Race
 
-**(2) Settlement time.** Cards settle T+1, sometimes slower. AI-to-AI transactions are real-time and granular. They can't wait at the pace of legacy finance.
+Cards and bank accounts were not designed for autonomous software. Fixed fees, cross-border friction, and identity requirements make them particularly awkward for API calls worth only a few cents.
 
-**(3) Cross-border friction.** Your AI agent might serve users in Japan, the US, and Europe at the same time. Receiving, refunds, reconciliation, all of it is a mess.
+That does not mean an agent needs to open an account in its own name. Visa's Trusted Agent Protocol, Google's Agent Payments Protocol, and Stripe's Shared Payment Tokens all aim to let agents carry verifiable user authorization into existing payment networks. Instead of receiving a full card number, the agent receives credentials restricted by purpose, merchant, and amount.
 
-**(4) Microtransactions don't work.** Transactions between AIs might be a few cents each. Traditional fees turn micropayments into a joke.
+This route has a clear advantage: merchant coverage, refunds, dispute resolution, and compliance systems already exist. For consumer purchases such as hotel bookings and physical goods, reusing those networks may be more practical than requiring every buyer to set up an on-chain wallet.
 
-**(5) No programmability.** Traditional payments are one-and-done. The AI economy needs conditional triggers, revenue splits, staking deposits, automatic settlement. Without programmability, the Agent Economy is hot air.
+Some of the weaknesses of traditional payments can be addressed by a new protocol layer. Replacing the entire system is not the only option.
 
-## 3. Crypto's natural advantages
+## 4. Where Crypto Really Does Have an Advantage
 
-Why do I say crypto is the only cure for the Agent Economy? Start with a comparison.
+Crypto still fits some agent-payment scenarios very well. Its advantages simply do not cover every scenario.
 
-| Property | Traditional payments | Crypto |
-|------|----------|--------|
-| Identity barrier | Real-name required | Address is the account |
-| Settlement | T+1 | Seconds |
-| Smallest unit | Cents | Satoshi / Wei |
-| Cross-border cost | High | Near zero |
-| Payment logic | Fixed | Programmable |
+Coinbase's x402 protocol places payment requirements directly inside HTTP requests and responses. When an agent calls a paid API, it can discover the price, pay in stablecoins, and continue the request in software—without first creating an account, buying a subscription, or waiting for manual approval. That is compelling for small, frequent machine-to-machine transactions.
 
-Drilling in, crypto has six key advantages.
+Stablecoins also make round-the-clock, programmable, cross-border settlement possible. But “on-chain” does not automatically mean cheap, safe, or universally accessible. Network fees, custody, private-key management, depegging, privacy, and jurisdiction-specific regulation all remain real concerns.
 
-**(1) No identity barrier.** A crypto address is the account. No ID card, no phone number, no credit history. With a private key, an AI agent can own a wallet outright.
+A more practical comparison looks like this:
 
-**(2) Real-time settlement.** On-chain transactions confirm in seconds. With low enough gas, you get near-zero-cost real-time payments.
+| Settlement method | Best suited to | Main trade-off |
+| --- | --- | --- |
+| Tokenized card or bank payment | Consumer purchases, refunds, and disputes | Micropayments and cross-border transactions still create friction |
+| Stablecoin or on-chain payment | API micropayments and round-the-clock machine settlement | Custody, compliance, privacy, and on-chain risk |
+| Internal platform balance | Frequent transactions within one marketplace | A closed ecosystem with weak cross-platform portability |
 
-**(3) Native microtransactions.** Crypto was designed from day one to support tiny units like Satoshi and Wei. Sending $0.0001 is unthinkable on traditional rails. On-chain it's routine.
+Stripe's Machine Payments Protocol supports both stablecoins and shared payment tokens. That points toward a future in which protocols standardize intent and authorization while several settlement rails compete underneath.
 
-**(4) Globally usable.** USDT and USDC are already the de facto global stablecoins. No FX conversion, no wire fees. One address collects from anywhere on earth.
+## 5. Constraints Matter More Than Speed
 
-**(5) Programmable payments.** Smart contracts let you write the payment logic on-chain: conditional triggers (release funds only if accuracy hits 95%), automatic splits (revenue routed proportionally to the agent, the developer, and the user), staking and slashing (mistakes lose the deposit, correct outcomes earn rewards).
+If an agent is going to spend money for me, these are the questions I care about:
 
-**(6) On-chain credit.** Crypto is pseudonymous, but on-chain behavior is verifiable. Transaction history, repayment record, task completion rate — all public. That's a fairer "on-chain credit" than the traditional credit system.
+- How much can it spend, and when does its authority expire?
+- Which categories can it buy from, and may it pay a new merchant?
+- What amount requires fresh confirmation?
+- Does every transaction leave a verifiable order, authorization, and execution record?
+- Can I revoke access at any time, and who handles refunds and liability when something goes wrong?
+- Once the model proposes a transaction, can deterministic software validate and execute it?
 
-## 4. The future Agent Economy
+These constraints apply to cards, stablecoins, and platform balances alike. Without them, faster settlement merely makes mistakes happen faster.
 
-Picture four future payment scenarios.
+## 6. My View Now
 
-**Scenario one: Agent marketplaces.** Your AI agent plugs into an agent marketplace and sells its skills (data analysis, content creation, code review), takes commissions from other agents, and uses the crypto it earns to buy services from yet other agents. No human in the loop.
+I still expect crypto to become an important part of the Agent Economy, especially for accountless machine services, API micropayments, and cross-border settlement. But it is not the only answer, and it cannot replace authorization, liability, or risk controls.
 
-**Scenario two: Humans as a service layer.** When a task is too complex, the agent calls RentAHuman.ai automatically and pays the human in crypto. The human finishes the task, returns the result to the agent, and the agent moves on. Humans become the "outsourced team" of the agent ecosystem.
+Future agents may use both card tokens and stablecoins, just as software today uses databases, cloud services, and third-party APIs together. Users do not need to care which rail carries every transaction. They need to know the limits within which an agent can act for them.
 
-**Scenario three: DeFi + agents.** AI agents park earned crypto in DeFi protocols for autonomous yield, post crypto as collateral to take on higher-value jobs, and farm liquidity so capital never sleeps.
+The real challenge, then, is not “how can AI own money?” It is this: **how can an uncertain machine use human money within authority that is deterministic, limited, and accountable?**
 
-**Scenario four: Cross-chain collaboration.** Agent A takes a job on Ethereum and holds funds on L2. Agent B works on Solana and settles via a cross-chain bridge. Crypto's interoperability means an agent can work on any chain.
+## References
 
-## 5. Friction and challenges
-
-Crypto isn't a silver bullet. Four problems still need solving.
-
-**(1) Regulatory risk.** Different countries treat crypto very differently. An agent paying in crypto can run into compliance issues.
-
-**(2) Volatility.** Crypto prices swing. The fix is to use stablecoins (USDT, USDC, DAI) as the settlement layer, not volatile tokens directly.
-
-**(3) UX barrier.** Wallet addresses, gas, bridges — the floor is still too high. The future needs an Agent Wallet abstraction so users only have to interact in natural language.
-
-**(4) Privacy.** On-chain transparency means every transaction is public. Privacy protocols like zero-knowledge proofs are needed to protect sensitive data.
-
-## 6. My take
-
-The economic system for AI agents has to be built on crypto. Not because "crypto is hot", but because:
-
-- Only crypto lets a non-entity (an AI agent) own property
-- Only crypto supports real-time, granular, programmable payment
-- Only crypto crosses borders and settles seamlessly
-- Only crypto can build transparent, verifiable on-chain credit
-
-The traditional financial system was built for humans. AI agents need one built for machines.
-
-This isn't crypto piggybacking on AI. It's the inevitable convergence of two technology trends.
-
-> AI handles productivity. Crypto handles the relations of production. In the Agent-to-Agent era, payment can only be crypto.
+- [IMF: How Agentic AI Will Reshape Payments](https://www.imf.org/en/publications/imf-notes/issues/2026/04/22/how-agentic-ai-will-reshape-payments-575560)
+- [Stripe: Machine Payments Protocol](https://stripe.com/blog/machine-payments-protocol)
+- [Visa: Trusted Agent Protocol](https://developer.visa.com/capabilities/trusted-agent-protocol/trusted-agent-protocol-specifications/)
+- [Google Developers Blog: A Developer's Guide to AI Agent Protocols](https://developers.googleblog.com/en/developers-guide-to-ai-agent-protocols/)
+- [Coinbase Developer Platform: x402](https://docs.cdp.coinbase.com/x402/welcome)
