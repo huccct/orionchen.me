@@ -16,13 +16,13 @@ draft: false
 lang: en
 ---
 
-## 1. What is type gymnastics
+## What is type gymnastics
 
 Type gymnastics is the practice of building things — array operations, string transforms, object mappings — entirely inside the TypeScript type system, with no runtime code. All the logic lives at the type level.
 
 It takes inspiration from the [type-challenges](https://github.com/type-challenges/type-challenges) repo, which is basically a training ground for advanced TS.
 
-## 2. Prerequisites
+## Prerequisites
 
 Before diving in, make sure you have a working understanding of these TypeScript features:
 
@@ -66,7 +66,7 @@ Conditional types distribute over union types automatically.
 type A = 'a' | 'b' extends U ? X : Y // applied to each member
 ```
 
-## 3. Ten beginner type-gymnastics problems
+## Ten beginner type-gymnastics problems
 
 ### 1. `Pick<T, K>`: pick a subset of properties
 
@@ -175,7 +175,7 @@ type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ?
 type Result = Includes<[1, 2, 3], 2> // => true
 ```
 
-## 4. The types you'll actually use day-to-day
+## The types you'll actually use day-to-day
 
 ### 1. Utility types
 
@@ -284,6 +284,6 @@ function processValue(value: unknown) {
 }
 ```
 
-## 5. Wrap-up
+## Wrap-up
 
 TypeScript type gymnastics is a powerful tool — it lets you express complex logic at the type level. But remember: type gymnastics is the means, not the goal. The goal is type-safe, maintainable code. In real codebases, pick the type design that fits the situation and don't over-engineer.

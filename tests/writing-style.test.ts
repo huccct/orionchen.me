@@ -37,6 +37,13 @@ describe('writing style', () => {
     expect(
       headings.every((heading) => !/^(?:[一二三四五六七八九十\d]+[、.]?)?$/.test(heading.title))
     ).toBe(true)
+    expect(
+      headings.every(
+        (heading) =>
+          heading.level !== 2 ||
+          !/^(?:[一二三四五六七八九十]+、|\d+\.\s+|[IVXLCDM]+\.\s+)/.test(heading.title)
+      )
+    ).toBe(true)
     expect(tags.length).toBeGreaterThanOrEqual(1)
     expect(tags.length).toBeLessThanOrEqual(3)
     expect(new Set(tags).size).toBe(tags.length)

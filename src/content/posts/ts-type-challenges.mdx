@@ -16,13 +16,13 @@ tags:
 draft: false
 ---
 
-## 一、什么是类型体操
+## 什么是类型体操
 
 类型体操是指仅通过 TypeScript 类型系统实现某些功能（如数组操作、字符串变换、对象映射等），不涉及运行时代码，完全在类型层完成逻辑推导和运算。
 
 它的灵感来自 [type-challenges](https://github.com/type-challenges/type-challenges) 仓库，是 TS 高级用法的训练场。
 
-## 二、你需要掌握的基础知识
+## 你需要掌握的基础知识
 
 开始前，建议你对以下 TypeScript 特性有所了解：
 
@@ -66,7 +66,7 @@ type Readonly<T> = { readonly [K in keyof T]: T[K] }
 type A = 'a' | 'b' extends U ? X : Y // 实际会对每个成员判断
 ```
 
-## 三、类型体操入门 10 题
+## 类型体操入门 10 题
 
 ### 1. `Pick<T, K>`: 从类型中选出部分属性
 
@@ -175,7 +175,7 @@ type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ?
 type Result = Includes<[1, 2, 3], 2> // => true
 ```
 
-## 四、开发中最常用的类型
+## 开发中最常用的类型
 
 ### 1. 工具类型
 
@@ -284,6 +284,6 @@ function processValue(value: unknown) {
 }
 ```
 
-## 五、总结
+## 总结
 
 TypeScript 类型体操是一个强大的工具，它让我们能够在类型层面实现复杂的逻辑。记住，类型体操不是目的，而是手段。我们的目标是写出类型安全、易于维护的代码。在实际开发中，要根据具体场景选择合适的类型方案，避免过度设计。

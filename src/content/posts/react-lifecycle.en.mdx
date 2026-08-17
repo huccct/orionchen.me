@@ -21,7 +21,7 @@ lang: en
 
 A React component's lifecycle is the full arc from creation to destruction. Along the way, React calls specific methods at specific moments — these are the lifecycle methods. Understanding them is essential for writing solid React apps.
 
-## 1. Lifecycle stages
+## Lifecycle stages
 
 A React component's lifecycle has three main stages:
 
@@ -29,7 +29,7 @@ A React component's lifecycle has three main stages:
 2. Updating: the component's props or state change
 3. Unmounting: the component is removed from the DOM
 
-## 2. Lifecycle methods, in detail
+## Lifecycle methods, in detail
 
 ### 1. Mounting
 
@@ -167,7 +167,7 @@ componentWillUnmount() {
 }
 ```
 
-## 3. Worked example: ScrollView
+## Worked example: ScrollView
 
 Let's tie it together with a `ScrollView` implementation:
 
@@ -334,7 +334,7 @@ class ScrollView extends Component<ScrollViewProps, ScrollViewState> {
 export default ScrollView
 ```
 
-## 4. Lifecycle execution order
+## Lifecycle execution order
 
 Here's what happens for the `ScrollView` in different scenarios:
 
@@ -363,7 +363,7 @@ Here's what happens for the `ScrollView` in different scenarios:
 9. componentWillUnmount
 ```
 
-## 5. Usage example
+## Usage example
 
 ```tsx
 function App() {
@@ -392,7 +392,7 @@ function App() {
 }
 ```
 
-## 6. Wrap-up
+## Wrap-up
 
 The `ScrollView` example shows lifecycle methods at work:
 

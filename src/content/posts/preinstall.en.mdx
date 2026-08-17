@@ -17,7 +17,7 @@ draft: false
 lang: en
 ---
 
-## 1. Overview
+## Overview
 
 `preinstall` is a hook in npm scripts. There's also `postinstall`. Their execution order is as follows — easier to compare side by side:
 
@@ -25,7 +25,7 @@ lang: en
 - install
 - postinstall
 
-## 2. preinstall vs postinstall
+## preinstall vs postinstall
 
 > Differences and what each is for
 
@@ -33,7 +33,7 @@ lang: en
 - `preinstall` only runs on `npm install`, not on other npm commands. `postinstall` runs not only on `npm install` but also on `npm install xxx` and `npm update`.
 - `preinstall` is good for setup work — checking the Node and npm environment, installing related dependencies, and so on. `postinstall` is good for compilation and initialization scripts.
 
-## 3. Some Optimizations
+## Some Optimizations
 
 > Adding a Shebang (Hashbang)
 
@@ -54,7 +54,7 @@ if (require.main === module) {
 // main 中执行你需要执行的相关逻辑
 ```
 
-## 4. Further Reading
+## Further Reading
 
 - https://www.ruanyifeng.com/blog/2016/10/npm_scripts.html
 

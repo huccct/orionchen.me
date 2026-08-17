@@ -47,7 +47,7 @@ These aren't bugs. They're **the statistical optimum** — the AI has seen milli
 
 **The key to making something good has never been the tool's capability. It's how strict your design brief is.** The methodology below works whether you're using Claude, Kimi, or Cursor.
 
-## 1. Mindset: you're not making a PPT, you're writing a design brief
+## Mindset: you're not making a PPT, you're writing a design brief
 
 A general-purpose LLM is not a designer. It's an intern who has seen a lot of code.
 
@@ -61,7 +61,7 @@ A designer can decide on their own "should this context use serif or sans-serif?
 
 Skip one and it'll fall back to average. **Hit all five and the output quality jumps a tier.**
 
-## 2. Tool ranking: which LLMs actually output something good
+## Tool ranking: which LLMs actually output something good
 
 Here's the real picture as of 2026:
 
@@ -76,7 +76,7 @@ Here's the real picture as of 2026:
 
 **Advanced move**: if you don't want to write a design brief every time, install the open-source [jiji262/claude-design-skill](https://github.com/jiji262/claude-design-skill) Claude Skill. It packages Claude.ai's internal design system prompt, anti-AI-Slop rules, and type/typeface specs into a portable skill — works in local Claude Code or Cursor — auto-injecting the manual brief from sections 3-5 of this post. Chinese breakdown: [Liu Damao's analysis](https://liduos.com/posts/claude-design-system-prompt).
 
-## 3. Design tokens: the "swatch" you give to the AI
+## Design tokens: the "swatch" you give to the AI
 
 Before starting any new deck, fill in this swatch first. It's your "design constitution" — every prompt below is built on it.
 
@@ -111,7 +111,7 @@ Before starting any new deck, fill in this swatch first. It's your "design const
 
 Write this once, copy it to your clipboard. Paste it before every prompt below.
 
-## 4. Anti-AI-Slop checklist: lock in "what not to do"
+## Anti-AI-Slop checklist: lock in "what not to do"
 
 This section is the most valuable part of this post. The list below shuts down every shortcut the AI will take that produces "AI smell":
 
@@ -133,7 +133,7 @@ This section is the most valuable part of this post. The list below shuts down e
 
 Paste this with the design tokens every time. AI responds noticeably better to this kind of negative-constraint phrasing.
 
-## 5. Per-page "intent": the layout rhythm a deck should have
+## Per-page "intent": the layout rhythm a deck should have
 
 A beginner mistake: letting AI produce a "title + three bullets × 8 pages" rundown.
 
@@ -153,7 +153,7 @@ A good deck's rhythm is **each page does one job**, with layout variation betwee
 
 Write directly in the prompt: "these 8 pages are: cover / data / timeline / quote / comparison / process / quote / closing" — and the AI immediately knows **each page is different** and won't give you 8 templates of the same shape.
 
-## 6. A long prompt you can copy verbatim
+## A long prompt you can copy verbatim
 
 All the rules above, blended into one runnable prompt. Paste into Claude Artifacts or Kimi, swap the topic for your own:
 
@@ -218,7 +218,7 @@ For specific company names, products, or numbers, WebSearch first. Don't invent 
 
 That last line, "outline first, then implementation," is the real lever in this prompt — **don't let it generate the full HTML; review the outline first**. This step alone saves 30 minutes of regeneration ping-pong.
 
-## 7. Single-case iteration: how to make it better, not worse
+## Single-case iteration: how to make it better, not worse
 
 Iteration isn't random rollback. It has a loop structure. Borrowing [Bao Yu's 5-step prompt engineering](https://baoyu.io/blog/why-people-struggle-with-prompt-engineering):
 
@@ -241,7 +241,7 @@ Each item ends with "everything else stays." The AI will diff against the previo
 
 By round 5-6, you'll notice the deck is increasingly close to what was in your head. **Not because the AI got smarter — because your brief got more specific.**
 
-## 8. Saving and projecting
+## Saving and projecting
 
 The AI will give you a block of code from `<!DOCTYPE html>` to `</html>`.
 
@@ -258,7 +258,7 @@ Double-click to open. Arrow keys to navigate. F for fullscreen.
 - Get there 10 minutes early and run it once
 - Keep a PDF backup (Ctrl+P in browser, save as PDF)
 
-## 9. Where this method extends to
+## Where this method extends to
 
 Once you've got it down, **HTML PPT is just one application of this skill**. The same "AI + design brief + anti-AI-Slop" approach can produce:
 
@@ -270,7 +270,7 @@ Once you've got it down, **HTML PPT is just one application of this skill**. The
 
 Swap the "topic" and "structure"; the rest of the spec carries over. **That's the real value here — this isn't teaching you to make a PPT, it's teaching you how to get AI to make any "web-native" visual artifact.**
 
-## 10. Last note
+## Last note
 
 AI is a lever, not a replacement. **Taste, judgment, and depth of content are still your core assets.** AI does the typing-and-layout grunt work; the rest is what's uniquely yours.
 

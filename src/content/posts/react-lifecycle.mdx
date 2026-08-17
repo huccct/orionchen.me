@@ -20,7 +20,7 @@ draft: false
 
 React 组件的生命周期是指组件从创建到销毁的整个过程。在这个过程中，React 会在特定的时机调用一些特定的方法，这些方法被称为生命周期方法。理解这些生命周期方法对于开发高质量的 React 应用至关重要。
 
-## 一、生命周期阶段
+## 生命周期阶段
 
 React 组件的生命周期主要分为三个阶段：
 
@@ -28,7 +28,7 @@ React 组件的生命周期主要分为三个阶段：
 2. 更新阶段（Updating）：组件的 props 或 state 发生变化时
 3. 卸载阶段（Unmounting）：组件从 DOM 中移除
 
-## 二、生命周期方法详解
+## 生命周期方法详解
 
 ### 1. 挂载阶段
 
@@ -166,7 +166,7 @@ componentWillUnmount() {
 }
 ```
 
-## 三、实践案例：ScrollView 组件
+## 实践案例：ScrollView 组件
 
 让我们通过一个 ScrollView 组件的实现来理解这些生命周期方法：
 
@@ -333,7 +333,7 @@ class ScrollView extends Component<ScrollViewProps, ScrollViewState> {
 export default ScrollView
 ```
 
-## 四、生命周期执行顺序
+## 生命周期执行顺序
 
 让我们看看这个 ScrollView 组件在不同情况下的生命周期执行顺序：
 
@@ -362,7 +362,7 @@ export default ScrollView
 9. componentWillUnmount
 ```
 
-## 五、使用示例
+## 使用示例
 
 ```tsx
 function App() {
@@ -391,7 +391,7 @@ function App() {
 }
 ```
 
-## 六、总结
+## 总结
 
 通过这个 ScrollView 组件的实现，我们可以看到 React 生命周期方法的实际应用：
 
