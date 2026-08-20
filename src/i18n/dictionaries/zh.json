@@ -8,6 +8,7 @@
     "homeCollectionDescription": "代码、纪录片和写作的个人站点首页。",
     "writingDescription": "技术教程、AI 观察和个人写作归档。",
     "worksDescription": "Orion Chen 的项目、产品实验与纪录片作品。",
+    "readingDescription": "Orion Chen 留下的阅读书单与简短笔记。",
     "tagsDescription": "按主题浏览 Orion Chen 的已发布文章。",
     "guestbookDescription": "留言、想法、批评和合作意向。"
   },
@@ -81,6 +82,12 @@
     "title": "留言",
     "intro": "留言、想法、批评、合作意向，都欢迎。"
   },
+  "reading": {
+    "title": "阅读",
+    "eyebrow": "Books / Notes",
+    "headline": "一些想留下来的书。",
+    "intro": "不是完整的阅读记录，只放那些读过之后还会想起、也愿意再翻开的书。"
+  },
   "about": {
     "title": "关于",
     "metaDescription": "Orion Chen，一个不只关心技术的工程师。",
@@ -94,6 +101,7 @@
     "location": "Hangzhou / Web / AI",
     "coordinatesTitle": "坐标",
     "readingTitle": "阅读",
+    "readingMore": "更多",
     "contactTitle": "联系",
     "contactEmail": "Email",
     "contactGithub": "GitHub",
@@ -170,6 +178,7 @@
     "home": "首页",
     "writing": "写作",
     "works": "作品",
+    "reading": "阅读",
     "tags": "标签",
     "guestbook": "留言",
     "about": "关于",

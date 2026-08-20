@@ -1,10 +1,13 @@
+import Link from 'next/link'
 import { SectionHeader } from '@/components/section-header'
 import type { Locale } from '@/i18n/config'
+import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
 import { siteConfig } from '@/lib/site-config'
 
 export function AboutPageContent({ locale }: { locale: Locale }) {
   const dict = getDictionary(locale)
+  const prefix = localePathPrefix[locale]
 
   return (
     <div className="mx-auto max-w-4xl space-y-14">
@@ -67,9 +70,11 @@ export function AboutPageContent({ locale }: { locale: Locale }) {
       </section>
 
       <section>
-        <SectionHeader>{dict.about.readingTitle}</SectionHeader>
+        <SectionHeader action={<Link href={`${prefix}/reading`}>{dict.about.readingMore}</Link>}>
+          {dict.about.readingTitle}
+        </SectionHeader>
         <ul className="grid gap-x-8 gap-y-3 text-sm md:grid-cols-2">
-          {dict.about.readingItems.map((item) => (
+          {dict.about.readingItems.slice(0, 6).map((item) => (
             <li key={item.title} className="border-border border-t pt-3">
               <a href={item.href} className="text-accent" target="_blank" rel="noreferrer">
                 {item.title}

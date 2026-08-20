@@ -62,6 +62,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: lastPostDate,
       },
       { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
+      { path: '/reading', priority: 0.6, changeFrequency: 'monthly' },
     ] satisfies StaticEntry[]
   ).flatMap((entry): SitemapEntry[] =>
     locales.map((locale) =>

@@ -8,6 +8,7 @@
     "homeCollectionDescription": "The home of Orion Chen's code, documentary, and writing.",
     "writingDescription": "Tutorials, notes on AI, and personal essays.",
     "worksDescription": "Orion Chen's projects, product experiments, and documentary work.",
+    "readingDescription": "Books and brief reading notes kept by Orion Chen.",
     "tagsDescription": "Browse Orion Chen's published writing by topic.",
     "guestbookDescription": "Notes, thoughts, criticism, and collaboration ideas."
   },
@@ -81,6 +82,12 @@
     "title": "Guestbook",
     "intro": "Notes, thoughts, criticism, collaboration ideas — all welcome."
   },
+  "reading": {
+    "title": "Reading",
+    "eyebrow": "Books / Notes",
+    "headline": "Books worth keeping close.",
+    "intro": "Not a complete reading log, just books that stayed with me and feel worth opening again."
+  },
   "about": {
     "title": "About",
     "metaDescription": "Orion Chen, an engineer who cares about more than technology.",
@@ -94,6 +101,7 @@
     "location": "Hangzhou / Web / AI",
     "coordinatesTitle": "Coordinates",
     "readingTitle": "Reading",
+    "readingMore": "more",
     "contactTitle": "Contact",
     "contactEmail": "Email",
     "contactGithub": "GitHub",
@@ -170,6 +178,7 @@
     "home": "Home",
     "writing": "Writing",
     "works": "Works",
+    "reading": "Reading",
     "tags": "Tags",
     "guestbook": "Guestbook",
     "about": "About",
