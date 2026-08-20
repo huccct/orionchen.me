@@ -29,7 +29,7 @@
     "heroLine2": "和写作",
     "heroLine3": "来自",
     "rec": "REC",
-    "watching": "你正在被观看。",
+    "recording": "记录还在发生的故事。",
     "worksTitle": "作品",
     "writingTitle": "写作",
     "all": "全部"
@@ -125,6 +125,16 @@
         "title": "币安人生",
         "href": "https://www.amazon.com/%E5%B9%A3%E5%AE%89%E4%BA%BA%E7%94%9F-%E5%B9%B8%E9%81%8B%E3%80%81%E9%9F%8C%E6%80%A7%E8%88%87%E4%BF%9D%E8%AD%B7%E7%94%A8%E6%88%B6%E7%9A%84%E5%9B%9E%E6%86%B6%E9%8C%84-Traditional-Changpeng-Zhao-ebook/dp/B0GDG6D3WP",
         "note": "看一个工程师怎么撞上时代第三幕"
+      },
+      {
+        "title": "史蒂夫·乔布斯传",
+        "href": "https://book.douban.com/subject/6889859/",
+        "note": "看审美、控制欲与产品直觉如何塑造一家公司"
+      },
+      {
+        "title": "埃隆·马斯克传",
+        "href": "https://book.douban.com/subject/36518892/",
+        "note": "看极端使命感如何同时成为引擎与代价"
       },
       {
         "title": "黑客与画家",

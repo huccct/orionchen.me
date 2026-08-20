@@ -56,7 +56,7 @@ export function HomePageContent({ locale }: { locale: Locale }) {
             <span>{dict.home.rec}</span>
           </div>
           <p className="mt-3 text-xs tracking-[0.22em] sm:text-sm sm:tracking-[0.3em] md:text-base">
-            {dict.home.watching}
+            {dict.home.recording}
           </p>
         </div>
       </section>

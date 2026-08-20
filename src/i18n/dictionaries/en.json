@@ -29,7 +29,7 @@
     "heroLine2": "and writing",
     "heroLine3": "by",
     "rec": "REC",
-    "watching": "You are being watched.",
+    "recording": "Recording stories still unfolding.",
     "worksTitle": "Works",
     "writingTitle": "Writing",
     "all": "all"
@@ -125,6 +125,16 @@
         "title": "Binance Life",
         "href": "https://www.amazon.com/%E5%B9%A3%E5%AE%89%E4%BA%BA%E7%94%9F-%E5%B9%B8%E9%81%8B%E3%80%81%E9%9F%8C%E6%80%A7%E8%88%87%E4%BF%9D%E8%AD%B7%E7%94%A8%E6%88%B6%E7%9A%84%E5%9B%9E%E6%86%B6%E9%8C%84-Traditional-Changpeng-Zhao-ebook/dp/B0GDG6D3WP",
         "note": "Watching an engineer collide with the third act of an era."
+      },
+      {
+        "title": "Steve Jobs",
+        "href": "https://book.douban.com/subject/6889859/",
+        "note": "How taste, control, and product instinct shaped a company."
+      },
+      {
+        "title": "Elon Musk",
+        "href": "https://book.douban.com/subject/36518892/",
+        "note": "How an extreme sense of mission becomes both engine and cost."
       },
       {
         "title": "Hackers and Painters",
