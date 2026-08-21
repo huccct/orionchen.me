@@ -1,0 +1,358 @@
+---
+title: '别再只会 console.log：在 Cursor 和 Chrome 里调试 NestJS'
+date: '2026-08-21'
+slug: cursor-chrome-debug-nestjs
+summary: >-
+  从零创建一个真实 NestJS 项目，用同一个 GET /users/42 请求走通 Cursor 断点、Chrome Node 调试和 Network 排查。
+seoTitle: Cursor 与 Chrome 调试 NestJS 入门：断点、Variables、Sources、Network
+seoDescription: 一篇可照着操作的 NestJS 调试教程，讲清 Cursor launch.json、Variables、Step Over、Step Into、Chrome Sources 与 Network。
+seoKeywords:
+  - Cursor 调试 NestJS
+  - Chrome 调试 Node.js
+  - NestJS 断点调试
+  - Node Inspector
+tags:
+  - backend
+  - node
+draft: false
+---
+
+我以前排查接口问题，最熟练的动作是在代码里撒一排 `console.log`。参数打印一次，返回值打印一次，怀疑函数没执行，再补一句“到这里了”。
+
+它当然能用。但调用链一长，日志很快会淹没终端。断点调试能让程序暂停在某一行，让我们直接查看当前变量、表达式结果和函数是从哪里被调用的。
+
+这篇文章从一个**真实的 NestJS 项目**开始，用同一个 `GET /users/42` 请求完成三件事：
+
+1. 在 Cursor 中命中 TypeScript 断点，查看 Variables 和 Call Stack。
+2. 在 Chrome DevTools 中找到真正的 `src/users/users.controller.ts` 并调试 Node 进程。
+3. 在 Chrome Network 中确认浏览器实际发送了什么请求。
+
+为了避免占用常见端口，本文统一使用：
+
+| 用途 | 端口 | 谁连接它 |
+| --- | ---: | --- |
+| NestJS HTTP 服务 | `3200` | 浏览器、curl、Postman |
+| Node Inspector | `9230` | Cursor、Chrome DevTools |
+
+两个端口不是一回事。访问接口用 `3200`，连接调试器用 `9230`。
+
+## 创建一个真实的 NestJS 项目
+
+如果你已经有 NestJS 项目，可以跳到下一节。没有的话，在终端执行：
+
+```bash
+npx @nestjs/cli new nestjs-debug-demo --package-manager npm --skip-git
+cd nestjs-debug-demo
+npx nest generate controller users --no-spec
+```
+
+Nest CLI 会生成下面这个文件，而不是 `src/users.controller.ts`：
+
+```text
+nestjs-debug-demo/
+└── src/
+    ├── app.module.ts
+    ├── main.ts
+    └── users/
+        └── users.controller.ts
+```
+
+因此本文提到的完整路径始终是：
+
+```text
+src/users/users.controller.ts
+```
+
+CLI 还会自动把 `UsersController` 注册到 `app.module.ts`。把 `src/users/users.controller.ts` 改成：
+
+```ts
+import { Controller, Get, Param } from '@nestjs/common'
+
+@Controller('users')
+export class UsersController {
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    const numericId = Number(id)
+    const user = { id: numericId, name: 'Orion', role: 'developer' }
+    return user
+  }
+}
+```
+
+再把 `src/main.ts` 的监听端口改成 `3200`：
+
+```ts
+await app.listen(process.env.PORT ?? 3200)
+```
+
+最后在 `package.json` 中把调试脚本的 Inspector 端口固定为 `9230`：
+
+```json
+{
+  "scripts": {
+    "start:debug": "nest start --debug 9230 --watch"
+  }
+}
+```
+
+运行项目：
+
+```bash
+npm run start:debug
+```
+
+终端应同时出现：
+
+```text
+Debugger listening on ws://127.0.0.1:9230/...
+[Nest] ... Nest application successfully started
+```
+
+先用 curl 验证接口：
+
+```bash
+curl http://localhost:3200/users/42
+```
+
+预期返回：
+
+```json
+{"id":42,"name":"Orion","role":"developer"}
+```
+
+这一步不通过就先不要开调试器。先确认项目目录、编译错误和 HTTP 端口都正确。
+
+## 在 Cursor 中命中断点
+
+### 创建 launch.json
+
+在项目根目录创建 `.vscode/launch.json`：
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach NestJS (9230)",
+      "type": "node",
+      "request": "attach",
+      "port": 9230,
+      "restart": true,
+      "sourceMaps": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}
+```
+
+![Cursor 中连接真实 NestJS 9230 Inspector 的 launch.json](/images/posts/cursor-chrome-debug-nestjs/cursor-real-nest-launch-9230.webp)
+
+这里最关键的是两项：
+
+- `request: "attach"`：连接已经由 `npm run start:debug` 启动的 Node 进程。
+- `port: 9230`：必须和终端里的 `Debugger listening` 端口一致。
+
+`sourceMaps` 负责把运行中的 JavaScript 映射回 TypeScript；`restart` 让 Nest watch 重启后自动尝试重连。
+
+### 下断点并触发请求
+
+严格按下面顺序操作：
+
+1. 保持 `npm run start:debug` 正在运行。
+2. 在 Cursor 打开 `src/users/users.controller.ts`。
+3. 点击 `const numericId = Number(id)` 左侧的行号，出现红点。
+4. 打开左侧 **Run and Debug**，选择 `Attach NestJS (9230)`。
+5. 按 `F5` 开始连接。
+6. 在另一个终端执行 `curl http://localhost:3200/users/42`。
+
+请求会暂时卡住，这是正常的：Node 正停在断点上等待你的下一步操作。
+
+![Cursor 命中 users.controller.ts 断点，Variables 显示 id，Call Stack 显示 findOne](/images/posts/cursor-chrome-debug-nestjs/cursor-real-nest-breakpoint-users.webp)
+
+现在左侧才会出现有内容的调试信息：
+
+- **Variables**：当前作用域变量。图中可以看到 `id: "42"`。
+- **Watch**：手动添加表达式，例如 `Number(id)`。
+- **Call Stack**：程序如何走到这里。图中当前函数是 `UsersController.findOne`。
+- **Breakpoints**：当前启用的所有断点。
+
+### 为什么我的 Variables 是空的？
+
+Variables 只有在程序**暂停**时才有内容。仅仅看到 `Debugger attached`，只表示连接成功，不表示已经停住。
+
+如果左下角显示 `RUNNING`，按这四项检查：
+
+1. 红点是否在真正会执行的 `src/users/users.controller.ts` 中。
+2. 是否在连接调试器之后重新请求了 `/users/42`。
+3. 请求端口是不是 HTTP 的 `3200`，而不是 Inspector 的 `9230`。
+4. 断点是否变成了实心红点；灰色空心圆通常表示 source map 没对应上。
+
+暂停后，当前行会高亮，顶部的单步按钮才真正有意义。
+
+## Step Over、Step Into、Step Out 到底怎么用
+
+假设程序停在：
+
+```ts
+const numericId = Number(id)
+```
+
+### Step Over：执行这一行，但不钻进去
+
+快捷键是 `F10`。按一次后，`Number(id)` 会执行完，黄色高亮移动到下一行。即使当前行调用了函数，也不会进入函数内部。日常调试最常用的就是它。
+
+### Step Into：进入当前行调用的函数
+
+快捷键是 `F11`。如果当前行调用了你自己写的 Service：
+
+```ts
+const user = this.usersService.findOne(numericId)
+```
+
+在这行按 `F11`，就能进入 `UsersService.findOne()`。对 `Number()` 这类内置函数通常没有必要 Step Into。
+
+### Step Out：退出当前函数，回到调用者
+
+快捷键是 `Shift + F11`。如果不小心进入了框架代码，或已经看完 Service 内部逻辑，用它直接运行到当前函数返回，然后回到上一层。
+
+### Continue：继续到下一个断点
+
+快捷键是 `F5`。它不是“下一行”，而是恢复运行，直到命中下一个断点或请求结束。调完当前现场后按 `F5`，刚才卡住的 curl 才会收到响应。
+
+一句话记忆：
+
+```text
+F10 越过当前行　F11 进入函数　Shift+F11 退出函数　F5 放行
+```
+
+## 在 Chrome 中直接调试 NestJS
+
+Cursor 和 Chrome 连接的是同一个 Node Inspector。为避免一个断点同时被两个窗口抢着处理，建议先停止 Cursor 调试，再操作 Chrome。
+
+### 让 Chrome 找到 Node 进程
+
+保持 `npm run start:debug` 运行，在 Chrome 地址栏打开：
+
+```text
+chrome://inspect/#devices
+```
+
+如果页面没有出现目标：
+
+1. 点击 **Configure...**。
+2. 添加 `localhost:9230`。
+3. 回到终端确认仍有 `Debugger listening on ...:9230`。
+4. 回到页面点击刷新，然后点击目标下方的 **inspect**。
+
+这会打开一扇专门调试 Node 的 DevTools。它不是普通网页的 DevTools。
+
+### 找到真正的 users.controller.ts
+
+进入 **Sources**，按 `Command + P`；Windows/Linux 使用 `Ctrl + P`。输入：
+
+```text
+users.controller.ts
+```
+
+选择路径为 `src/users/users.controller.ts` 的结果。也可以从左侧文件树依次展开 `file:// → 项目目录 → src → users`。
+
+![Chrome Node DevTools 中真实展开的 src/users/users.controller.ts](/images/posts/cursor-chrome-debug-nestjs/chrome-real-nest-sources-users-controller.webp)
+
+然后点击 `const numericId = Number(id)` 左侧行号，下断点，再访问：
+
+```text
+http://localhost:3200/users/42
+```
+
+命中后，右侧 **Scope** 对应 Cursor 的 Variables，**Call Stack** 也表示调用链；顶部的继续、Step Over、Step Into、Step Out 操作逻辑完全一样。
+
+如果这里只有 `main.js`，通常说明你连接的不是本文这个 NestJS 进程，或者 TypeScript source map 没加载。先核对目标端口是否为 `9230`，再确认 `tsconfig.json` 中存在：
+
+```json
+{
+  "compilerOptions": {
+    "sourceMap": true
+  }
+}
+```
+
+不要把 Inspector 暴露到公网。Node Inspector 能控制进程并执行代码，本机调试保持绑定 `127.0.0.1` 即可。
+
+## Chrome Network 和 Node 调试不是一回事
+
+Node DevTools 的 Sources 用来观察后端内部变量；普通网页 DevTools 的 Network 用来观察浏览器发出的 HTTP 请求。
+
+在调用 NestJS 接口的前端页面打开普通 DevTools：macOS 按 `Command + Option + I`，Windows/Linux 按 `Ctrl + Shift + I`。然后：
+
+1. 切到 **Network**。
+2. 选择 **Fetch/XHR**。
+3. 再触发一次页面操作。
+4. 点击 `/users/42` 请求。
+
+![Chrome Network 中的 GET users 42 请求](/images/posts/cursor-chrome-debug-nestjs/chrome-real-nest-network-users-42.webp)
+
+依次检查：
+
+- **Headers**：URL、Method、Status Code、Authorization 是否正确。
+- **Payload**：浏览器实际发送了什么参数。
+- **Response / Preview**：后端实际返回了什么。
+- **Initiator**：哪段前端代码发起了请求。
+- **Timing**：时间主要花在哪个阶段。
+
+一个很好用的排查顺序是：
+
+```text
+页面没反应
+  └─ Network 里有请求吗？
+       ├─ 没有：查前端点击事件和调用条件
+       └─ 有：URL、Method、Payload 对吗？
+            ├─ 不对：修前端或代理配置
+            └─ 对：NestJS 断点命中吗？
+                 ├─ 没命中：查路由、Guard、Pipe、中间件
+                 └─ 命中：查 Service、数据库、业务判断
+```
+
+## 常见问题速查
+
+### Cursor 无法连接 9230
+
+确认运行的是 `npm run start:debug`，终端确实出现了 `Debugger listening`，并且 `launch.json` 的 `port` 也是 `9230`。三处端口必须一致。
+
+### 断点是灰色空心圆
+
+先确认断点下在 `src/users/users.controller.ts`，再检查 `tsconfig.json` 的 `sourceMap: true`。如果项目输出目录不是默认的 `dist`，可在 `launch.json` 补充：
+
+```json
+"outFiles": ["${workspaceFolder}/dist/**/*.js"]
+```
+
+### 请求到了，但 Controller 断点没命中
+
+NestJS 在 Controller 前还可能经过 Middleware、Guard、Interceptor 和 Pipe。先看 Network 的状态码与响应体；若提前返回 `401` 或 `403`，把断点向前移到相应 Guard 或中间件。
+
+### watch 重启后断点失效
+
+先停止 Cursor 或 Chrome 调试，再停止终端里的 Nest 进程，然后重新执行 `npm run start:debug` 并连接。恢复到“一个 Nest 进程、一个 Inspector 端口、一个调试器”最省时间。
+
+## 最后记住这套最小流程
+
+```text
+1. npm run start:debug
+2. 确认 HTTP 3200、Inspector 9230
+3. 在 src/users/users.controller.ts 下断点
+4. Cursor F5 连接，或 Chrome chrome://inspect 连接
+5. 请求 http://localhost:3200/users/42
+6. 暂停后看 Variables / Scope 和 Call Stack
+7. F10 越过、F11 进入、Shift+F11 退出、F5 放行
+```
+
+业务变量和调用链不对，用 Cursor 或 Chrome Node DevTools；浏览器有没有发请求、参数和响应是否正确，用 Chrome Network。`console.log` 适合留下长期可观察的信息，断点适合在本地暂停现场、验证猜测。
+
+## 参考资料
+
+- [NestJS 官方 First steps](https://docs.nestjs.com/first-steps)：创建项目与默认目录结构。
+- [NestJS 官方 Controllers](https://docs.nestjs.com/controllers)：Controller、路由参数与 CLI 生成命令。
+- [NestJS 官方 TypeScript starter](https://github.com/nestjs/typescript-starter)：`start:debug`、`sourceMap` 等默认配置。
+- [Node.js 官方 Debugger 文档](https://nodejs.org/api/debugger.html)：Inspector、调试端口与安全说明。
+- [VS Code 官方 Node.js debugging](https://code.visualstudio.com/docs/nodejs/nodejs-debugging)：attach、source map、restart 与单步操作；Cursor 使用兼容的调试配置。
+- [Chrome DevTools：Inspect network activity](https://developer.chrome.com/docs/devtools/network)：Network 各面板的用途。
