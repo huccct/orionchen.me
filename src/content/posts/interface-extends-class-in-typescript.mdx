@@ -1,0 +1,196 @@
+---
+title: TypeScript 中，接口为什么可以继承类？
+date: '2026-08-25'
+slug: interface-extends-class-in-typescript
+summary: 接口继承类时，拿到的是实例成员的类型要求，而不是实现；private 和 protected 还会把这种要求限定在同一条继承链上。
+tags:
+  - typescript
+  - tutorial
+draft: false
+---
+
+## 一行看起来很奇怪的代码
+
+最近看到下面这段 TypeScript 时，我的第一反应是：接口和类不是两种东西吗，接口怎么还能继承类？
+
+```ts
+class Person {
+  name = '小明'
+
+  sayHello() {
+    console.log('你好')
+  }
+}
+
+interface PersonLike extends Person {}
+```
+
+这段代码是合法的。`PersonLike` 会拿到 `Person` **实例一侧的类型结构**，大致可以理解成：
+
+```ts
+interface PersonLike {
+  name: string
+  sayHello(): void
+}
+```
+
+这里最重要的区别是：接口只拿走了“必须有什么”，没有拿走“具体怎么做”。
+
+所以 `name` 的初始值 `'小明'` 不会进入接口，`sayHello` 里的 `console.log` 也不会进入接口。接口只记得实例上有一个 `string` 类型的 `name`，以及一个返回 `void` 的 `sayHello` 方法。
+
+## 它拿到的是清单，不是现成代码
+
+把接口想成验收清单会更容易理解。
+
+`interface PersonLike extends Person` 的意思不是“让接口变成 `Person`”，而是把 `Person` 实例需要具备的成员抄进清单。另一个类只要满足这张清单，就可以实现它：
+
+```ts
+class Student implements PersonLike {
+  name = '小红'
+
+  sayHello() {
+    console.log('同学你好')
+  }
+}
+```
+
+`Student` 没有继承 `Person`，但它的公开结构相同，因此可以通过检查。这来自 TypeScript 的结构类型系统：很多时候，类型是否兼容取决于“长得像不像”，而不是有没有明确写出继承关系。
+
+这也解释了 `extends` 和 `implements` 在这里做的不同工作：
+
+- `class Student extends Person` 会建立真正的 JavaScript 继承关系，复用父类的字段初始化和方法实现；
+- `class Student implements PersonLike` 只会在编译时检查结构，不会自动添加任何字段或方法；
+- `interface PersonLike extends Person` 只会扩展类型要求，编译后不会留下运行时代码。
+
+还有一个容易忽略的边界：类有实例一侧和静态一侧。接口继承类时关心的是实例成员，不会把构造函数和静态成员一起抄过来。
+
+```ts
+class Person {
+  static species = 'human'
+
+  constructor(public name: string) {}
+}
+
+interface PersonLike extends Person {}
+```
+
+这里的 `PersonLike` 会要求实例具有 `name: string`，但不会要求实现者拥有 `species`，也不会检查它的构造函数是否接收一个字符串。
+
+## private 和 protected 为什么会改变结果
+
+真正绕的地方，是原来的类含有 `private` 或 `protected` 成员时。
+
+```ts
+class PluginBase {
+  protected initialized = false
+}
+
+interface Plugin extends PluginBase {
+  run(): void
+}
+```
+
+`Plugin` 不只要求一个 `run` 方法，也把 `PluginBase` 的 `protected initialized` 算进了类型。问题在于，另一个无关的类不能靠写一个同名成员冒充它：
+
+```ts
+class FakePlugin implements Plugin {
+  protected initialized = false
+
+  run() {}
+}
+```
+
+这段代码会报错。虽然两个成员都叫 `initialized`，类型也相同，但 TypeScript 会检查 `private` 和 `protected` 成员的来源。目标类型里如果有这类成员，实现者必须拥有从同一个类声明继承而来的成员。
+
+可以把它想成一枚防伪印章。公开成员只要名称和类型对得上就行；`private` 和 `protected` 成员还带着“由谁声明”的信息。自己刻一个同名印章，并不会变成原来那一枚。
+
+因此，实现者需要进入 `PluginBase` 这条继承链：
+
+```ts
+class GitHubPlugin extends PluginBase implements Plugin {
+  run() {
+    this.initialized = true
+    console.log('插件已运行')
+  }
+}
+```
+
+现在 `GitHubPlugin` 继承了真正来自 `PluginBase` 的 `initialized`，所以能够实现 `Plugin`。
+
+这个限制有一个关键前提：**被继承的类中存在 `private` 或 `protected` 成员。** 如果类里只有公开成员，TypeScript 仍然主要按照结构判断，无关的类只要成员一致也能通过。
+
+## 真实开发中什么时候会用
+
+接口继承类并不是日常 TypeScript 中的主流写法。它比较适合一种特殊要求：既想描述一组额外能力，又想限定只有某个基类的后代才能提供这些能力。
+
+前面的插件例子就是这种情况：
+
+```ts
+class PluginBase {
+  protected initialized = false
+}
+
+interface Plugin extends PluginBase {
+  run(): void
+}
+```
+
+`Plugin` 表达了两层约束：实现者必须有 `run`，同时必须来自 `PluginBase` 的继承体系。在维护旧代码、为已有类补充类型，或描述某些框架扩展点时，可能会遇到这种写法。
+
+不过，如果基类和接口都由自己设计，抽象类通常更直观：
+
+```ts
+abstract class PluginBase {
+  protected initialized = false
+
+  abstract run(): void
+}
+
+class GitHubPlugin extends PluginBase {
+  run() {
+    this.initialized = true
+  }
+}
+```
+
+这段代码直接说明了两件事：子类会复用基类状态，同时必须实现 `run`。读代码的人不需要先理解“接口继承类”这层少见的组合。
+
+在更常见的业务代码里，通常只需要下面三种关系：
+
+```ts
+// 在旧要求上增加新要求
+interface Admin extends User {
+  permissions: string[]
+}
+
+// 检查一个类是否满足要求
+class Member implements User {
+  // ...
+}
+
+// 复用父类的实现
+class Dog extends Animal {
+  // ...
+}
+```
+
+也就是说，接口继承类值得知道，但不必为了显得灵活而主动使用。能用“接口继承接口”或“抽象类派生子类”清楚表达时，优先选择读者更熟悉的写法。
+
+## 最后记住这张表
+
+| 写法 | 得到什么 | 是否复用实现 |
+| --- | --- | --- |
+| `class B extends A` | 父类的实例能力与运行时继承关系 | 是 |
+| `interface B extends A` | 在原有类型要求上增加要求 | 否 |
+| `class B implements A` | 对类的实例结构做编译时检查 | 否 |
+| `interface B extends SomeClass` | 类的实例成员类型；遇到 `private` / `protected` 时还保留来源限制 | 否 |
+
+我最后给自己的记法是：**想定规矩，用接口；想复用代码，用类继承；接口继承类，只是把类的实例结构变成一张更特殊的规矩清单。**
+
+理解到这里已经足够应付绝大多数代码。真正在项目里遇到 `interface A extends SomeClass` 时，再检查两件事：它是否在利用 `private` / `protected` 限制继承来源，以及这里换成抽象类会不会更容易读。
+
+## 参考资料
+
+- [TypeScript Handbook：Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
+- [TypeScript Handbook：Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility)
+- [TypeScript Handbook：Classes](https://www.typescriptlang.org/docs/handbook/2/classes.html)
