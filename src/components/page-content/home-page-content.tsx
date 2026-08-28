@@ -78,12 +78,7 @@ export function HomePageContent({ locale }: { locale: Locale }) {
         </SectionHeader>
         <div>
           {latest.map((post) => (
-            <PostCard
-              key={post.slug}
-              pathPrefix={prefix}
-              post={post}
-              tutorialLabel={dict.blog.tutorialBadge}
-            />
+            <PostCard key={post.slug} pathPrefix={prefix} post={post} />
           ))}
         </div>
       </section>

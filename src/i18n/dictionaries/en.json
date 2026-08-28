@@ -37,13 +37,8 @@
   },
   "blog": {
     "title": "Writing",
-    "filterAll": "All writing",
-    "filterTutorial": "Tutorials",
-    "filterNotes": "Notes",
-    "ariaFilter": "Filter writing",
     "newer": "newer",
     "older": "older",
-    "tutorialBadge": "tutorial",
     "tableOfContents": "Contents",
     "tocAria": "Table of contents",
     "previousPost": "Previous",

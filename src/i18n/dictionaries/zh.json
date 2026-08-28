@@ -37,13 +37,8 @@
   },
   "blog": {
     "title": "写作",
-    "filterAll": "全部文章",
-    "filterTutorial": "教程",
-    "filterNotes": "随笔",
-    "ariaFilter": "筛选写作",
     "newer": "较新",
     "older": "较早",
-    "tutorialBadge": "教程",
     "tableOfContents": "目录",
     "tocAria": "文章目录",
     "previousPost": "上一篇",

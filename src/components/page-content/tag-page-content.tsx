@@ -36,12 +36,7 @@ export function TagPageContent({ locale, tag }: { locale: Locale; tag: string })
         <SectionHeader>{`${dict.breadcrumb.tags}: ${tag}`}</SectionHeader>
         <div>
           {posts.map((post) => (
-            <PostCard
-              key={post.slug}
-              pathPrefix={prefix}
-              post={post}
-              tutorialLabel={dict.blog.tutorialBadge}
-            />
+            <PostCard key={post.slug} pathPrefix={prefix} post={post} />
           ))}
         </div>
       </div>

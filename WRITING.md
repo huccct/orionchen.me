@@ -34,7 +34,7 @@ draft: false
 
 - 日期统一为带引号的 `YYYY-MM-DD`。
 - 每篇使用 1–3 个标签，标签不表达语言。
-- 标签优先从以下集合选择：`life`、`thinking`、`history`、`film`、`tutorial`、`AI`、`Agent Economy`、`frontend`、`backend`、`css`、`react`、`vue.js`、`typescript`、`node`、`internet`、`github`、`startup`、`business`、`Crypto`。
+- 标签优先从以下集合选择：`life`、`thinking`、`history`、`film`、`AI`、`Agent Economy`、`frontend`、`backend`、`css`、`react`、`vue.js`、`typescript`、`node`、`internet`、`github`、`startup`、`business`、`Crypto`。
 - `summary` 只负责列表展示和默认 SEO 描述；确有搜索需求时再补 `seoTitle`、`seoDescription` 和 `seoKeywords`。
 
 ## 结构
