@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Cache-Control 从预签名上传到图片读取的闭环</title>
+  <desc id="desc">API 把 Cache-Control 加入 SignedHeaders，移动端携带相同请求头上传，S3 保存为对象元数据，后续读取经 CDN 返回相同缓存头。</desc>
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#e5e5e5" stroke-width="1" />
+    </pattern>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#2563eb" />
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#2a9d8f" />
+    </marker>
+    <style>
+      text { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #334155; }
+      .actor { font-size: 24px; font-weight: 700; }
+      .heading { font-size: 19px; font-weight: 700; }
+      .label { font-size: 16px; font-weight: 600; }
+      .small { font-size: 14px; }
+      .code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="675" fill="#faf8f5" />
+  <rect width="1200" height="675" fill="url(#grid)" />
+
+  <text x="60" y="52" font-size="28" font-weight="750">从上传签名到读取缓存：同一个 Cache-Control 闭环</text>
+  <text x="60" y="80" font-size="15" fill="#64748b">请求头先成为 SigV4 合同，再成为对象元数据和读取响应头</text>
+
+  <g>
+    <rect x="60" y="105" width="250" height="62" rx="8" fill="#eff6ff" stroke="#1e3a5f" stroke-width="2" />
+    <rect x="475" y="105" width="250" height="62" rx="8" fill="#eff6ff" stroke="#1e3a5f" stroke-width="2" />
+    <rect x="890" y="105" width="250" height="62" rx="8" fill="#eff6ff" stroke="#1e3a5f" stroke-width="2" />
+    <text class="actor" x="185" y="144" text-anchor="middle">API</text>
+    <text class="actor" x="600" y="144" text-anchor="middle">移动端</text>
+    <text class="actor" x="1015" y="144" text-anchor="middle">S3 / CDN</text>
+    <path d="M185 167V628M600 167V628M1015 167V628" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="7 7" />
+  </g>
+
+  <rect x="38" y="194" width="78" height="34" rx="6" fill="#2563eb" />
+  <text x="77" y="217" text-anchor="middle" font-size="17" font-weight="700" fill="#ffffff">上传</text>
+
+  <g>
+    <rect x="55" y="246" width="270" height="126" rx="9" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+    <text class="heading" x="76" y="278">1. 生成预签名 PUT URL</text>
+    <rect x="76" y="296" width="228" height="56" rx="6" fill="#fff7e6" stroke="#f59e0b" stroke-width="1.5" />
+    <text class="label" x="190" y="319" text-anchor="middle" fill="#92400e">SignedHeaders</text>
+    <text class="code" x="190" y="341" text-anchor="middle">cache-control;content-type;host</text>
+  </g>
+
+  <path d="M325 273H458" fill="none" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow-blue)" />
+  <text class="small" x="392" y="258" text-anchor="middle">2. URL + 必须发送的请求头</text>
+
+  <g>
+    <rect x="475" y="246" width="250" height="126" rx="9" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+    <text class="heading" x="496" y="278">上传请求头</text>
+    <rect x="496" y="296" width="208" height="58" rx="6" fill="#eff6ff" stroke="#bfdbfe" />
+    <text class="code" x="510" y="319">Cache-Control: public,</text>
+    <text class="code" x="510" y="340">max-age=31536000, immutable</text>
+  </g>
+
+  <path d="M725 273H873" fill="none" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow-blue)" />
+  <text class="small" x="799" y="258" text-anchor="middle">3. PUT（签名匹配）</text>
+
+  <g>
+    <rect x="890" y="224" width="250" height="148" rx="9" fill="#ffffff" stroke="#2a9d8f" stroke-width="2" />
+    <text class="heading" x="911" y="256">保存为对象元数据</text>
+    <circle cx="1111" cy="250" r="14" fill="#2a9d8f" />
+    <path d="M1104 250l5 5 9-11" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <rect x="911" y="276" width="208" height="72" rx="6" fill="#ecfdf5" stroke="#2a9d8f" />
+    <text class="code" x="925" y="300">Cache-Control: public,</text>
+    <text class="code" x="925" y="322">max-age=31536000,</text>
+    <text class="code" x="925" y="344">immutable</text>
+  </g>
+
+  <path d="M38 407H1162" stroke="#cbd5e1" stroke-width="2" />
+  <rect x="38" y="428" width="78" height="34" rx="6" fill="#2a9d8f" />
+  <text x="77" y="451" text-anchor="middle" font-size="17" font-weight="700" fill="#ffffff">读取</text>
+
+  <g>
+    <rect x="475" y="486" width="250" height="112" rx="9" fill="#ffffff" stroke="#1e3a5f" stroke-width="2" />
+    <text class="heading" x="496" y="518">4. 请求同一图片 URL</text>
+    <text class="small" x="496" y="548">本地内存、磁盘均未命中时</text>
+    <text class="small" x="496" y="574">才进入 HTTP / CDN 层</text>
+  </g>
+
+  <g>
+    <rect x="890" y="470" width="250" height="128" rx="9" fill="#ffffff" stroke="#2a9d8f" stroke-width="2" />
+    <text class="heading" x="911" y="502">响应返回缓存策略</text>
+    <text class="code" x="911" y="530">Cache-Control: public,</text>
+    <text class="code" x="911" y="552">max-age=31536000, immutable</text>
+    <rect x="911" y="566" width="105" height="22" rx="11" fill="#d1fae5" />
+    <text class="small" x="964" y="582" text-anchor="middle" fill="#166534">长期复用</text>
+  </g>
+
+  <path d="M725 514H873" fill="none" stroke="#2563eb" stroke-width="3" marker-end="url(#arrow-blue)" />
+  <text class="small" x="799" y="498" text-anchor="middle">GET 图片</text>
+  <path d="M890 578H742" fill="none" stroke="#2a9d8f" stroke-width="3" marker-end="url(#arrow-green)" />
+  <text class="small" x="816" y="612" text-anchor="middle">命中 CDN，或回源后写入缓存</text>
+</svg>

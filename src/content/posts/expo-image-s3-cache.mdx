@@ -1,0 +1,279 @@
+---
+title: 一张图片为什么加载了两次：从 Expo Image 到 S3 的端到端缓存优化
+date: '2026-08-30'
+slug: expo-image-s3-cache
+summary: 从列表进入详情时，同一张图片为什么还会重新加载？用一次真实 PR 讲清客户端内存与磁盘缓存、HTTP Cache-Control、不可变 URL 和 S3 SigV4 如何接成完整链路。
+seoTitle: Expo Image 图片缓存详解：memory-disk、Cache-Control 与 S3 SigV4
+seoDescription: 通过一次 React Native 图片缓存优化，讲清 Expo Image memory-disk、recyclingKey、HTTP immutable、S3 预签名上传和不可变对象 URL 的完整关系。
+seoKeywords:
+  - Expo Image 缓存
+  - React Native 图片缓存
+  - Cache-Control immutable
+  - S3 预签名上传
+  - SigV4 SignedHeaders
+tags:
+  - frontend
+  - backend
+  - internet
+draft: false
+---
+
+最近我遇到一个很具体的问题：用户在发现页已经看见了一张帖子封面，点进详情页后，明明还是同一个 URL、同一张图片，界面却可能再次经历加载过程。
+
+这类问题很容易被误判成“接口没有缓存”。但接口缓存的是帖子标题、作者和图片 URL 等 JSON 数据；真正占带宽、解码时间和屏幕等待的是图片文件。**数据列表命中了 React Query，不等于图片也命中了缓存。**
+
+最后的改动并不大：[PR #360](https://github.com/ResonoLabs/clawk/pull/360) 一共修改 5 个文件，核心只有两件事（仓库为私有，链接需要权限）：
+
+1. 列表和详情统一使用 `expo-image`，明确启用内存与磁盘缓存。
+2. 新上传的对象带上长期 `Cache-Control`，并把这个要求写进 S3 预签名上传的签名。
+
+真正值得展开的地方，是这两件事为什么必须一起做。
+
+## 图片缓存不是一个开关，而是一条链路
+
+把一张远程图片显示到手机屏幕上，至少会经过四层：
+
+1. **图片视图**：当前组件应该显示哪个 URL，列表复用时会不会短暂显示上一张图。
+2. **内存缓存**：应用进程还活着时，能否快速复用已经加载过的图片。
+3. **磁盘缓存**：应用重启或内存缓存被清理后，本地是否还有可复用文件。
+4. **HTTP 与对象存储**：本地没有缓存时，客户端和中间 CDN 能否放心复用响应，还是必须回源确认。
+
+![同一张图片从视图、内存、磁盘到 HTTP 与对象存储的四层缓存链路](/images/posts/expo-image-s3-cache/01-framework-four-cache-layers.webp)
+
+第一次打开图片时，四层通常都会走一遍：根据 URL 查内存、查磁盘、发起网络请求，最后从 CDN 或对象存储拿到文件。
+
+再次打开时，理想路径应该越来越短：
+
+```text
+同一进程内再次显示：图片 URL → 内存缓存 → 屏幕
+应用重启后再次显示：图片 URL → 磁盘缓存 → 内存 → 屏幕
+本地缓存被清理：图片 URL → HTTP/CDN 缓存 → 本地缓存 → 屏幕
+全部未命中：图片 URL → 对象存储 → 本地缓存 → 屏幕
+```
+
+只优化其中一层，收益就会有缺口。客户端缓存没有统一，列表与详情可能各走各的；服务端没有声明缓存规则，本地缓存失效后仍可能产生回源和重新验证。
+
+## 客户端先统一成同一种图片加载器
+
+优化前，瀑布流卡片直接使用 React Native 的 `Image`：
+
+```tsx
+import { Image } from 'react-native'
+
+const cover = <Image source={coverSource} resizeMode="cover" />
+```
+
+详情页的图片组件虽然从项目的 UI 入口导入，但这个入口最终仍然重新导出了 React Native `Image`。也就是说，两个页面没有共同声明一套可验证的图片缓存策略。
+
+这不代表 React Native `Image` 一定会在每次渲染时重新下载。iOS、Android 和底层网络栈本身也可能缓存图片。问题在于：应用代码没有明确约定内存、磁盘和跨页面复用行为，结果依赖平台与默认实现，出了问题也很难定位。
+
+PR 将列表和详情都改为 `expo-image`：
+
+```tsx
+import { Image } from 'expo-image'
+
+const cover = (
+  <Image
+    cachePolicy="memory-disk"
+    contentFit="cover"
+    recyclingKey={sourceUri}
+    source={{ uri: sourceUri }}
+  />
+)
+```
+
+这里最关键的是 `cachePolicy="memory-disk"`。Expo 官方文档对它的定义很直接：先使用内存缓存，内存没有时再回退到磁盘缓存。没有自定义 `cacheKey` 时，图片的源 URL 就是缓存键。
+
+因此，列表和详情只要使用完全相同、稳定的 URL，就能查询同一份 Expo Image 缓存。列表刚显示过的封面，详情页不需要再建立一套独立缓存。
+
+### `recyclingKey` 不是缓存键
+
+`recyclingKey` 很容易被名字误导。它不决定“去哪里找缓存”，而是服务于可复用列表视图。
+
+瀑布流会不断回收屏幕外的卡片组件，再拿它们显示新的数据。如果旧图片还留在视图里，新图片又尚未加载完成，用户可能短暂看见上一张图。Expo Image 在 `recyclingKey` 变化时会先把当前内容重置为空白或占位图，再加载新资源。
+
+所以两者解决的是不同问题：
+
+- `cachePolicy` 决定图片存在哪里、下一次如何复用。
+- `recyclingKey` 决定组件换数据时，旧画面如何被清掉。
+
+一个负责性能，一个负责正确性。把 `recyclingKey` 当成缓存键，不但解释不通，也会让后续排查走错方向。
+
+### 替换组件时还有两个小差异
+
+React Native `Image` 与 Expo Image 的属性和事件结构并不完全相同：
+
+```text
+React Native Image          Expo Image
+resizeMode="cover"    →     contentFit="cover"
+event.nativeEvent.source  →  event.source
+```
+
+这类迁移看起来只是改名，但如果瀑布流依赖图片加载后的真实宽高计算比例，事件结构改错会直接破坏卡片布局。缓存优化不能用新的显示 bug 来交换。
+
+## 服务端要告诉缓存：这个 URL 不会变
+
+客户端统一以后，列表进入详情的热路径已经缩短了。但应用重启、磁盘缓存淘汰或新设备首次访问时，图片仍然要经过 HTTP。
+
+这时对象响应需要明确告诉客户端和 CDN：它能不能被缓存、多久不用重新确认。
+
+PR 为新上传对象增加了：
+
+```http
+Cache-Control: public, max-age=31536000, immutable
+```
+
+三个指令分别表示：
+
+- `public`：允许共享缓存保存响应。若响应本来就没有 `Authorization` 限制，它往往不是必需的，但能清楚表达共享缓存意图。
+- `max-age=31536000`：响应在 31,536,000 秒，也就是约一年内保持新鲜。
+- `immutable`：在新鲜期内，资源内容不会变化；客户端通常不必为了确认“有没有更新”再发条件请求。
+
+`immutable` 不是“强制缓存”的高级开关，而是服务端做出的承诺：**这个 URL 在有效期内永远代表同一份内容。**
+
+如果 `/images/avatar.webp` 今天是 A，明天仍用同一路径覆盖成 B，一年缓存就会让部分用户长期看到 A。长期缓存必须和版本化 URL 一起使用。
+
+## 为什么这里敢缓存一年
+
+上传服务没有把文件保存为固定的 `image.webp`，而是为每次上传生成新的 ULID：
+
+```text
+uploads/users/{userId}/circle-post/{objectId}.webp
+```
+
+用户重新上传图片时会得到新的 `objectId` 和新 URL，旧 URL 不需要被覆盖。内容变化就换地址，这正是 MDN 所说的 cache busting 模式。
+
+这里的 ULID 不是内容哈希：相同文件上传两次仍会产生两个地址。但对缓存正确性而言，真正需要的只是“同一个地址不被覆盖”。内容寻址可以进一步去重，却不是这次修复的前提。
+
+因此可以把规则压缩成一句话：
+
+> 同一 URL 的内容会变化，缓存就要谨慎；URL 只代表一个版本，就可以大胆延长缓存时间。
+
+## 为什么 `Cache-Control` 还要进入 SigV4 签名
+
+项目不是让 API 服务器接收完整图片，再转发给对象存储。API 只生成一个短期有效的 S3 预签名 PUT URL，移动端拿着它直接上传。
+
+这条链路里，`Cache-Control` 是上传请求的一部分。S3 接收 PUT 后，将它保存为对象的缓存元数据；之后读取对象时，响应才会带上对应的缓存策略。
+
+为了让这个请求头成为不可省略、不可随意修改的上传契约，PR 同时修改了三个地方：
+
+```ts
+const signedHeaders = 'cache-control;content-type;host'
+
+const canonicalHeaders =
+  `cache-control:${IMMUTABLE_CACHE_CONTROL}\n` +
+  `content-type:${input.contentType}\n` +
+  `host:${request.host}\n`
+
+return {
+  uploadUrl,
+  headers: {
+    'Cache-Control': IMMUTABLE_CACHE_CONTROL,
+    'Content-Type': input.contentType,
+  },
+}
+```
+
+![API 生成预签名 URL、移动端携带已签名 Cache-Control 上传、S3 保存并在读取时返回缓存头的闭环](/images/posts/expo-image-s3-cache/02-flowchart-sigv4-cache-contract.svg)
+
+这三处缺一不可：
+
+1. `canonicalHeaders` 把头部和值放进待签名的规范请求。
+2. `X-Amz-SignedHeaders` 告诉 S3 哪些头部受签名保护。
+3. 返回给客户端的 `headers` 告诉实际上传请求必须发送什么。
+
+如果签名时写了 `cache-control`，客户端上传时却漏掉它或改了值，S3 计算出的签名就无法匹配。这个约束让“所有新对象都必须带缓存元数据”从团队约定变成协议保证。
+
+## 两端只改一端会发生什么
+
+只改客户端：
+
+- 列表和详情能复用 Expo Image 的内存、磁盘缓存。
+- 但本地缓存被清理后，HTTP 层是否重新验证或回源仍取决于对象响应。
+- 其他客户端和 CDN 得不到明确的长期缓存信号。
+
+只改服务端：
+
+- HTTP 缓存和 CDN 可以更积极地复用对象。
+- 但应用内两个页面如果使用不同图片实现、不同缓存键或不同策略，仍可能无法共享内存与磁盘缓存。
+- 瀑布流组件复用时的旧图闪烁也没有解决。
+
+两端一起改，才形成完整路径：同一 URL 在应用内复用；本地没有时，在 HTTP 层继续复用；所有缓存都没有时，才回到对象存储。
+
+## 这次测试验证了什么
+
+PR 留下了两类最小回归检查。
+
+移动端测试读取两个组件源码，确认它们都从 `expo-image` 导入，并声明了 `cachePolicy="memory-disk"`；详情组件还必须传入 `recyclingKey`。这种源码级测试很朴素，但能防止后续重构时无意退回 React Native `Image`。
+
+API 测试直接创建预签名上传，检查：
+
+```ts
+expect(upload.headers).toMatchObject({
+  'Cache-Control': 'public, max-age=31536000, immutable',
+})
+
+expect(new URL(upload.uploadUrl).searchParams.get('X-Amz-SignedHeaders')).toContain('cache-control')
+```
+
+它验证了“返回给客户端的上传头”和“签名保护的头”同时存在。
+
+不过，这些测试没有证明真实设备快了多少，也没有覆盖 CDN 和对象存储最终返回的响应头。PR 没有基准数据，所以不能严谨地写成“加载速度提升 80%”。要验证线上收益，还应做四件事：
+
+1. 冷启动加载列表，记录第一次图片请求。
+2. 进入详情，确认同一 URL 没有再次下载完整文件。
+3. 重启应用再访问，检查是否从磁盘缓存恢复。
+4. 对新上传对象执行 `HEAD`，确认响应包含预期的 `Cache-Control`。
+
+测试保护代码结构，真实设备验证用户路径，两者不能互相替代。
+
+## 还有几个必须说明的边界
+
+### 旧对象不会自动获得新缓存头
+
+这次策略写在上传请求里，只影响改动上线后新上传的对象。已有对象如果没有缓存元数据，需要单独回写或复制对象才能获得一致策略。是否迁移旧数据，要看它们的访问量，没必要为了形式统一扫描整个桶。
+
+### 完整 URL 必须稳定
+
+Expo Image 默认把源 URL 当缓存键。如果同一对象每次都生成不同的签名查询参数，即使路径相同，也可能得到不同缓存键。公开资源适合稳定 URL；私有资源则需要显式设计缓存键和授权过期之间的关系，不能直接照搬。
+
+### `public` 不能无脑覆盖私有媒体
+
+这次服务端改动位于共享的 S3 上传集成中，实际覆盖所有新上传对象，不只是帖子图片。`public` 允许共享缓存保存响应；如果聊天附件、孵化素材等属于用户私有内容，就必须核对它们的读取鉴权和对象可见性。
+
+`Cache-Control: public` 不会自动把一个私有桶改成公开桶，但它会改变已经拿到响应的中间缓存如何保存内容。敏感资源更适合按上传用途配置 `private`、较短有效期或 `no-store`。这不是性能细节，而是隐私边界。
+
+### 删除对象不等于立刻清除所有副本
+
+一年缓存意味着客户端和 CDN 可能长期持有副本。如果产品承诺“删除后立即不可访问”，必须同时考虑 CDN purge、私有鉴权和客户端本地缓存，而不能只删除 S3 对象。
+
+## 下一步什么时候才需要做
+
+完成这条基础链路后，不必立刻加入复杂的图片基础设施。只有测量结果表明仍然存在问题时，再考虑：
+
+- 使用 `Image.prefetch` 提前加载即将进入视口或详情页的图片。
+- 为列表生成更小的缩略图，避免下载大图后再缩小显示。
+- 通过 CDN 做格式协商和尺寸变换。
+- 记录缓存命中类型、图片加载耗时和回源比例。
+
+这些方案都可能有效，但也都会增加存储、转换、监控或失效管理成本。先让同一个 URL 在现有四层中正确复用，通常已经能消除最明显的重复工作。
+
+## 最后记住这四个问题
+
+排查图片缓存时，不要只问“有没有缓存”，依次问：
+
+1. 列表和详情是否使用相同的图片加载器与缓存策略？
+2. 同一份内容是否拥有完全相同、稳定的缓存键？
+3. 对象响应是否明确声明了合适的 HTTP 缓存规则？
+4. 长期缓存的 URL 是否保证永不覆盖，并符合资源的隐私级别？
+
+这次优化的代码很少，价值却不在某一行 `cachePolicy`。它把图片视图、设备缓存、HTTP 语义和对象上传协议连成了一条可以解释、测试和继续测量的链路。
+
+## 参考资料
+
+- [Expo Image 官方文档](https://docs.expo.dev/versions/latest/sdk/image/)：`cachePolicy`、默认缓存键、`recyclingKey` 与预加载接口。
+- [MDN：Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control)：`public`、`max-age`、`immutable` 和版本化 URL 的缓存模式。
+- [RFC 8246：HTTP Immutable Responses](https://www.rfc-editor.org/rfc/rfc8246.html)：`immutable` 的标准语义与安全注意事项。
+- [Amazon S3 PutObject API](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)：PUT 请求中的 `Cache-Control` 对象元数据。
+- [Amazon S3：使用查询参数进行 SigV4 身份验证](https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html)：预签名 URL、规范请求和 `X-Amz-SignedHeaders`。
+- [Clawk PR #360：cache post images](https://github.com/ResonoLabs/clawk/pull/360)：本文对应的实现改动与回归检查；私有仓库，需要访问权限。
