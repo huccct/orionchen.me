@@ -2,7 +2,7 @@
 title: 一张图片为什么加载了两次：从 Expo Image 到 S3 的端到端缓存优化
 date: '2026-08-30'
 slug: expo-image-s3-cache
-summary: 从列表进入详情时，同一张图片为什么还会重新加载？用一次真实 PR 讲清客户端内存与磁盘缓存、HTTP Cache-Control、不可变 URL 和 S3 SigV4 如何接成完整链路。
+summary: 从列表进入详情时，同一张图片为什么还会重新加载？用一次真实优化讲清客户端内存与磁盘缓存、HTTP Cache-Control、不可变 URL 和 S3 SigV4 如何接成完整链路。
 seoTitle: Expo Image 图片缓存详解：memory-disk、Cache-Control 与 S3 SigV4
 seoDescription: 通过一次 React Native 图片缓存优化，讲清 Expo Image memory-disk、recyclingKey、HTTP immutable、S3 预签名上传和不可变对象 URL 的完整关系。
 seoKeywords:
@@ -22,7 +22,7 @@ draft: false
 
 这类问题很容易被误判成“接口没有缓存”。但接口缓存的是帖子标题、作者和图片 URL 等 JSON 数据；真正占带宽、解码时间和屏幕等待的是图片文件。**数据列表命中了 React Query，不等于图片也命中了缓存。**
 
-最后的改动并不大：[PR #360](https://github.com/ResonoLabs/clawk/pull/360) 一共修改 5 个文件，核心只有两件事（仓库为私有，链接需要权限）：
+最后的改动并不大，核心只有两件事：
 
 1. 列表和详情统一使用 `expo-image`，明确启用内存与磁盘缓存。
 2. 新上传的对象带上长期 `Cache-Control`，并把这个要求写进 S3 预签名上传的签名。
@@ -67,7 +67,7 @@ const cover = <Image source={coverSource} resizeMode="cover" />
 
 这不代表 React Native `Image` 一定会在每次渲染时重新下载。iOS、Android 和底层网络栈本身也可能缓存图片。问题在于：应用代码没有明确约定内存、磁盘和跨页面复用行为，结果依赖平台与默认实现，出了问题也很难定位。
 
-PR 将列表和详情都改为 `expo-image`：
+客户端将列表和详情都改为 `expo-image`：
 
 ```tsx
 import { Image } from 'expo-image'
@@ -117,7 +117,7 @@ event.nativeEvent.source  →  event.source
 
 这时对象响应需要明确告诉客户端和 CDN：它能不能被缓存、多久不用重新确认。
 
-PR 为新上传对象增加了：
+服务端为新上传对象增加了：
 
 ```http
 Cache-Control: public, max-age=31536000, immutable
@@ -155,7 +155,7 @@ uploads/users/{userId}/circle-post/{objectId}.webp
 
 这条链路里，`Cache-Control` 是上传请求的一部分。S3 接收 PUT 后，将它保存为对象的缓存元数据；之后读取对象时，响应才会带上对应的缓存策略。
 
-为了让这个请求头成为不可省略、不可随意修改的上传契约，PR 同时修改了三个地方：
+为了让这个请求头成为不可省略、不可随意修改的上传契约，实现同时修改了三个地方：
 
 ```ts
 const signedHeaders = 'cache-control;content-type;host'
@@ -202,7 +202,7 @@ return {
 
 ## 这次测试验证了什么
 
-PR 留下了两类最小回归检查。
+这次改动留下了两类最小回归检查。
 
 移动端测试读取两个组件源码，确认它们都从 `expo-image` 导入，并声明了 `cachePolicy="memory-disk"`；详情组件还必须传入 `recyclingKey`。这种源码级测试很朴素，但能防止后续重构时无意退回 React Native `Image`。
 
@@ -218,7 +218,7 @@ expect(new URL(upload.uploadUrl).searchParams.get('X-Amz-SignedHeaders')).toCont
 
 它验证了“返回给客户端的上传头”和“签名保护的头”同时存在。
 
-不过，这些测试没有证明真实设备快了多少，也没有覆盖 CDN 和对象存储最终返回的响应头。PR 没有基准数据，所以不能严谨地写成“加载速度提升 80%”。要验证线上收益，还应做四件事：
+不过，这些测试没有证明真实设备快了多少，也没有覆盖 CDN 和对象存储最终返回的响应头。现有实现没有基准数据，所以不能严谨地写成“加载速度提升 80%”。要验证线上收益，还应做四件事：
 
 1. 冷启动加载列表，记录第一次图片请求。
 2. 进入详情，确认同一 URL 没有再次下载完整文件。
@@ -276,4 +276,3 @@ Expo Image 默认把源 URL 当缓存键。如果同一对象每次都生成不�
 - [RFC 8246：HTTP Immutable Responses](https://www.rfc-editor.org/rfc/rfc8246.html)：`immutable` 的标准语义与安全注意事项。
 - [Amazon S3 PutObject API](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)：PUT 请求中的 `Cache-Control` 对象元数据。
 - [Amazon S3：使用查询参数进行 SigV4 身份验证](https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-query-string-auth.html)：预签名 URL、规范请求和 `X-Amz-SignedHeaders`。
-- [Clawk PR #360：cache post images](https://github.com/ResonoLabs/clawk/pull/360)：本文对应的实现改动与回归检查；私有仓库，需要访问权限。
