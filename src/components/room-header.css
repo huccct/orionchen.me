@@ -1,0 +1,207 @@
+.room-header {
+  margin-bottom: 36px;
+}
+.room-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--site-muted);
+}
+.room-navigation a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+}
+.room-navigation a:hover {
+  color: var(--site-accent);
+}
+.room-navigation a:focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 4px;
+}
+.room-welcome {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid var(--site-border);
+  padding: 24px 0 32px;
+}
+.room-welcome h1 {
+  font-family: var(--font-heading);
+  font-size: 48px;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.room-welcome p {
+  margin-top: 18px;
+  color: var(--site-muted);
+  line-height: 1.8;
+  max-width: 38ch;
+}
+.room-welcome img {
+  width: 100%;
+  height: auto;
+}
+.book-shelf {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+.book-shelf details {
+  border-bottom: 5px solid var(--site-border);
+  padding-bottom: 18px;
+}
+.book-shelf summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 120px;
+}
+.book-shelf summary::-webkit-details-marker {
+  display: none;
+}
+.book-shelf summary::before {
+  content: '';
+  width: 28px;
+  height: 96px;
+  flex-shrink: 0;
+  background: #a66e4d;
+  border-left: 4px solid #89583e;
+  border-radius: 2px 5px 5px 2px;
+}
+.book-shelf details:nth-child(3n + 2) summary::before {
+  background: #858967;
+  border-color: #666e4e;
+}
+.book-shelf details:nth-child(3n) summary::before {
+  background: #747f84;
+  border-color: #535f65;
+}
+.book-shelf summary h2 {
+  font-family: var(--font-heading);
+  font-size: 23px;
+  line-height: 1.5;
+}
+.book-shelf summary span {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--site-muted);
+}
+.book-shelf summary:focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 5px;
+}
+.book-shelf details[open] summary h2,
+.book-shelf summary:hover h2 {
+  color: var(--site-accent);
+}
+.book-shelf details p {
+  font-size: 14px;
+  color: var(--site-muted);
+  line-height: 1.9;
+  margin: 12px 0;
+}
+.book-shelf details a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 13px;
+  color: var(--site-accent);
+}
+@media (max-width: 767px) {
+  .room-welcome {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 0;
+  }
+  .room-welcome h1 {
+    font-size: 32px;
+  }
+  .room-welcome p {
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .book-shelf {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.room-welcome img {
+  aspect-ratio: 8 / 5;
+  object-fit: cover;
+  border-radius: 0;
+}
+.room-guestbook .room-welcome img {
+  object-fit: cover;
+}
+.room-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  min-height: 44px;
+  color: var(--site-accent);
+  font-size: 13px;
+}
+.room-enter:focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 4px;
+}
+
+.room-welcome {
+  background: var(--site-surface);
+  border: 1px solid var(--site-border);
+  box-shadow: 5px 5px 0 var(--site-border);
+  padding: 24px;
+  margin-top: 12px;
+  gap: 24px;
+}
+.room-welcome h1 {
+  font-size: 36px;
+}
+.room-welcome img {
+  image-rendering: pixelated;
+  border: 2px solid var(--site-border);
+  aspect-ratio: 16/9;
+}
+.room-enter {
+  padding: 0 12px;
+  border: 1px solid var(--site-border);
+  background: var(--site-bg);
+  box-shadow: 2px 2px 0 var(--site-border);
+}
+.room-enter:hover {
+  border-color: var(--site-accent);
+}
+.room-navigation a {
+  color: var(--site-accent);
+}
+.detail-navigation {
+  padding: 12px 16px;
+  margin-bottom: 28px;
+  background: var(--site-surface);
+  border: 1px solid var(--site-border);
+  box-shadow: 3px 3px 0 var(--site-border);
+}
+.book-shelf summary::before {
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--site-border);
+}
+@media (max-width: 767px) {
+  .room-welcome {
+    padding: 16px;
+    gap: 18px;
+  }
+  .room-welcome h1 {
+    font-size: 28px;
+  }
+}

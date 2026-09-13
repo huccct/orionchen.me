@@ -1,6 +1,6 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { defineConfig, globalIgnores } from 'eslint/config'
+import nextVitals from 'eslint-config-next/core-web-vitals'
+import nextTs from 'eslint-config-next/typescript'
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -8,12 +8,14 @@ const eslintConfig = defineConfig([
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:
-    ".next/**",
-    ".content-collections/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
+    '.next/**',
+    '.content-collections/**',
+    'out/**',
+    'build/**',
+    'next-env.d.ts',
+    // Vendored Draco runtime; do not lint generated third-party code.
+    'public/models/draco/**',
   ]),
-]);
+])
 
-export default eslintConfig;
+export default eslintConfig

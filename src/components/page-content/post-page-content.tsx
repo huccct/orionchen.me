@@ -1,5 +1,7 @@
 import { MDXContent } from '@content-collections/mdx/react'
 import Link from 'next/link'
+import '@/components/room-header.css'
+import { ArrowLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { EarlyContentBanner } from '@/components/early-content-banner'
 import { JsonLd } from '@/components/json-ld'
@@ -8,14 +10,8 @@ import type { Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { format, type Dictionary, getDictionary } from '@/i18n/get-dictionary'
 import type { TableOfContentsItem } from '@/lib/post-metadata'
-import {
-  getPostWithNeighbors,
-  type PublishedPost,
-} from '@/lib/posts'
-import {
-  createBlogPostingJsonLd,
-  createBreadcrumbJsonLd,
-} from '@/lib/seo'
+import { getPostWithNeighbors, type PublishedPost } from '@/lib/posts'
+import { createBlogPostingJsonLd, createBreadcrumbJsonLd } from '@/lib/seo'
 
 export function PostPageContent({ locale, slug }: { locale: Locale; slug: string }) {
   const dict = getDictionary(locale)
@@ -37,6 +33,24 @@ export function PostPageContent({ locale, slug }: { locale: Locale; slug: string
         ]}
       />
       <article className="mx-auto w-full max-w-2xl min-w-0 lg:mx-0">
+        <nav
+          className="room-navigation detail-navigation"
+          aria-label={locale === 'zh' ? '阅读导航' : 'Reading navigation'}
+        >
+          <Link
+            className="hover:text-accent inline-flex min-h-11 items-center gap-2"
+            href={`${prefix || '/'}#writing-room`}
+          >
+            <ArrowLeft size={15} />
+            {locale === 'zh' ? '回到写作小屋' : 'Back to the writing room'}
+          </Link>
+          <Link
+            className="hover:text-accent inline-flex min-h-11 items-center"
+            href={`${prefix}/blog`}
+          >
+            {locale === 'zh' ? '文章目录' : 'Writing archive'}
+          </Link>
+        </nav>
         <header className="mb-8 space-y-3">
           <h1 className="font-serif text-3xl leading-tight text-balance break-words sm:text-4xl">
             {post.title}
@@ -63,13 +77,7 @@ export function PostPageContent({ locale, slug }: { locale: Locale; slug: string
   )
 }
 
-function PostTableOfContents({
-  dict,
-  items,
-}: {
-  dict: Dictionary
-  items: TableOfContentsItem[]
-}) {
+function PostTableOfContents({ dict, items }: { dict: Dictionary; items: TableOfContentsItem[] }) {
   if (items.length === 0) return null
 
   return (

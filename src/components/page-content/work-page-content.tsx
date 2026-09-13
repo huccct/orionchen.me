@@ -1,3 +1,6 @@
+import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import '@/components/room-header.css'
 import { MDXContent } from '@content-collections/mdx/react'
 import { notFound } from 'next/navigation'
 import { JsonLd } from '@/components/json-ld'
@@ -28,6 +31,16 @@ export function WorkPageContent({ locale, slug }: { locale: Locale; slug: string
           ]),
         ]}
       />
+      <nav
+        className="room-navigation detail-navigation"
+        aria-label={locale === 'zh' ? '作品导航' : 'Work navigation'}
+      >
+        <Link href={`${prefix || '/'}#works-room`}>
+          <ArrowLeft size={15} />
+          {locale === 'zh' ? '回到工作室' : 'Back to the studio'}
+        </Link>
+        <Link href={`${prefix}/works`}>{locale === 'zh' ? '作品目录' : 'Works archive'}</Link>
+      </nav>
       <header className="mb-8 space-y-3">
         <div className="flex flex-wrap gap-2">
           <StatusPill kind={work.type} label={dict.works.types[work.type]} />

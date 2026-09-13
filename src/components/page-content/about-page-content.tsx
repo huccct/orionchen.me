@@ -1,3 +1,4 @@
+import { RoomHeader } from '@/components/room-header'
 import Link from 'next/link'
 import { SectionHeader } from '@/components/section-header'
 import type { Locale } from '@/i18n/config'
@@ -11,6 +12,7 @@ export function AboutPageContent({ locale }: { locale: Locale }) {
 
   return (
     <div className="mx-auto max-w-4xl space-y-14">
+      <RoomHeader room="about" locale={locale} />
       <section>
         <SectionHeader>{dict.about.title}</SectionHeader>
         <div className="grid gap-8 md:grid-cols-[1fr_13rem] md:items-end">
@@ -18,9 +20,9 @@ export function AboutPageContent({ locale }: { locale: Locale }) {
             <p className="text-muted-foreground font-mono text-xs tracking-[0.24em] uppercase">
               {dict.about.eyebrow}
             </p>
-            <h1 className="font-serif text-4xl leading-[1.08] text-balance sm:text-5xl md:text-6xl">
+            <h2 className="font-serif text-3xl leading-tight text-balance sm:text-4xl">
               {dict.about.headline}
-            </h1>
+            </h2>
             <div className="max-w-2xl space-y-4 text-base leading-relaxed">
               <p>{dict.about.intro1}</p>
               <p className="text-muted-foreground">

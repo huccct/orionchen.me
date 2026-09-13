@@ -1,5 +1,6 @@
+import { RoomHeader } from '@/components/room-header'
 import { JsonLd } from '@/components/json-ld'
-import { SectionHeader } from '@/components/section-header'
+import { ArrowUpRight } from 'lucide-react'
 import type { Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
@@ -27,39 +28,27 @@ export function ReadingPageContent({ locale }: { locale: Locale }) {
       />
 
       <div className="mx-auto max-w-4xl space-y-10">
-        <section>
-          <SectionHeader>{dict.reading.title}</SectionHeader>
-          <div className="max-w-2xl space-y-5">
-            <p className="text-muted-foreground font-mono text-xs tracking-[0.24em] uppercase">
-              {dict.reading.eyebrow}
-            </p>
-            <h1 className="font-serif text-4xl leading-[1.08] text-balance sm:text-5xl">
-              {dict.reading.headline}
-            </h1>
-            <p className="text-muted-foreground leading-relaxed">{dict.reading.intro}</p>
-          </div>
-        </section>
-
-        <ol className="grid gap-x-10 gap-y-5 md:grid-cols-2">
-          {dict.about.readingItems.map((item, index) => (
-            <li key={item.title} className="border-border border-t pt-4">
-              <div className="flex items-start justify-between gap-4">
-                <a
-                  href={item.href}
-                  className="text-accent font-serif text-xl leading-snug"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {item.title}
-                </a>
-                <span className="text-muted-foreground shrink-0 font-mono text-[10px] tracking-wider">
-                  {String(index + 1).padStart(2, '0')}
-                </span>
-              </div>
-              <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{item.note}</p>
-            </li>
+        <RoomHeader room="reading" locale={locale} />
+        <p className="text-muted-foreground max-w-2xl leading-relaxed">{dict.reading.intro}</p>
+        <div className="book-shelf">
+          {dict.about.readingItems.map((item) => (
+            <details key={item.title}>
+              <summary>
+                <div>
+                  <h2>{item.title}</h2>
+                  <span>
+                    {locale === 'zh' ? '翻开，看看推荐理由' : 'Open to read why it stayed with me'}
+                  </span>
+                </div>
+              </summary>
+              <p>{item.note}</p>
+              <a href={item.href} target="_blank" rel="noreferrer">
+                {locale === 'zh' ? '查看这本书（新窗口）' : 'View book (new window)'}
+                <ArrowUpRight size={15} />
+              </a>
+            </details>
           ))}
-        </ol>
+        </div>
       </div>
     </>
   )

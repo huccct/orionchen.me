@@ -1,3 +1,4 @@
+import { RoomHeader } from '@/components/room-header'
 import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
 import { BlogFilter } from '@/components/blog-filter'
@@ -35,6 +36,7 @@ export function BlogListPageContent({ locale, page = 1 }: { locale: Locale; page
           ]),
         ]}
       />
+      <RoomHeader room="writing" locale={locale} />
       {allPosts.length === 0 && locale !== defaultLocale ? (
         <div>
           <SectionHeader>{dict.blog.title}</SectionHeader>

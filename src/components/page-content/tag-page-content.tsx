@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { JsonLd } from '@/components/json-ld'
 import { PostCard } from '@/components/post-card'
-import { SectionHeader } from '@/components/section-header'
+import { RoomHeader } from '@/components/room-header'
 import type { Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
@@ -33,7 +33,7 @@ export function TagPageContent({ locale, tag }: { locale: Locale; tag: string })
         ]}
       />
       <div>
-        <SectionHeader>{`${dict.breadcrumb.tags}: ${tag}`}</SectionHeader>
+        <RoomHeader room="tags" locale={locale} title={`${dict.breadcrumb.tags}: ${tag}`} />
         <div>
           {posts.map((post) => (
             <PostCard key={post.slug} pathPrefix={prefix} post={post} />

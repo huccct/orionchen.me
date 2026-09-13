@@ -1,3 +1,4 @@
+import { RoomHeader } from '@/components/room-header'
 import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
 import { SectionHeader } from '@/components/section-header'
@@ -29,6 +30,7 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
           ]),
         ]}
       />
+      <RoomHeader room="works" locale={locale} />
       <div>
         <SectionHeader>{dict.works.title}</SectionHeader>
         {works.length === 0 && locale !== defaultLocale ? (

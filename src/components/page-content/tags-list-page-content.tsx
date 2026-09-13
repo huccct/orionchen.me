@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
-import { SectionHeader } from '@/components/section-header'
+import { RoomHeader } from '@/components/room-header'
 import type { Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
 import { getDictionary } from '@/i18n/get-dictionary'
@@ -29,13 +29,13 @@ export function TagsListPageContent({ locale }: { locale: Locale }) {
         ]}
       />
       <div>
-        <SectionHeader>{dict.blog.tagsTitle}</SectionHeader>
+        <RoomHeader room="tags" locale={locale} />
         <div className="flex flex-wrap gap-2 font-mono text-sm">
           {sorted.map(([tag, count]) => (
             <Link
               key={tag}
               href={`${prefix}/tags/${encodeURIComponent(tag)}`}
-              className="border-border hover:text-accent rounded-sm border px-2 py-1"
+              className="border-border hover:text-accent topic-ticket border px-3 py-2"
             >
               {tag} <span className="text-muted-foreground">{count}</span>
             </Link>

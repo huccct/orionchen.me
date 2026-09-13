@@ -7,8 +7,9 @@ quiet, dense, text-led, and warm at the edges. The site is a personal works spac
 film, and writing, not a studio brand or conversion funnel.
 
 The visual mood is warm zinc, paper-like light mode, near-black dark mode, and a sienna
-accent that suggests old photos, field notes, and film contact sheets. Motion is sparse:
-first-screen fade-in, hover color changes, and small state transitions only.
+accent that suggests old photos, field notes, and film contact sheets. Motion is purposeful:
+the homepage paper town rotates on demand and briefly approaches a chosen building before
+navigation. Reduced-motion skips the entrance animation. Reading pages remain quiet.
 
 ## 2. Color Palette & Roles
 
@@ -68,13 +69,22 @@ States are visible but restrained:
 - `film`: sienna border/text
 - `code` and `writing`: neutral border/text
 
+Writing, works and reading headers use eye-height renders of their actual room interiors.
+The guestbook keeps its postbox portrait. Use the shared warm paper background,
+serif title (48px desktop, 32px mobile), thin divider, return-to-town and step-inside links.
+These conventional archive headers coexist with the immersive 3D interiors. The writing room also links
+to topics. Reading uses native expandable books with recommendation text and outbound links.
+
 ## 5. Layout Principles
 
 Pages use a `max-w-5xl` shell with `px-4 md:px-8`. Reading pages use `max-w-2xl` prose for
 comfortable line length. Work and post listings use dense grids with 16-24px gaps.
 
-Homepage order is fixed: Hero, Works, Writing, Guestbook. Works are mixed by medium and sorted
-by publish date, not grouped into code/film/writing lanes.
+Homepage: a viewport-filling 3D town with an uninterrupted ground plane, corner signature
+and lightweight overlaid navigation. No intro column, article list, footer or section shell.
+Building selection enters a fullscreen interior; exiting restores the street. Other pages
+retain their existing reading measure. Portrait framing brings the nearest buildings closer.
+See docs/homepage-neighborhood.md for the approved reference and interaction contract.
 
 Use full-width bands or unframed layouts for sections. Dividers are thin borders or mono
 `// Section Name` headers, not decorative blocks.
@@ -84,6 +94,10 @@ Use full-width bands or unframed layouts for sections. Dividers are thin borders
 Depth is editorial, not ornamental. Default surfaces have no shadow. Hover may add `shadow-sm`
 and a subtle border/accent shift. No glass cards, glow, parallax, floating blobs, particle
 fields, or gradient backgrounds.
+
+The homepage uses the approved retro pixel-art town, clustered shading and warm cream
+controls with restrained stepped shadows. Its matching room portraits connect the town
+to the editorial archive. Keep article text as crisp HTML rather than pixel imagery.
 
 Images should feel inspectable: posters, screenshots, stills, or real covers. Avoid blurred,
 dark, atmospheric stock imagery when the user needs to understand the work.
@@ -129,3 +143,24 @@ Use these prompts when extending the site:
 - "Review this component against DESIGN.md section 7 and remove anything that looks like a
   product landing page."
 - "Design an empty state for Works that is honest and quiet, without growth or subscribe copy."
+
+## Interior exploration
+
+The approved pixel town replaces the paper-model aesthetic. Keep the reference's
+mint/terracotta/teal roof colors, leafy paths, physical shop signs and the original
+handwritten SVG signature. Avoid generated slogans or simulated game currencies.
+
+House entry approaches the door and opens a fullscreen native dialog with a matching
+pixel-art interior. Drag or use arrow keys to pan; desks, shelves and a screen open
+real content, also available through labeled buttons. Escape closes content first,
+then exits. Reduced motion skips travel and stops sprite animation. The dog remains
+a floppy-eared companion. See `docs/pixel-town.md` for visual and interaction details.
+
+## Site-wide pixel continuity
+
+All page families use cream paper, teal accents, squared framed imagery and subtle
+stepped borders. About and topics use the shared RoomHeader alongside writing,
+works, reading and guestbook. Detail pages use compact room-return navigation;
+footers link to the locale's town. Long-form text remains normal readable HTML.
+Shared color tokens carry the same treatment into dark mode, including scene controls
+and indoor panels. Scenery dims in dark mode while the SVG signature remains legible.

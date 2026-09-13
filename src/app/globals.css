@@ -15,21 +15,21 @@
 }
 
 :root {
-  --site-bg: oklch(0.985 0 0);
-  --site-surface: oklch(0.97 0.004 60);
-  --site-fg: oklch(0.18 0.005 60);
-  --site-muted: oklch(0.46 0.006 60);
-  --site-border: oklch(0.88 0.006 60);
-  --site-accent: oklch(0.55 0.1 50);
+  --site-bg: #fcf7eb;
+  --site-surface: #f2ead8;
+  --site-fg: #343a32;
+  --site-muted: #706954;
+  --site-border: #d7c8a8;
+  --site-accent: #336e63;
 }
 
 .dark {
-  --site-bg: oklch(0.155 0.008 60);
-  --site-surface: oklch(0.215 0.01 60);
-  --site-fg: oklch(0.96 0.004 70);
-  --site-muted: oklch(0.76 0.012 70);
-  --site-border: oklch(0.37 0.012 60);
-  --site-accent: oklch(0.72 0.13 50);
+  --site-bg: #1c2826;
+  --site-surface: #253632;
+  --site-fg: #f3ead5;
+  --site-muted: #b9b69e;
+  --site-border: #506057;
+  --site-accent: #a4cbb0;
   color-scheme: dark;
 }
 
@@ -242,4 +242,90 @@ body {
     max-width: 100%;
     border-radius: var(--radius-md);
   }
+}
+
+/* Shared identity must load on direct article/archive visits as well as the town. */
+.site-signature {
+  display: block;
+  width: 220px;
+  padding: 12px 0;
+}
+.site-signature img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.dark .site-signature img {
+  filter: invert(1);
+}
+.site-signature:focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 5px;
+}
+@media (max-width: 767px) {
+  .site-signature {
+    width: 190px;
+  }
+}
+@media (max-width: 374px) {
+  .site-signature {
+    width: 165px;
+  }
+}
+
+/* Quiet paper surfaces connect readable pages to the illustrated town. */
+.site-header {
+  border-bottom: 2px solid var(--site-border);
+}
+.site-header nav a[aria-current='page'] {
+  color: var(--site-accent);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+.section-heading {
+  border-bottom: 2px solid var(--site-border);
+}
+.section-heading h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--site-fg);
+}
+.section-heading h2::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--site-accent);
+  box-shadow: 3px -3px 0 var(--site-border);
+  flex-shrink: 0;
+}
+.topic-ticket {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  background: var(--site-surface);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--site-border);
+}
+.topic-ticket:hover {
+  border-color: var(--site-accent);
+}
+.town-footer {
+  border-top: 2px solid var(--site-border);
+  background: var(--site-surface);
+}
+.town-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.town-footer a:hover {
+  color: var(--site-accent);
+}
+body :is(a, button, summary, input):focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 4px;
 }
