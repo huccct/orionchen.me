@@ -519,3 +519,81 @@ body:has(.pixel-town) .site-signature {
     display: none;
   }
 }
+
+/* Small paper notices belong to the same town as the existing signs. */
+.pixel-latest-notice {
+  position: absolute;
+  right: 1.5%;
+  top: 57%;
+  width: 160px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 5px;
+  background: var(--site-bg);
+  color: var(--site-fg);
+  border: 3px solid var(--site-border);
+  box-shadow: 4px 4px 0 #293e3540;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.pixel-latest-notice strong {
+  font-size: 13px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pixel-latest-notice:hover,
+.pixel-latest-notice:focus-visible {
+  border-color: var(--site-accent);
+}
+.pixel-recommendation {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  box-sizing: border-box;
+  padding: 24px;
+  background: var(--site-bg);
+  color: var(--site-fg);
+  border: 3px solid var(--site-border);
+  box-shadow: 6px 6px 0 #1c282640;
+}
+.pixel-recommendation::backdrop {
+  background: #162b2766;
+}
+.pixel-recommendation-kicker {
+  color: var(--site-accent);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.pixel-recommendation h2 {
+  font-size: 23px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.pixel-recommendation-summary {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-top: 12px;
+}
+.pixel-recommendation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.pixel-recommendation-actions :is(a, button) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 2px solid var(--site-border);
+  font-size: 14px;
+}
+.pixel-recommendation-actions a {
+  background: var(--site-accent);
+  color: var(--site-bg);
+}

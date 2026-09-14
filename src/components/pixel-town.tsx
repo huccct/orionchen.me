@@ -4,9 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { Pause, Play, ArrowLeft, ArrowRight, MapPin } from 'lucide-react'
+import type { NeighborhoodEntry } from '@/lib/neighborhood'
 import { neighborhoodWalk } from '@/lib/neighborhood'
 
 type Props = {
+  latestPost?: NeighborhoodEntry
   interiorOpen: boolean
   labels: string[]
   hrefs: string[]
@@ -238,13 +240,20 @@ export default function PixelTown(props: Props) {
               <span className="pixel-tooltip">{props.labels[index]} ↗</span>
             </Link>
           ))}
+          {props.latestPost && (
+            <Link className="pixel-latest-notice" href={props.latestPost.href}>
+              <span>{props.zh ? '写作屋 · 新故事' : 'Writing room · New story'}</span>
+              <strong>{props.latestPost.title}</strong>
+              <span>{props.zh ? '翻开看看 ↗' : 'Read the story ↗'}</span>
+            </Link>
+          )}
           <button
             ref={(el) => {
               sprites.current[0] = el
             }}
             className="pixel-actor pixel-dog"
             onClick={props.onDog}
-            aria-label={props.zh ? '跟狗狗去读一篇文章' : 'Follow the dog to a random post'}
+            aria-label={props.zh ? '看看狗狗推荐的文章' : 'See the dog’s reading recommendation'}
           >
             <span className="pixel-sprite" />
             <span className="dog-heart" aria-hidden="true">
