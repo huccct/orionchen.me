@@ -35,7 +35,7 @@ function CardInner({
           src={work.cover}
           alt={work.title}
           fill
-          className="object-cover"
+          className={work.coverFit === 'contain' ? 'object-contain' : 'object-cover'}
           sizes="(max-width: 768px) 100vw, 33vw"
         />
         {badge && (

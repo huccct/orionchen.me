@@ -1,7 +1,7 @@
 import { allWorks } from 'content-collections'
 import { type Locale, locales } from '@/i18n/config'
 
-const VISIBLE_WORK_SLUGS = ['documentary-ep01'] as const
+const VISIBLE_WORK_SLUGS = ['vibe', 'documentary-ep01'] as const
 const DEFAULT_LOCALE: Locale = 'zh'
 
 export function getVisibleWorks(locale: Locale = DEFAULT_LOCALE) {
@@ -9,12 +9,13 @@ export function getVisibleWorks(locale: Locale = DEFAULT_LOCALE) {
 
   return allWorks
     .filter(
-      (work) =>
-        order.has(work.slug as (typeof VISIBLE_WORK_SLUGS)[number]) && work.lang === locale
+      (work) => order.has(work.slug as (typeof VISIBLE_WORK_SLUGS)[number]) && work.lang === locale
     )
     .toSorted((a, b) => {
-      const aIndex = order.get(a.slug as (typeof VISIBLE_WORK_SLUGS)[number]) ?? Number.MAX_SAFE_INTEGER
-      const bIndex = order.get(b.slug as (typeof VISIBLE_WORK_SLUGS)[number]) ?? Number.MAX_SAFE_INTEGER
+      const aIndex =
+        order.get(a.slug as (typeof VISIBLE_WORK_SLUGS)[number]) ?? Number.MAX_SAFE_INTEGER
+      const bIndex =
+        order.get(b.slug as (typeof VISIBLE_WORK_SLUGS)[number]) ?? Number.MAX_SAFE_INTEGER
 
       return aIndex - bIndex
     })

@@ -46,6 +46,10 @@ describe('workSchema', () => {
       cover: '/images/works/movorca.jpg',
     })
     expect(r.success).toBe(true)
+    if (r.success) {
+      expect(r.data.coverFit).toBe('cover')
+      expect(workSchema.parse({ ...r.data, coverFit: 'contain' }).coverFit).toBe('contain')
+    }
   })
 
   it('rejects unknown type', () => {

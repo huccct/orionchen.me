@@ -34,6 +34,7 @@ export const workSchema = z.object({
   status: z.enum(['wip', 'live', 'archived']),
   publishedAt: z.string(),
   cover: z.string(),
+  coverFit: z.enum(['cover', 'contain']).optional().default('cover'),
   featured: z.boolean().optional().default(false),
   hasDetail: z.boolean().optional().default(false),
   updatedAt: z.string().optional(),
