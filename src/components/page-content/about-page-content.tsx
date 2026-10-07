@@ -1,3 +1,4 @@
+import { ExperimentPreview } from '@/components/experiment-preview'
 import { RoomHeader } from '@/components/room-header'
 import Link from 'next/link'
 import { SectionHeader } from '@/components/section-header'
@@ -58,6 +59,7 @@ export function AboutPageContent({ locale }: { locale: Locale }) {
         </div>
       </section>
 
+      <ExperimentPreview locale={locale} />
       <section>
         <SectionHeader>{dict.about.coordinatesTitle}</SectionHeader>
         <div className="grid gap-5 md:grid-cols-3">

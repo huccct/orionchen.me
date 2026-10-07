@@ -32,17 +32,17 @@ export function PostPageContent({ locale, slug }: { locale: Locale; slug: string
           ]),
         ]}
       />
-      <article className="mx-auto w-full max-w-2xl min-w-0 lg:mx-0">
+      <article data-page="post" className="mx-auto w-full max-w-2xl min-w-0 lg:mx-0">
         <nav
           className="room-navigation detail-navigation"
           aria-label={locale === 'zh' ? '阅读导航' : 'Reading navigation'}
         >
           <Link
             className="hover:text-accent inline-flex min-h-11 items-center gap-2"
-            href={`${prefix || '/'}#writing-room`}
+            href={prefix || '/'}
           >
             <ArrowLeft size={15} />
-            {locale === 'zh' ? '回到写作小屋' : 'Back to the writing room'}
+            {locale === 'zh' ? '回到首页' : 'Home'}
           </Link>
           <Link
             className="hover:text-accent inline-flex min-h-11 items-center"

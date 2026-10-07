@@ -1,166 +1,54 @@
-# DESIGN.md - orionchen.me
+# Design — Orion Chen
 
-## 1. Visual Theme & Atmosphere
+## Direction
 
-orionchen.me should feel like an engineer's notebook edited with documentary restraint:
-quiet, dense, text-led, and warm at the edges. The site is a personal works space for code,
-film, and writing, not a studio brand or conversion funnel.
+A personal, text-first site, inspired by the ease and restraint of antfu.me.
+The homepage introduces Orion through real writing, code experiments, film and books.
+No town, rooms, decorative objects, game navigation or oversized promotional headings.
+Keep the existing handwritten signature as the personal mark; do not copy another author's.
 
-The visual mood is warm zinc, paper-like light mode, near-black dark mode, and a sienna
-accent that suggests old photos, field notes, and film contact sheets. Motion is purposeful:
-the homepage paper town rotates on demand and briefly approaches a chosen building before
-navigation. Reduced-motion skips the entrance animation. Reading pages remain quiet.
+## System
 
-## 2. Color Palette & Roles
+Near-white #fdfdfc, charcoal #353633, secondary text #72756f, subtle borders #e8e9e4,
+and restrained moss links #507562. Dark mode uses neutral charcoal and muted green.
+Use existing Geist for navigation and introductory prose; existing serif fonts remain
+available for long-form article headings. Content measures roughly 660px on the homepage
+and archives; article pages may widen for the table of contents. Paragraphs have spacious
+line height, natural inline links, and no containing cards.
 
-| Token                 | Value                                   | Role                              |
-| --------------------- | --------------------------------------- | --------------------------------- |
-| `--color-bg`          | `oklch(0.985 0 0)` / `#fafafa`          | Default light page background     |
-| `--color-bg-dark`     | `oklch(0.18 0.005 60)`                  | Warm zinc dark background         |
-| `--color-fg`          | `oklch(0.18 0.005 60)`                  | Primary light text                |
-| `--color-fg-dark`     | `oklch(0.96 0 0)`                       | Primary dark text                 |
-| `--color-muted`       | `oklch(0.55 0.005 60)`                  | Secondary text, timestamps, hints |
-| `--color-border`      | `oklch(0.92 0.004 60)`                  | Light borders and dividers        |
-| `--color-border-dark` | `oklch(0.27 0.005 60)`                  | Dark borders and dividers         |
-| `--color-accent`      | `oklch(0.55 0.1 50)` / sienna `#A0522D` | Links, film emphasis, active UI   |
+## Surfaces and interaction
 
-Use the accent with discipline. It should mark decisions, selected states, and important
-links, never flood backgrounds.
+Lightweight header with signature, visible text navigation, locale and theme controls.
+Homepage: name, natural introduction with meaningful links, social links, latest writing.
+Writing: year-grouped plain links, quiet dates, existing pagination and topic routes.
+Archive headers are text-only. Reading shows book recommendations beside typographic covers.
+Animations are brief and restrained: a small homepage entrance and link feedback.
+Respect reduced motion, visible keyboard focus, touch targets and mobile wrapping.
+Keep published content, locale availability, comments, RSS and existing URL shapes intact.
+Retired `/town` and `/en/town` routes redirect to the matching homepage.
 
-## 3. Typography Rules
+## Typography and visual notes
 
-Use Geist Sans for interface and body text, Geist Mono for navigation, tags, dates, counters,
-and `//` decorations. Use Newsreader for English display headings and Noto Serif SC for
-Chinese display headings. Mixed Chinese and English headings may use a serif stack:
-`var(--font-newsreader), var(--font-noto-serif-sc), serif`.
+Use the existing Newsreader / Noto Serif SC stack for display titles, archive titles and
+article links; retain Geist for body and UI. The homepage name is 48px desktop / 40px mobile.
+Home and About show two small, real Vibe experiment captures with direct play links,
+unframed captions and complete, uncropped images. No pixel scenes or invented photographs.
 
-| Level | Size                                             | Use                                   |
-| ----- | ------------------------------------------------ | ------------------------------------- |
-| Hero  | `4rem` desktop, smaller via breakpoint utilities | Homepage name and one-line identity   |
-| H1    | `2rem` to `4rem`                                 | Page title, post title                |
-| H2    | `2rem`                                           | Section title, article major heading  |
-| H3    | `1.25rem`                                        | Card clusters and subsection headings |
-| Lead  | `1.25rem`                                        | Hero support copy and post summary    |
-| Body  | `1rem`                                           | Main reading text                     |
-| Small | `0.875rem`                                       | Metadata and quiet labels             |
-| Mono  | `0.875rem` or smaller                            | Tags, nav, status pills, dates        |
+Featured experiments: six real Vibe works, with two randomly selected on mount. Session
+storage excludes the previous pair on refresh. Full 1280×720 captures preserve the original
+16:9 composition with contain sizing and no hover crop; mobile uses a single column. Top navigation contains Writing, Works, Reading only;
+About and Guestbook remain available in the footer, with Guestbook also in the introduction.
 
-Line height should stay between `1.6` and `1.7` for prose. Letter spacing stays normal.
+Writing archives now show authored summaries, linked topics, dates and the first local
+article illustration where available. Year labels remain small; desktop adds a narrow
+sidebar with topic counts and existing book recommendations. Mobile stacks content and
+sidebar, preserving pagination. Do not fabricate covers for text-only articles.
 
-## 4. Component Stylings
-
-Buttons use shadcn-style variants with square confidence: `rounded-sm` or `rounded-md`, never
-larger than 8px. Primary buttons are foreground-filled with accent hover states. Secondary
-buttons are bordered, quiet, and monochrome.
-
-Cards are individual repeated items only: work cards, post cards, dialogs, and compact tool
-surfaces. Cards use a 1px border, no default shadow, and `shadow-sm` only on hover. Do not put
-cards inside cards.
-
-Inputs and textareas use a simple border, transparent background, 44px minimum height, and
-accent focus rings. Navigation uses mono labels, generous hit targets, and no pill-shaped
-marketing treatment.
-
-States are visible but restrained:
-
-- `wip`: amber border/text
-- `live`: emerald border/text
-- `archived`: muted border/text
-- `film`: sienna border/text
-- `code` and `writing`: neutral border/text
-
-Writing, works and reading headers use eye-height renders of their actual room interiors.
-The guestbook keeps its postbox portrait. Use the shared warm paper background,
-serif title (48px desktop, 32px mobile), thin divider, return-to-town and step-inside links.
-These conventional archive headers coexist with the immersive 3D interiors. The writing room also links
-to topics. Reading uses native expandable books with recommendation text and outbound links.
-
-## 5. Layout Principles
-
-Pages use a `max-w-5xl` shell with `px-4 md:px-8`. Reading pages use `max-w-2xl` prose for
-comfortable line length. Work and post listings use dense grids with 16-24px gaps.
-
-Homepage: a viewport-filling 3D town with an uninterrupted ground plane, corner signature
-and lightweight overlaid navigation. No intro column, article list, footer or section shell.
-Building selection enters a fullscreen interior; exiting restores the street. Other pages
-retain their existing reading measure. Portrait framing brings the nearest buildings closer.
-See docs/homepage-neighborhood.md for the approved reference and interaction contract.
-
-Use full-width bands or unframed layouts for sections. Dividers are thin borders or mono
-`// Section Name` headers, not decorative blocks.
-
-## 6. Depth & Elevation
-
-Depth is editorial, not ornamental. Default surfaces have no shadow. Hover may add `shadow-sm`
-and a subtle border/accent shift. No glass cards, glow, parallax, floating blobs, particle
-fields, or gradient backgrounds.
-
-The homepage uses the approved retro pixel-art town, clustered shading and warm cream
-controls with restrained stepped shadows. Its matching room portraits connect the town
-to the editorial archive. Keep article text as crisp HTML rather than pixel imagery.
-
-Images should feel inspectable: posters, screenshots, stills, or real covers. Avoid blurred,
-dark, atmospheric stock imagery when the user needs to understand the work.
-
-## 7. Do's And Don'ts
-
-Do:
-
-- Preserve `/blog/[slug]` and `/tags/[tag]` URL shapes.
-- Keep code, film, and writing first-class from the start.
-- Use `//` mono decorations and thin dividers for rhythm.
-- Prefer useful density over oversized marketing composition.
-- Keep the maintenance surface small.
-
-Don't:
-
-- Add newsletter capture, paywalls, memberships, courses, or conversion funnels.
-- Add a chatbot widget, site agent, floating help bubble, or aggressive analytics.
-- Use purple cyber palettes, large gradients, rounded-2xl cards, emoji icons, or decorative
-  orbs.
-- Add heavy animation libraries.
-- Add visual features that require weekly maintenance without creating actual work.
-
-## 8. Responsive Behavior
-
-Use one primary breakpoint: `md` at 768px. Mobile layouts are single-column, touch targets are
-at least 44px, and nav must remain scannable without text overflow. Desktop layouts may use
-two-column grids for Works and compact metadata sidebars for article pages.
-
-Hero type must not scale with viewport width. Use discrete breakpoint sizes and confirm long
-Chinese and English text wraps cleanly.
-
-## 9. Agent Prompt Guide
-
-Use these prompts when extending the site:
-
-- "Build a Work card using DESIGN.md tokens, with code/film/writing status pills and no default
-  shadow."
-- "Create a dense archive section with `// Section Name` decoration, `max-w-5xl` shell, and
-  16-24px gaps."
-- "Add a page that feels like engineer restraint plus documentary warmth; avoid gradients,
-  rounded-2xl, and marketing CTAs."
-- "Review this component against DESIGN.md section 7 and remove anything that looks like a
-  product landing page."
-- "Design an empty state for Works that is honest and quiet, without growth or subscribe copy."
-
-## Interior exploration
-
-The approved pixel town replaces the paper-model aesthetic. Keep the reference's
-mint/terracotta/teal roof colors, leafy paths, physical shop signs and the original
-handwritten SVG signature. Avoid generated slogans or simulated game currencies.
-
-House entry approaches the door and opens a fullscreen native dialog with a matching
-pixel-art interior. Drag or use arrow keys to pan; desks, shelves and a screen open
-real content, also available through labeled buttons. Escape closes content first,
-then exits. Reduced motion skips travel and stops sprite animation. The dog remains
-a floppy-eared companion. See `docs/pixel-town.md` for visual and interaction details.
-
-## Site-wide pixel continuity
-
-All page families use cream paper, teal accents, squared framed imagery and subtle
-stepped borders. About and topics use the shared RoomHeader alongside writing,
-works, reading and guestbook. Detail pages use compact room-return navigation;
-footers link to the locale's town. Long-form text remains normal readable HTML.
-Shared color tokens carry the same treatment into dark mode, including scene controls
-and indoor panels. Scenery dims in dark mode while the SVG signature remains legible.
+Reading uses custom typographic book covers (explicitly distinguished from publisher
+artwork), visible recommendation notes, and direct book links. Solid cloth-like colors
+and a slight hover tilt add tactility. Each section has distinct static artwork in the outer margins: home uses contour lines;
+writing uses manuscript rules; works uses geometric orbits; reading uses page arcs;
+about uses circular compositions; guestbook uses conversation outlines; topics uses
+connected index nodes. Article detail backgrounds are quieter. Chinese and English
+share the same section artwork. The central text column stays clear. No background
+JavaScript, tracking of the pointer, or continuous animation is needed.

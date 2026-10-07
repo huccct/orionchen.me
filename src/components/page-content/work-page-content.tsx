@@ -20,7 +20,7 @@ export function WorkPageContent({ locale, slug }: { locale: Locale; slug: string
   if (!work || !work.hasDetail) notFound()
 
   return (
-    <article className="mx-auto w-full max-w-2xl">
+    <article data-page="work" className="mx-auto w-full max-w-2xl">
       <JsonLd
         data={[
           createWorkJsonLd(work),
@@ -35,9 +35,9 @@ export function WorkPageContent({ locale, slug }: { locale: Locale; slug: string
         className="room-navigation detail-navigation"
         aria-label={locale === 'zh' ? '作品导航' : 'Work navigation'}
       >
-        <Link href={`${prefix || '/'}#works-room`}>
+        <Link href={prefix || '/'}>
           <ArrowLeft size={15} />
-          {locale === 'zh' ? '回到工作室' : 'Back to the studio'}
+          {locale === 'zh' ? '回到首页' : 'Home'}
         </Link>
         <Link href={`${prefix}/works`}>{locale === 'zh' ? '作品目录' : 'Works archive'}</Link>
       </nav>
