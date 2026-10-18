@@ -1,0 +1,388 @@
+---
+title: 大白话讲 NestJS 配置：从 .env 到 YAML，再到 config 库
+date: '2026-10-18'
+slug: nestjs-configuration-explained
+summary: 用饭馆开分店的例子，讲清配置放哪、程序怎么读、重复了听谁的，再把 .env、嵌套 YAML 和 config 库逐个接起来。
+tags:
+  - backend
+  - node
+  - typescript
+draft: false
+---
+
+## 配置，就是开店前填好的那张表
+
+假设你写了一套饭馆点餐系统。今天在自己电脑上试营业，明天搬到测试服务器，后天正式上线。
+
+点餐、下单、结账的流程都一样，但有些东西要换：程序监听哪个端口、连接哪台数据库、使用什么密码。
+
+这就像同一家饭馆开分店：**炒菜方法可以共用，每家店的地址、电话和仓库钥匙得单独填。**
+
+程序里，这张“分店信息表”就叫配置。如果把数据库地址写死在业务代码里，每搬一次家，就得翻代码找地址；漏改一处，测试程序还有可能连到正式数据库。
+
+下面就沿着这家饭馆开分店的过程，把配置放哪、怎么读取、重复了听谁的，一步步接起来。
+
+示例需要一个已有的 NestJS 项目，命令都在项目根目录执行。前半篇逐步完善官方方案，最后单独演示第三方 `config` 库。本文于 2026 年 10 月 18 日核对官方文档。
+
+## 这些名字，分别负责什么
+
+这些名字长得像，职责却不同：
+
+| 名字 | 大白话 | 负责什么 |
+| --- | --- | --- |
+| `@nestjs/config` | NestJS 配套的配置管理员 | 提供 `ConfigModule` 和 `ConfigService` |
+| 环境变量 | 开店时从外面交代的话 | 把本次运行的参数交给程序 |
+| `.env` | 把这些交代写成便条 | 保存一行一个的键值对，需要工具加载 |
+| YAML、JSON | 两种填表格式 | 保存数据，本身不会替程序读取配置 |
+| `config` | 另一位配置管理员 | 第三方 Node.js 库，也叫 node-config，按约定读取并合并配置 |
+
+所以，`@nestjs/config` 和 npm 上的 `config` 是两个不同的包。官方方案也能读取 YAML、JSON；第三方 `config` 库也不只支持 JSON。区别主要在于谁负责读取，以及采用什么组织规则。
+
+## 官方方案：先请来配置管理员
+
+我们先用 [NestJS 官方提供的配置模块](https://docs.nestjs.com/application/configuration)：
+
+```bash
+npm install @nestjs/config
+```
+
+在 `src/app.module.ts` 中引入它。下面只展示配置相关部分，已有的 Controller、Service 和其他模块继续保留：
+
+```ts
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+
+@Module({
+  imports: [ConfigModule.forRoot({ isGlobal: true })],
+})
+export class AppModule {}
+```
+
+这里有三个名字：
+
+- `ConfigModule`：把配置管理员请进来。
+- `forRoot()`：让管理员在应用启动时准备好配置。
+- `isGlobal: true`：其他模块也能找这位管理员，不用每个模块再导入一遍 `ConfigModule`。
+
+接着在项目根目录创建 `.env`，注意文件名开头有一个点：
+
+```dotenv
+PORT=3000
+DATABASE_HOST=localhost
+```
+
+默认情况下，`ConfigModule.forRoot()` 会寻找当前工作目录下的 `.env`。我们从项目根目录启动，所以文件就放在这里。
+
+想读取配置，就找 `ConfigService`。例如把 `src/main.ts` 写成：
+
+```ts
+import { NestFactory } from '@nestjs/core'
+import { ConfigService } from '@nestjs/config'
+import { AppModule } from './app.module.js'
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+  const config = app.get(ConfigService)
+  const port = Number(config.get<string>('PORT', '3000'))
+
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error('PORT 必须是 1–65535 之间的整数')
+  }
+
+  await app.listen(port)
+}
+
+void bootstrap()
+```
+
+这里的 `get('PORT', '3000')` 就是问：“端口填了多少？没填就用 3000。”
+
+`Number()` 把文字转成数字，后面的检查防止有人填入 `hello`、小数或超出范围的数字。本文使用固定端口，因此也排除了表示自动分配端口的 `0`。配置不对就启动失败，问题会更早暴露。
+
+### 写了 `number`，不代表它真的变成数字
+
+下面这行看起来像是已经拿到了数字：
+
+```ts
+const port = config.get<number>('PORT')
+```
+
+这里的 `<number>` 只是给 TypeScript 的类型提示。**如果来源是未经转换的环境变量，读到的仍然可能是字符串 `"3000"`。** 类型提示不会替你做运行时转换。
+
+布尔值也一样：`Boolean('false')` 的结果其实是 `true`，因为它是非空字符串。若约定配置只能填 `true` 或 `false`，应该先检查值是否合法，再用 `value === 'true'` 转换。
+
+## 环境变量：同一套程序，换一张开店便条
+
+环境变量可以理解成程序随身带的一组参数，在 Node.js 中通过 `process.env` 读取。加载 `.env` 可以提供这些参数，部署平台也可以直接设置，不一定需要文件。
+
+在 macOS 或 Linux 终端里运行：
+
+```bash
+PORT=4000 npm run start:dev
+```
+
+即使 `.env` 里写着 `PORT=3000`，在默认设置下，这次启动也会使用 `4000`。就像店里的便条写着三点开门，店长临时交代今天四点开门，这次就按四点来。
+
+如果想准备不同环境的文件，可以把原来的 `forRoot()` 改成：
+
+```ts
+ConfigModule.forRoot({
+  isGlobal: true,
+  envFilePath: [
+    `.env.${process.env.NODE_ENV ?? 'development'}`,
+    '.env',
+  ],
+})
+```
+
+在这段配置下，同名变量按下面的顺序取值，找到就用：
+
+```text
+启动前已有的环境变量
+  高于 .env.development（或指定环境的文件）
+  高于 .env
+```
+
+数组里排在前面的文件优先。比如运行 `NODE_ENV=production npm run start:dev`，上面就会先找 `.env.production`，再从 `.env` 补齐缺少的变量。这里仍用开发启动命令演示选文件，不是正式部署命令。
+
+`NODE_ENV` 要在启动前设置，因为程序需要先知道环境名，才能决定读取哪个文件。只把它写进尚未读取的 `.env`，就来不及参与这一步了。
+
+密码和密钥放在部署平台的环境变量里；本地使用的 `.env` 不要提交到 Git。仓库可以留一份不含真实密钥的 `.env.example`，告诉同事需要填写哪些项目。`.env` 是普通文本，并不加密。
+
+## YAML：把一长串配置整理成分栏表格
+
+配置只有两三项时，`.env` 很直观。项目变大后，数据库、缓存、邮件各有一串参数，就像一张便条挤满了字。
+
+YAML 可以把相关内容放到一起。在项目根目录创建 `config/app.yaml`：
+
+```yaml
+http:
+  port: 3000
+
+database:
+  host: localhost
+  port: 5432
+```
+
+这里的缩进表达“谁属于谁”：第一个 `port` 属于 `http`，第二个属于 `database`，不会混淆。使用空格缩进，不要用 Tab。
+
+如果把它翻译成 JavaScript 对象，就是：
+
+```js
+const settings = {
+  http: { port: 3000 },
+  database: { host: 'localhost', port: 5432 },
+}
+```
+
+这就是**嵌套配置**：把相关设置放进同一组，再给每一组起个名字。
+
+### 文件写好了，还要有人读
+
+`@nestjs/config` 不会自动把某个 YAML 文件认作配置。我们给它一个函数，让这个函数负责“打开文件、解析、检查，再把结果交回来”。
+
+安装 YAML 解析器，以及用来检查配置结构的 Zod：
+
+```bash
+npm install js-yaml zod
+npm install -D @types/js-yaml
+```
+
+创建 `src/configuration.ts`：
+
+```ts
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { load } from 'js-yaml'
+import { z } from 'zod'
+
+const portSchema = z.number().int().min(1).max(65535)
+const settingsSchema = z.object({
+  http: z.object({ port: portSchema }),
+  database: z.object({
+    host: z.string().trim().min(1),
+    port: portSchema,
+  }),
+})
+
+export default () => {
+  const file = join(process.cwd(), 'config', 'app.yaml')
+  const settings = settingsSchema.parse(load(readFileSync(file, 'utf8')))
+
+  settings.http.port = portSchema.parse(
+    Number(process.env.PORT ?? settings.http.port),
+  )
+
+  return settings
+}
+```
+
+这段代码按顺序做四件事：找到文件，用 `js-yaml` 读懂 YAML，用 Zod 检查字段和类型，再用环境变量 `PORT` 覆盖 HTTP 端口。没有设置 `PORT`，就保留 YAML 中的值。
+
+`schema` 在这里就是“填表规则”：端口必须是规定范围内的整数，数据库地址必须是非空文字。`.parse()` 按规则检查，出错就抛异常；文件不存在或 YAML 格式写错，也会让启动停止。
+
+这里先要求 YAML 本身是一份合法的基础配置，再检查覆盖值。YAML 里的端口写成数字 `3000`，不要加引号写成字符串 `"3000"`。
+
+接下来，把配置函数接到 `src/app.module.ts`。合并前面的环境文件设置后，配置相关代码如下；已有的其他模块、Controller 和 Service 继续保留：
+
+```ts
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import configuration from './configuration.js'
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: [
+        `.env.${process.env.NODE_ENV ?? 'development'}`,
+        '.env',
+      ],
+      load: [configuration],
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+`load: [configuration]` 的意思是：“环境变量准备好以后，再执行这个函数，把它返回的对象也收进配置里。”这就是 YAML 文件和 NestJS 之间的连接处。
+
+### 嵌套配置，用点号一路找下去
+
+现在读取端口的路径变成了 `http.port`。`src/main.ts` 可以缩短为：
+
+```ts
+import { NestFactory } from '@nestjs/core'
+import { ConfigService } from '@nestjs/config'
+import { AppModule } from './app.module.js'
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule)
+  const config = app.get(ConfigService)
+  await app.listen(config.getOrThrow<number>('http.port'))
+}
+
+void bootstrap()
+```
+
+此时可以使用 `<number>`，因为前面的配置函数已经把值转换并检查过了。`getOrThrow()` 在配置不存在时抛错；普通 `get()` 则可能返回 `undefined`。
+
+在已有的 `config` 实例上，读取数据库地址可以写：
+
+```ts
+const host = config.getOrThrow<string>('database.host')
+```
+
+点号就是找东西的路线：“先找 `database` 那一栏，再找里面的 `host`。”
+
+这份示例只给 HTTP 端口写了覆盖规则。如果前面的 `.env` 仍有 `PORT=3000`，你把 YAML 的端口改成 `5000`，最终还是 `3000`。要验证 YAML 的默认值，先移除终端和所加载 `.env` 文件中的 `PORT`。
+
+同理，前面 `.env` 中的 `DATABASE_HOST` **不会自动覆盖** YAML 的 `database.host`。这是两个不同的名字，需要在配置函数里明确映射并校验。YAML 中直接写 `${DATABASE_HOST}`，`js-yaml` 也不会自动替换它。
+
+本文用 `process.cwd()` 从启动目录找文件。因此部署时，需要把 `config/app.yaml` 一起带上，并从项目根目录运行。只复制编译后的 `dist` 会缺少这份文件；如果改成把 YAML 放在 `src` 里、随编译产物部署，则需要配置 Nest CLI 的资源复制。
+
+### 用两次启动，确认自己真的接上了
+
+在 macOS 或 Linux 下执行：
+
+```bash
+PORT=4000 npm run start:dev
+```
+
+服务应该监听 `4000`。另开一个终端运行 `curl -i http://localhost:4000/`，应收到 HTTP 响应；没有配置首页路由时，返回 `404` 也说明服务已启动。按 `Ctrl+C` 停止服务，再运行：
+
+```bash
+PORT=hello npm run start:dev
+```
+
+这次应该在开始监听前报错。前一次检查覆盖规则，后一次检查填错配置时能否及时停下来。
+
+## 第三方 config 库：总店一份默认表，分店只写差异
+
+前面我们自己决定读取哪份 YAML、哪些环境变量可以覆盖它。[第三方 `config` 库](https://github.com/node-config/node-config)提供了另一套现成约定：先读默认配置，再根据运行环境叠加差异。
+
+可以把它理解成：总店先定一张通用表，杭州店只改杭州店不同的几项，不用重新抄整张表。
+
+下面是一个独立演示，不需要和前面的官方方案混在一起。安装：
+
+```bash
+npm install config
+```
+
+在项目根目录创建这两个文件：
+
+```text
+config/
+├── default.json
+└── production.json
+```
+
+`config/default.json` 放基础配置：
+
+```json
+{
+  "http": { "port": 3000 },
+  "database": {
+    "host": "localhost",
+    "port": 5432
+  }
+}
+```
+
+`config/production.json` 只写生产环境不同的部分：
+
+```json
+{
+  "database": {
+    "host": "db.internal.example"
+  }
+}
+```
+
+在根目录创建 `check-config.cjs`。用 `.cjs` 明确采用 CommonJS，这个小例子就不依赖 NestJS 项目自身的模块设置：
+
+```js
+const config = require('config')
+
+console.log(config.get('http.port'))
+console.log(config.get('database.host'))
+console.log(config.get('database.port'))
+```
+
+在 macOS 或 Linux 下，从项目根目录运行：
+
+```bash
+NODE_ENV=production node check-config.cjs
+```
+
+只存在上述两份 JSON、没有其他覆盖来源时，预期输出：
+
+```text
+3000
+db.internal.example
+5432
+```
+
+数据库地址采用生产配置，两个端口沿用默认配置。这里合并的是嵌套对象中的字段，不会因为生产配置写了 `database`，就丢掉默认配置中的 `database.port`。
+
+`db.internal.example` 只是演示占位地址，代码也没有真的连接数据库。JSON 格式不要写注释或尾随逗号。
+
+### 两个 `get()`，缺配置时反应不同
+
+NestJS 的 `ConfigService.get()` 查不到配置时，通常返回 `undefined`；第三方库的 `config.get()` 查不到键时会抛错。可选配置可以先用 `config.has()` 判断。
+
+此外，node-config 不会自动猜出 `DATABASE_HOST` 应该对应 `database.host`，也不会仅仅因为目录里有 `.env` 就替你加载它。环境变量映射要按它的规则配置，环境名要在导入这个库之前确定。
+
+它的价值在于**按约定管理多套配置及其覆盖关系**。如果项目只有一份小 JSON，Node.js 的 `readFileSync()` 加 `JSON.parse()` 就能读取，不必为了读文件专门换一套配置管理工具。
+
+## 自己做项目，该怎么选
+
+| 你的情况 | 可以先用什么 |
+| --- | --- |
+| 普通 NestJS 项目，配置不多 | `@nestjs/config` 加 `.env` |
+| 配置按数据库、缓存等分组后更容易读 | 官方模块加自定义配置函数，按需使用 YAML |
+| 团队已有 node-config 规范，需要默认配置与环境差异合并 | 沿用第三方 `config` 库 |
+
+如果是我新建一个普通 NestJS 项目，会先用官方模块加 `.env`。等到配置确实需要分组，再加 YAML；如果团队已经使用 node-config，就沿用现有约定。先让每个值从哪里来一目了然，再考虑增加层次。
+
+回到饭馆开分店这件事：业务代码负责把菜做好，配置告诉它“今天在哪家店开工”。管理员负责读表，文件负责存表，环境变量负责交代本次运行的差异。分清这三件事，换环境时就不必满项目找地址和密码了。
