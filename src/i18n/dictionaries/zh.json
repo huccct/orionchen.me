@@ -122,42 +122,50 @@
       {
         "title": "这世界既残酷也温柔",
         "href": "https://book.douban.com/subject/26984629/",
-        "note": "给自己留一点不被磨平的余地"
+        "note": "给自己留一点不被磨平的余地",
+        "cover": "/images/books/cruel-and-gentle.webp"
       },
       {
         "title": "币安人生",
         "href": "https://www.amazon.com/%E5%B9%A3%E5%AE%89%E4%BA%BA%E7%94%9F-%E5%B9%B8%E9%81%8B%E3%80%81%E9%9F%8C%E6%80%A7%E8%88%87%E4%BF%9D%E8%AD%B7%E7%94%A8%E6%88%B6%E7%9A%84%E5%9B%9E%E6%86%B6%E9%8C%84-Traditional-Changpeng-Zhao-ebook/dp/B0GDG6D3WP",
-        "note": "看一个工程师怎么撞上时代第三幕"
+        "note": "看一个工程师怎么撞上时代第三幕",
+        "cover": "/images/books/binance-life.webp"
       },
       {
         "title": "史蒂夫·乔布斯传",
         "href": "https://book.douban.com/subject/6889859/",
-        "note": "看审美、控制欲与产品直觉如何塑造一家公司"
+        "note": "看审美、控制欲与产品直觉如何塑造一家公司",
+        "cover": "/images/books/steve-jobs.webp"
       },
       {
         "title": "埃隆·马斯克传",
         "href": "https://book.douban.com/subject/36518892/",
-        "note": "看极端使命感如何同时成为引擎与代价"
+        "note": "看极端使命感如何同时成为引擎与代价",
+        "cover": "/images/books/elon-musk.webp"
       },
       {
         "title": "黑客与画家",
         "href": "https://book.douban.com/subject/6021440/",
-        "note": "写代码的人为什么也该懂商业"
+        "note": "写代码的人为什么也该懂商业",
+        "cover": "/images/books/hackers-and-painters.webp"
       },
       {
         "title": "禅与摩托车维修艺术",
         "href": "https://book.douban.com/subject/6811366/",
-        "note": "关于认真做一件事"
+        "note": "关于认真做一件事",
+        "cover": "/images/books/zen-and-motorcycle-maintenance.webp"
       },
       {
         "title": "The Mom Test",
         "href": "https://book.douban.com/subject/26320572/",
-        "note": "怎么问问题才不会被自己骗"
+        "note": "怎么问问题才不会被自己骗",
+        "cover": "/images/books/the-mom-test.webp"
       },
       {
         "title": "资本论",
         "href": "https://book.douban.com/subject/30316487/",
-        "note": "看清自己卖的是什么"
+        "note": "看清自己卖的是什么",
+        "cover": "/images/books/capital.webp"
       }
     ]
   },

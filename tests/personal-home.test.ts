@@ -1,7 +1,10 @@
+import fs from 'node:fs'
+import path from 'node:path'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { expect, it, vi } from 'vitest'
 import { HomePageContent } from '@/components/page-content/home-page-content'
+import { ReadingPageContent } from '@/components/page-content/reading-page-content'
 import { RoomHeader } from '@/components/room-header'
 import { BlogFilter } from '@/components/blog-filter'
 import { getDictionary } from '@/i18n/get-dictionary'
@@ -73,4 +76,18 @@ it('shows article context and local artwork without requiring every post to have
     React.createElement(PostCard, { post: { ...post, content: '' } })
   )
   expect(textOnly).not.toContain('<img ')
+})
+
+it('renders a real local cover for every recommendation in both languages', () => {
+  for (const locale of ['zh', 'en'] as const) {
+    const books = getDictionary(locale).about.readingItems
+    const html = renderToStaticMarkup(React.createElement(ReadingPageContent, { locale }))
+    expect(html.match(/<img /g)).toHaveLength(books.length)
+    expect(html).not.toMatch(/Orion’s bookshelf|reading-book-imprint|reading-colophon/)
+    for (const book of books) {
+      const cover = fs.readFileSync(path.join(process.cwd(), 'public', book.cover))
+      expect(cover.toString('ascii', 8, 12)).toBe('WEBP')
+      expect(html).toContain(encodeURIComponent(book.cover))
+    }
+  }
 })

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { RoomHeader } from '@/components/room-header'
 import { JsonLd } from '@/components/json-ld'
 import { ArrowUpRight } from 'lucide-react'
@@ -27,7 +28,7 @@ export function ReadingPageContent({ locale }: { locale: Locale }) {
         ]}
       />
 
-      <div className="reading-page mx-auto max-w-4xl">
+      <div className="archive-page reading-page">
         <RoomHeader room="reading" locale={locale} />
         <p className="text-muted-foreground max-w-2xl leading-relaxed">{dict.reading.intro}</p>
         <div className="book-shelf">
@@ -40,11 +41,12 @@ export function ReadingPageContent({ locale }: { locale: Locale }) {
                 rel="noreferrer"
                 aria-label={`${item.title}${locale === 'zh' ? '（新窗口）' : ' (new window)'}`}
               >
-                <span className="reading-book-title">{item.title}</span>
-                <span className="reading-book-rule" aria-hidden="true" />
-                <span className="reading-book-imprint" aria-hidden="true">
-                  Orion’s bookshelf
-                </span>
+                <Image
+                  src={item.cover}
+                  alt={locale === 'zh' ? `${item.title}封面` : `Cover of ${item.title}`}
+                  fill
+                  sizes="(max-width: 767px) 105px, 118px"
+                />
               </a>
               <div className="reading-book-note">
                 <h2>{item.title}</h2>
@@ -60,11 +62,6 @@ export function ReadingPageContent({ locale }: { locale: Locale }) {
             </article>
           ))}
         </div>
-        <p className="reading-colophon">
-          {locale === 'zh'
-            ? '封面为本站书名排版，非原版书封。'
-            : 'Covers are typographic interpretations, not publisher artwork.'}
-        </p>
       </div>
     </>
   )

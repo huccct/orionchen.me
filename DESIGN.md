@@ -12,8 +12,8 @@ Keep the existing handwritten signature as the personal mark; do not copy anothe
 Near-white #fdfdfc, charcoal #353633, secondary text #72756f, subtle borders #e8e9e4,
 and restrained moss links #507562. Dark mode uses neutral charcoal and muted green.
 Use existing Geist for navigation and introductory prose; existing serif fonts remain
-available for long-form article headings. Content measures roughly 660px on the homepage
-and archives; article pages may widen for the table of contents. Paragraphs have spacious
+available for long-form article headings. Content measures roughly 660px on the homepage; Writing, Works and Reading share a 1080px outer container with matching
+title alignment and header spacing. Article pages may widen for the table of contents. Paragraphs have spacious
 line height, natural inline links, and no containing cards.
 
 ## Surfaces and interaction
@@ -21,7 +21,7 @@ line height, natural inline links, and no containing cards.
 Lightweight header with signature, visible text navigation, locale and theme controls.
 Homepage: name, natural introduction with meaningful links, social links, latest writing.
 Writing: year-grouped plain links, quiet dates, existing pagination and topic routes.
-Archive headers are text-only. Reading shows book recommendations beside typographic covers.
+Archive headers are text-only. Reading shows book recommendations beside real publisher covers.
 Animations are brief and restrained: a small homepage entrance and link feedback.
 Respect reduced motion, visible keyboard focus, touch targets and mobile wrapping.
 Keep published content, locale availability, comments, RSS and existing URL shapes intact.
@@ -44,9 +44,11 @@ article illustration where available. Year labels remain small; desktop adds a n
 sidebar with topic counts and existing book recommendations. Mobile stacks content and
 sidebar, preserving pagination. Do not fabricate covers for text-only articles.
 
-Reading uses custom typographic book covers (explicitly distinguished from publisher
-artwork), visible recommendation notes, and direct book links. Solid cloth-like colors
-and a slight hover tilt add tactility. Each section has distinct static artwork in the outer margins: home uses contour lines;
+Reading uses real book covers, downloaded and optimized as local WebP assets, with
+visible recommendation notes and direct book links. Image sources are recorded in
+public/images/books/sources.json. Preserve each cover without cropping. Reading and Works
+use two columns on desktop and one on narrow screens; work titles and badges stack so
+long titles remain readable. Each section has distinct static artwork in the outer margins: home uses contour lines;
 writing uses manuscript rules; works uses geometric orbits; reading uses page arcs;
 about uses circular compositions; guestbook uses conversation outlines; topics uses
 connected index nodes. Article detail backgrounds are quieter. Chinese and English

@@ -21,7 +21,7 @@ export function BlogListPageContent({ locale, page = 1 }: { locale: Locale; page
   const pagedPosts = getBlogPagePosts(page, allPosts)
 
   return (
-    <>
+    <div className="archive-page">
       <JsonLd
         data={[
           createCollectionPageJsonLd({
@@ -57,6 +57,6 @@ export function BlogListPageContent({ locale, page = 1 }: { locale: Locale; page
           pathPrefix={prefix}
         />
       )}
-    </>
+    </div>
   )
 }

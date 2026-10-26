@@ -6,7 +6,7 @@ import './room-header.css'
 
 const rooms = {
   writing: [
-    '文章',
+    '写作',
     'Writing',
     '把想法放到纸上，再慢慢想清楚。',
     'Put a thought on paper. Give it room to grow.',

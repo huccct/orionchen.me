@@ -1,4 +1,8 @@
 .room-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
   margin: 0 0 48px;
 }
 .room-welcome h1 {
@@ -21,7 +25,7 @@
   font-size: 12px;
   color: var(--site-muted);
   min-height: 44px;
-  margin-top: 12px;
+  flex-shrink: 0;
 }
 .room-navigation {
   display: flex;
@@ -43,6 +47,11 @@
   color: var(--site-fg);
 }
 @media (max-width: 767px) {
+  .room-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
   .room-welcome h1 {
     font-size: 32px;
   }

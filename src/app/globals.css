@@ -609,12 +609,8 @@ body ::selection {
 }
 
 /* Archives offer enough context to choose what to read. */
-body > main:has(.writing-layout) {
+body > main:has(.archive-page) {
   max-width: 1080px;
-  padding-top: 40px;
-}
-body > main:has(.writing-layout) .room-header {
-  margin-bottom: 30px;
 }
 .writing-layout {
   display: grid;
@@ -816,12 +812,6 @@ body:has([data-page='post'])::before {
 body:has([data-page='work'])::before {
   transform: rotate(180deg);
 }
-body:has(.reading-page) > main {
-  max-width: 1040px;
-}
-.reading-page > .room-header {
-  margin-bottom: 20px;
-}
 .reading-page > p {
   max-width: 55ch;
 }
@@ -840,61 +830,20 @@ body:has(.reading-page) > main {
   border-bottom: 1px solid var(--site-border);
 }
 .reading-book-cover {
-  --cloth: #526859;
-  display: flex;
-  flex-direction: column;
   position: relative;
-  min-height: 174px;
-  padding: 20px 16px 16px 20px;
-  color: #fff8e8;
-  background: var(--cloth);
-  border-radius: 2px 5px 5px 2px;
-  box-shadow: 4px 6px 12px #00000016;
-  transform-origin: left center;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+  display: block;
+  height: 180px;
+  transition: transform 0.2s;
 }
-.reading-book-cover::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 8px;
-  width: 1px;
-  background: #ffffff30;
-}
-.reading-book:nth-child(4n + 2) .reading-book-cover {
-  --cloth: #805c49;
-}
-.reading-book:nth-child(4n + 3) .reading-book-cover {
-  --cloth: #4b5d72;
-}
-.reading-book:nth-child(4n) .reading-book-cover {
-  --cloth: #736348;
+.reading-book-cover img {
+  display: block;
+  object-fit: contain;
+  object-position: left center;
+  border-radius: 2px;
+  box-shadow: 3px 5px 12px #00000016;
 }
 .reading-book-cover:is(:hover, :focus-visible) {
-  transform: perspective(600px) rotateY(-9deg) translateY(-3px);
-  box-shadow: 7px 10px 18px #00000020;
-}
-.reading-book-title {
-  font-family: var(--font-heading);
-  font-size: 19px;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-.reading-book-rule {
-  height: 1px;
-  width: 24px;
-  background: currentColor;
-  opacity: 0.55;
-  margin: 18px 0;
-}
-.reading-book-imprint {
-  margin-top: auto;
-  font-family: var(--font-newsreader), serif;
-  font-size: 10px;
-  font-style: italic;
+  transform: translateY(-3px);
 }
 .reading-book-note h2 {
   font-family: var(--font-heading);
@@ -917,11 +866,6 @@ body:has(.reading-page) > main {
   font-size: 12px;
   color: var(--site-accent);
 }
-.reading-colophon {
-  margin-top: 28px;
-  color: var(--site-muted);
-  font-size: 11px;
-}
 @media (max-width: 767px) {
   .book-shelf {
     grid-template-columns: 1fr;
@@ -933,7 +877,7 @@ body:has(.reading-page) > main {
     padding: 24px 0;
   }
   .reading-book-cover {
-    min-height: 160px;
+    height: 160px;
   }
   body::before {
     background-size: auto 100svh;

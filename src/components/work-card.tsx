@@ -36,7 +36,7 @@ function CardInner({
           alt={work.title}
           fill
           className={work.coverFit === 'contain' ? 'object-contain' : 'object-cover'}
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="(max-width: 639px) 100vw, (max-width: 1080px) 50vw, 496px"
         />
         {badge && (
           <span className="border-border bg-background/90 text-muted-foreground absolute top-2 right-2 rounded-sm border px-2 py-0.5 font-mono text-xs backdrop-blur">
@@ -45,8 +45,8 @@ function CardInner({
         )}
       </div>
       <div className="space-y-2 p-4">
-        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-          <h3 className="min-w-0 font-serif text-base break-words">{work.title}</h3>
+        <div className="flex min-w-0 flex-col gap-2">
+          <h3 className="min-w-0 font-serif text-xl break-words">{work.title}</h3>
           <div className="flex shrink-0 flex-wrap gap-1">
             <StatusPill kind={work.type} label={labels.types[work.type]} />
             {work.status !== 'live' && (
@@ -54,7 +54,7 @@ function CardInner({
             )}
           </div>
         </div>
-        <p className="text-muted-foreground line-clamp-2 text-xs">{work.summary}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">{work.summary}</p>
       </div>
     </>
   )

@@ -29,7 +29,7 @@ export function WorksFilter({
         <Tabs
           value={kind}
           onValueChange={(value) => setKind(value as (typeof KINDS)[number])}
-          className="mb-6"
+          className="mb-6 min-h-11"
         >
           <TabsList className="max-w-full [scrollbar-width:none] overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden">
             {visibleKinds.map((item) => (
@@ -40,7 +40,7 @@ export function WorksFilter({
           </TabsList>
         </Tabs>
       )}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {filtered.map((work) => (
           <WorkCard key={work.slug} labels={dict.works} pathPrefix={pathPrefix} work={work} />
         ))}

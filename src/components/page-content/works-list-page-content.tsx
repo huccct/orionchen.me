@@ -1,7 +1,6 @@
 import { RoomHeader } from '@/components/room-header'
 import Link from 'next/link'
 import { JsonLd } from '@/components/json-ld'
-import { SectionHeader } from '@/components/section-header'
 import { WorksFilter } from '@/components/works-filter'
 import { defaultLocale, type Locale } from '@/i18n/config'
 import { localePathPrefix } from '@/i18n/config'
@@ -15,7 +14,7 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
   const works = getVisibleWorks(locale)
 
   return (
-    <>
+    <div className="archive-page">
       <JsonLd
         data={[
           createCollectionPageJsonLd({
@@ -32,7 +31,6 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
       />
       <RoomHeader room="works" locale={locale} />
       <div>
-        <SectionHeader>{dict.works.title}</SectionHeader>
         {works.length === 0 && locale !== defaultLocale ? (
           <p className="text-muted-foreground text-sm">
             {dict.works.emptyEnglish}{' '}
@@ -44,6 +42,6 @@ export function WorksListPageContent({ locale }: { locale: Locale }) {
           <WorksFilter dict={dict} works={works} pathPrefix={prefix} />
         )}
       </div>
-    </>
+    </div>
   )
 }
