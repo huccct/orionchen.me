@@ -1,51 +1,58 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, ArrowRight, BookOpen } from 'lucide-react'
-import { ThemeToggle } from '@/components/theme-toggle'
-import { reactConcepts, reactReflections, renderTrace, type UpdateMode } from './react-data'
+import { ArrowRight } from 'lucide-react'
+import { reactReflections, renderTrace, type UpdateMode } from './react-data'
 import './react-explorer.css'
-
-const modes = ['知识地图', '渲染实验', '理解检查', '深入资料'] as const
+import { KnowledgeMapWorkspace } from './knowledge-map-workspace'
+import { reactMapBranches, reactMapConcepts, reactMapNotes } from './react-map-data'
 
 export function ReactExplorer({ reference }: { reference: ReactNode }) {
+  return (
+    <KnowledgeMapWorkspace
+      title="React"
+      subtitle="用数据描述界面"
+      branches={reactMapBranches}
+      concepts={reactMapConcepts}
+      conceptNotes={reactMapNotes}
+      modes={['知识地图', '渲染实验', '理解检查']}
+      reference={reference}
+      experimentFor={() => '渲染实验'}
+      Experiment={ReactMapActivities}
+    />
+  )
+}
+
+function ReactMapActivities({
+  mode,
+  onExplore,
+}: {
+  mode: string
+  onExplore: (id: string) => void
+}) {
+  return (
+    <ReactActivities
+      mode={mode}
+      explore={(id) => onExplore(reactMapConcepts.find((node) => node.branch === id)?.id ?? id)}
+    />
+  )
+}
+
+function ReactActivities({ mode, explore }: { mode: string; explore: (id: string) => void }) {
   const workspace = useRef<HTMLElement>(null)
-  const inspector = useRef<HTMLElement>(null)
   const timeline = useRef<HTMLElement>(null)
-  const focusConcept = useRef(false)
-  const [mode, setMode] = useState<(typeof modes)[number]>('知识地图')
-  const [selected, setSelected] = useState('components')
   const [updateMode, setUpdateMode] = useState<UpdateMode>('replace')
   const [prediction, setPrediction] = useState<number | null>(null)
   const [step, setStep] = useState(-1)
   const [reflection, setReflection] = useState(0)
   const [responses, setResponses] = useState<Record<number, string>>({})
   const [revealed, setRevealed] = useState<Record<number, boolean>>({})
-  const concept = reactConcepts.find((item) => item.id === selected)!
   const trace = renderTrace(updateMode)
   const current = trace[Math.max(step, 0)]!
   const task = reactReflections[reflection]!
   useEffect(() => {
-    const target = focusConcept.current
-      ? inspector.current
-      : workspace.current?.querySelector<HTMLElement>('h2')
-    focusConcept.current = false
-    workspace.current?.scrollTo({ top: 0 })
-    target?.focus({ preventScroll: true })
-    if (target === inspector.current) target?.scrollIntoView({ block: 'start' })
+    workspace.current?.querySelector<HTMLElement>('h2')?.focus({ preventScroll: true })
   }, [mode])
-  function selectConcept(id: string) {
-    setSelected(id)
-    inspector.current?.focus({ preventScroll: true })
-    if (window.matchMedia('(max-width: 760px)').matches)
-      inspector.current?.scrollIntoView({ block: 'start' })
-  }
-  function explore(id: string) {
-    setSelected(id)
-    focusConcept.current = true
-    setMode('知识地图')
-  }
   useEffect(() => {
     if (step !== 0) return
     timeline.current?.focus({ preventScroll: true })
@@ -62,102 +69,8 @@ export function ReactExplorer({ reference }: { reference: ReactNode }) {
   }
 
   return (
-    <div className="react-learning">
-      <header className="react-toolbar">
-        <div className="react-brand">
-          <Link href="/learning" aria-label="回到知识地图">
-            <ArrowLeft size={19} />
-          </Link>
-          <h1>React</h1>
-        </div>
-        <nav aria-label="React 学习视图">
-          {modes.map((item) => (
-            <button
-              key={item}
-              type="button"
-              aria-pressed={mode === item}
-              onClick={() => setMode(item)}
-            >
-              {item === '深入资料' && <BookOpen size={15} aria-hidden="true" />}
-              {item}
-            </button>
-          ))}
-        </nav>
-        <ThemeToggle />
-      </header>
-      <main ref={workspace} className="react-workspace">
-        {mode === '知识地图' && (
-          <>
-            <div className="react-heading">
-              <h2 tabIndex={-1}>页面为什么会变化？</h2>
-              <p>从组件到状态，沿着六条主干建立联系。选择一个概念，展开它的用途与边界。</p>
-            </div>
-            <div className="react-map-layout">
-              <section className="react-map" aria-label="React 六条知识主干">
-                <div className="react-map-root">
-                  <strong>React</strong>
-                  <span>用数据描述界面</span>
-                </div>
-                <div className="react-branches">
-                  {reactConcepts.map((item, index) => (
-                    <button
-                      type="button"
-                      key={item.id}
-                      aria-pressed={selected === item.id}
-                      onClick={() => selectConcept(item.id)}
-                    >
-                      <span className="react-branch-title">{item.title}</span>
-                      <span>{item.terms}</span>
-                      <ArrowRight size={16} aria-hidden="true" />
-                      <span className="react-branch-order" aria-hidden="true">
-                        {index + 1}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-                <p className="react-note">连线表示知识分组；阅读顺序从上到下，不代表运行顺序。</p>
-              </section>
-              <section
-                ref={inspector}
-                tabIndex={-1}
-                className="react-inspector"
-                aria-label="概念详情"
-                aria-live="polite"
-              >
-                <h2 tabIndex={-1}>{concept.title}</h2>
-                <h3>{concept.question}</h3>
-                <p>{concept.description}</p>
-                <h4>放进一个场景</h4>
-                <p>{concept.example}</p>
-                <h4>容易混淆的地方</h4>
-                <p>{concept.mistake}</p>
-                <h4>试着做到</h4>
-                <p>{concept.task}</p>
-                <div className="react-related">
-                  <span>接着看</span>
-                  {concept.related.map((id) => (
-                    <button type="button" key={id} onClick={() => selectConcept(id)}>
-                      {reactConcepts.find((item) => item.id === id)!.title}
-                    </button>
-                  ))}
-                </div>
-                <details key={concept.id}>
-                  <summary>查看代码片段</summary>
-                  <pre>
-                    <code>{concept.code}</code>
-                  </pre>
-                  <p className="react-note">示意片段，省略导入与周边组件。</p>
-                </details>
-                <a className="react-doc" href={`https://react.dev/learn/${concept.doc}`}>
-                  阅读 React 官方文档 <ArrowRight size={14} aria-hidden="true" />
-                </a>
-                <button className="react-primary" type="button" onClick={() => setMode('渲染实验')}>
-                  动手看一次更新 <ArrowRight size={16} aria-hidden="true" />
-                </button>
-              </section>
-            </div>
-          </>
-        )}
+    <div className="react-learning react-activities">
+      <section ref={workspace} className="react-workspace">
         {mode === '渲染实验' && (
           <>
             <div className="react-heading">
@@ -318,7 +231,7 @@ export function ReactExplorer({ reference }: { reference: ReactNode }) {
               placeholder="我的判断是……因为……我会这样验证……"
             />
             <p className="react-note">
-              仅保留在当前页面内存，刷新或离开后清空；不上传、不自动评分。
+              仅保留在当前练习视图，切换视图、刷新或离开后清空；不上传、不自动评分。
             </p>
             <details key={task.title}>
               <summary>看一点提示</summary>
@@ -343,13 +256,7 @@ export function ReactExplorer({ reference }: { reference: ReactNode }) {
             </button>
           </div>
         )}
-        {mode === '深入资料' && (
-          <div className="react-reference">
-            <h2 tabIndex={-1}>从这张地图继续</h2>
-            <div className="prose">{reference}</div>
-          </div>
-        )}
-      </main>
+      </section>
     </div>
   )
 }

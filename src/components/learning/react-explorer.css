@@ -409,3 +409,20 @@ body:has(.react-learning) > footer {
     margin-bottom: 24px;
   }
 }
+
+/* Activities live inside the shared mind-map workspace, not a second app shell. */
+.react-learning.react-activities {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  display: block;
+  margin: 0;
+}
+.react-activities .react-workspace {
+  overflow: visible;
+  padding: 24px 0 48px;
+}
+.react-activities .react-timeline-panel:focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 4px;
+}

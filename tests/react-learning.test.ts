@@ -18,3 +18,23 @@ describe('React teaching trace', () => {
     }
   })
 })
+
+import {
+  reactMapBranches,
+  reactMapConcepts,
+  reactMapNotes,
+} from '@/components/learning/react-map-data'
+
+it('connects every React leaf to a branch, inspector and valid related concepts', () => {
+  const branches = new Set(reactMapBranches.map((branch) => branch.id))
+  const nodes = new Set(reactMapConcepts.map((node) => node.id))
+  expect(nodes.size).toBe(reactMapConcepts.length)
+  for (const node of reactMapConcepts) {
+    expect(branches.has(node.branch)).toBe(true)
+    const notes = reactMapNotes[node.id]!
+    expect(notes.code.length).toBeGreaterThan(0)
+    for (const related of notes.related) expect(nodes.has(related)).toBe(true)
+  }
+  for (const branch of branches)
+    expect(reactMapConcepts.some((node) => node.branch === branch)).toBe(true)
+})

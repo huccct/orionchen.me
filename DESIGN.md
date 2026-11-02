@@ -78,12 +78,12 @@ not necessarily the NestJS tree.
 
 ### React learning extension
 
-React inherits the neutral/moss tokens, serif section headings and existing body/UI
-fonts. Its full-viewport Read surface pairs a vertical six-branch map with a concept
-inspector; the update experiment pairs prediction controls with a four-stage timeline.
-Use quiet rules and surface tones, with accent selection feedback and separate calculated
-and committed values. At 760px and below, stack the columns and reveal selected details
-or the started timeline through focus and scrolling. Keep the toolbar, theme control and
-index return visible; reference prose is a separate view. Preserve this topic's distinct
-form rather than applying NestJS pan/zoom behavior. See
+React inherits the neutral/moss tokens and existing typography, using the same shared
+full-viewport map workspace as NestJS: central root, six bilateral colored branches,
+18 clickable leaves, pan/zoom/fit controls and branch collapse. Keep the right inspector,
+focus return and book-icon reference panel consistent across both topics. Below 640px,
+retain centered 65% initial zoom, the native concept locator and overlay inspector.
+The React experiment pairs prediction controls with a four-stage timeline and separate
+calculated/committed values; its columns stack at 760px and below. Preserve quiet surface
+tones, keyboard controls, theme switching and the index return. See
 [the React surface contract](docs/surfaces/react-learning.md).

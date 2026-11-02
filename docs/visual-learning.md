@@ -88,10 +88,12 @@ experiment, rather than copying every NestJS view.
 
 ## React implementation
 
-React implements the same five learning layers through a vertical six-branch map,
-concept inspector, prediction-gated render timeline and explanation/debugging/transfer
-prompts. The explorer is mounted by the `react` slug and receives MDX reference prose;
-its data lives in `react-data.ts`. See [the surface contract](surfaces/react-learning.md).
+React uses the same `knowledge-map-workspace.tsx` as NestJS, with a full-viewport,
+pannable and zoomable bilateral tree. `react-map-data.ts` supplies six branches and
+18 concept leaves; `react-explorer.tsx` configures the workspace and retains React's
+prediction timeline and explanation/debugging/transfer activities. The `react` slug
+mounts it with MDX reference prose in the book-icon panel. See
+[the surface contract](surfaces/react-learning.md).
 
 Compare three direct updates with three updater functions from count = 0 in one
 synchronous event. Keep event, queue, calculation and commit distinct, with calculated
@@ -99,9 +101,11 @@ state and committed DOM displayed separately. This is a deterministic teaching m
 not realtime React tracing; retain its exclusions and never infer fixed invocation
 counts or performance from its four stages.
 
-For React specifically, responses and revealed criteria are held by the parent explorer
-and survive learning-view switches while it remains mounted. This differs from the
-NestJS practice-view lifetime described above. Refreshing or leaving clears them;
-there is no upload, persistence or automatic grading. Mobile stacks map/detail and
-experiment/result, focusing and scrolling to a selected concept or started timeline.
-Review these transitions and state retention alongside prediction/reset behavior.
+Responses and revealed criteria remain only in the current practice view. Switching
+reflection prompts retains them, but changing learning views remounts keyed activities
+and clears them; refreshing or leaving also clears them. There is no upload,
+persistence or automatic grading. Review pan/zoom/fit, branch collapse, inspector
+focus/return and mobile concept navigation alongside prediction/reset behavior and
+response clearing. Below 640px, the map uses centered 65% initial zoom and an overlay
+inspector; at 760px and below, experiment input/result stack and starting the timeline
+focuses and scrolls it into view.
