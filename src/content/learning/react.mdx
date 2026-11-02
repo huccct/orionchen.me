@@ -1,0 +1,36 @@
+---
+title: 'React'
+date: '2026-11-02'
+slug: react
+summary: '从一次点击出发，看懂组件、状态与页面更新的关系。'
+tags:
+  - 知识地图
+  - react
+  - frontend
+draft: false
+---
+
+React 解决的是：当数据变化时，怎样用组件描述并更新界面。先理解数据流和渲染过程，再按需要学习 API。
+
+## 建议的探索顺序
+
+组件与 JSX → Props 与组合 → State 与事件 → 渲染与状态快照，然后理解 Effect 与状态共享。地图的连线表示概念联系，不是执行顺序；实验时间线才表示一次更新的阶段。
+
+## 实验的边界
+
+渲染实验是可以逐步查看的教学模型，不是 React 内部调度器的实时追踪。固定初始 count 为 0，模拟同一个同步点击事件里的三次更新，不包含并发中断、Suspense、服务端组件或 flushSync。
+
+React 可以批量处理更新；一次渲染也可能被中断或放弃。开发模式的 Strict Mode 可以额外调用组件和更新函数。因此不要把本实验的四个阶段理解为固定的函数调用次数，也不要用它测量性能。
+
+示例代码仅展示核心片段，省略导入和周边组件。理解检查的文字仅在当前页面内存中保留，不上传、不持久化，也不自动评分。
+
+## 继续阅读
+
+- [React 官方学习入口](https://react.dev/learn)
+- [渲染与提交](https://react.dev/learn/render-and-commit)
+- [状态是一张快照](https://react.dev/learn/state-as-a-snapshot)
+- [更新队列](https://react.dev/learn/queueing-a-series-of-state-updates)
+- [状态的保留与重置](https://react.dev/learn/preserving-and-resetting-state)
+- [你可能不需要 Effect](https://react.dev/learn/you-might-not-need-an-effect)
+
+这张地图聚焦客户端交互基础。Next.js 的路由、服务端渲染与缓存适合在此之后单独展开；后端分工可以继续探索 [NestJS 知识地图](/learning/nestjs)。

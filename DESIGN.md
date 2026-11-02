@@ -75,3 +75,15 @@ panel, not above the map. No decorative motion or prerequisite reading wall.
 
 Future topics reuse the learning method in [the authoring guide](docs/visual-learning.md),
 not necessarily the NestJS tree.
+
+### React learning extension
+
+React inherits the neutral/moss tokens, serif section headings and existing body/UI
+fonts. Its full-viewport Read surface pairs a vertical six-branch map with a concept
+inspector; the update experiment pairs prediction controls with a four-stage timeline.
+Use quiet rules and surface tones, with accent selection feedback and separate calculated
+and committed values. At 760px and below, stack the columns and reveal selected details
+or the started timeline through focus and scrolling. Keep the toolbar, theme control and
+index return visible; reference prose is a separate view. Preserve this topic's distinct
+form rather than applying NestJS pan/zoom behavior. See
+[the React surface contract](docs/surfaces/react-learning.md).

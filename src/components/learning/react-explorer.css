@@ -1,0 +1,411 @@
+.react-learning {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  background: var(--site-bg);
+  color: var(--site-fg);
+  font-size: 14px;
+  line-height: 1.8;
+}
+body:has(.react-learning) {
+  overflow: hidden;
+}
+body:has(.react-learning) > header,
+body:has(.react-learning) > footer {
+  visibility: hidden;
+}
+.react-learning button,
+.react-learning a,
+.react-learning summary {
+  -webkit-tap-highlight-color: transparent;
+}
+.react-learning button {
+  cursor: pointer;
+}
+.react-learning button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.react-learning :is(button, a, summary, textarea):focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 4px;
+}
+.react-learning ::selection {
+  background: var(--site-accent);
+  color: var(--site-bg);
+}
+.react-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--site-border);
+}
+.react-brand,
+.react-toolbar nav,
+.react-options,
+.react-controls,
+.react-related {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.react-brand a {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+}
+.react-brand h1 {
+  font-size: 21px;
+  font-weight: 600;
+}
+.react-toolbar button,
+.react-options button,
+.react-controls button {
+  min-height: 44px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 6px;
+}
+.react-learning button[aria-pressed='true'] {
+  color: var(--site-accent);
+  background: var(--site-surface);
+  box-shadow: inset 0 -2px var(--site-accent);
+}
+.react-learning button:hover:not(:disabled),
+.react-learning summary:hover {
+  color: var(--site-accent);
+}
+.react-workspace {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 40px clamp(20px, 5vw, 80px) 64px;
+  scrollbar-color: var(--site-muted) var(--site-bg);
+}
+.react-heading {
+  margin: 0 auto 36px;
+  max-width: 1200px;
+}
+.react-heading h2,
+.react-reference > h2 {
+  font-family: var(--font-heading);
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.react-heading p {
+  color: var(--site-muted);
+  margin-top: 12px;
+}
+.react-map-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(32px, 6vw, 88px);
+  max-width: 1200px;
+  margin: auto;
+}
+.react-map {
+  padding: 12px 0;
+}
+.react-map-root {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  color: var(--site-accent);
+}
+.react-map-root strong {
+  font-size: 28px;
+  font-weight: 500;
+}
+.react-map-root span {
+  color: var(--site-muted);
+}
+.react-branches {
+  margin-left: 22px;
+  border-left: 1px solid var(--site-border);
+  padding-left: 28px;
+}
+.react-branches button {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 20px;
+  gap: 4px 12px;
+  text-align: left;
+  width: 100%;
+  padding: 16px 18px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--site-border);
+}
+.react-branches button::before {
+  content: '';
+  position: absolute;
+  top: 35px;
+  left: -29px;
+  width: 24px;
+  height: 1px;
+  background: var(--site-border);
+}
+.react-branch-title {
+  font-size: 17px;
+}
+.react-branches button > span:nth-child(2) {
+  grid-row: 2;
+  font-size: 12px;
+  color: var(--site-muted);
+}
+.react-branches svg {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+.react-branch-order {
+  display: none;
+}
+.react-inspector {
+  border-left: 1px solid var(--site-border);
+  padding-left: clamp(24px, 3vw, 44px);
+}
+.react-inspector h2 {
+  color: var(--site-accent);
+  font-size: 15px;
+}
+.react-inspector h3,
+.react-trace h3,
+.react-await h3 {
+  font-size: 22px;
+  line-height: 1.5;
+  margin: 8px 0 16px;
+}
+.react-inspector h4 {
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 4px;
+}
+.react-inspector p,
+.react-trace p {
+  max-width: 70ch;
+}
+.react-note {
+  font-size: 12px;
+  color: var(--site-muted);
+  margin-top: 16px;
+}
+.react-related {
+  margin-top: 24px;
+  gap: 4px 14px;
+}
+.react-related span {
+  color: var(--site-muted);
+}
+.react-related button,
+.react-text-link {
+  color: var(--site-accent);
+  min-height: 44px;
+}
+.react-learning details {
+  margin: 20px 0;
+  border-top: 1px solid var(--site-border);
+  border-bottom: 1px solid var(--site-border);
+}
+.react-learning summary {
+  padding: 12px 0;
+  cursor: pointer;
+}
+.react-learning details p {
+  padding-bottom: 16px;
+}
+.react-learning pre {
+  overflow-x: auto;
+  max-width: 100%;
+  background: var(--site-surface);
+  padding: 20px;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.9;
+  border-radius: 6px;
+}
+.react-doc,
+.react-text-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: var(--site-accent);
+  text-underline-offset: 5px;
+  padding: 8px 0;
+}
+.react-doc:hover,
+.react-text-link:hover {
+  text-decoration: underline;
+}
+.react-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  border: 1px solid var(--site-accent);
+  color: var(--site-accent);
+  border-radius: 6px;
+  padding: 8px 18px;
+  margin-top: 20px;
+}
+.react-experiment-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 56px;
+  max-width: 1200px;
+  margin: auto;
+}
+.react-experiment-input legend {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.react-experiment-input fieldset {
+  min-width: 0;
+}
+.react-options button {
+  border: 1px solid var(--site-border);
+  min-width: 52px;
+}
+.react-timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 32px;
+}
+.react-timeline li {
+  border-top: 1px solid var(--site-border);
+  padding: 14px 4px 8px;
+  color: var(--site-muted);
+  font-size: 13px;
+}
+.react-timeline li span {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 8px;
+}
+.react-timeline li[data-active='true'] {
+  border-color: var(--site-accent);
+  color: var(--site-accent);
+  font-weight: 600;
+}
+.react-timeline li[data-done='true'] {
+  color: var(--site-fg);
+}
+.react-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  border-top: 1px solid var(--site-border);
+  border-bottom: 1px solid var(--site-border);
+  padding: 20px 0;
+}
+.react-values span,
+.react-dom span {
+  display: block;
+  color: var(--site-muted);
+}
+.react-values strong,
+.react-dom strong {
+  font-size: 40px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+.react-dom {
+  margin: 32px 0;
+}
+.react-result {
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--site-surface);
+}
+.react-controls {
+  margin: 24px 0 8px;
+}
+.react-controls button {
+  border: 1px solid var(--site-border);
+}
+.react-practice,
+.react-reference {
+  max-width: 760px;
+  margin: auto;
+}
+.react-practice h3 {
+  font-size: 19px;
+  margin: 28px 0 16px;
+}
+.react-practice label {
+  display: block;
+  margin: 20px 0 8px;
+}
+.react-practice textarea {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--site-border);
+  background: var(--site-surface);
+  border-radius: 6px;
+  caret-color: var(--site-accent);
+  resize: vertical;
+}
+.react-practice textarea::placeholder {
+  color: var(--site-muted);
+}
+.react-reference > h2 {
+  margin-bottom: 28px;
+}
+@media (max-width: 760px) {
+  .react-toolbar {
+    flex-wrap: wrap;
+    padding: 8px 16px;
+    gap: 6px;
+  }
+  .react-toolbar nav {
+    order: 3;
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .react-toolbar nav button {
+    flex: 1;
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .react-workspace {
+    padding: 28px 20px 48px;
+  }
+  .react-map-layout,
+  .react-experiment-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .react-inspector {
+    border-left: 0;
+    border-top: 1px solid var(--site-border);
+    padding: 28px 0 0;
+  }
+  .react-branches {
+    margin-left: 12px;
+    padding-left: 20px;
+  }
+  .react-branches button::before {
+    left: -21px;
+    width: 18px;
+  }
+  .react-branches button {
+    padding: 12px;
+  }
+  .react-timeline {
+    margin-bottom: 24px;
+  }
+}

@@ -85,3 +85,23 @@ experiment, rather than copying every NestJS view.
 - Verify pan, zoom, branch collapse, inspector focus/return, topic metadata, index
   links, references and existing article layout; run the repository's applicable
   checks and production build.
+
+## React implementation
+
+React implements the same five learning layers through a vertical six-branch map,
+concept inspector, prediction-gated render timeline and explanation/debugging/transfer
+prompts. The explorer is mounted by the `react` slug and receives MDX reference prose;
+its data lives in `react-data.ts`. See [the surface contract](surfaces/react-learning.md).
+
+Compare three direct updates with three updater functions from count = 0 in one
+synchronous event. Keep event, queue, calculation and commit distinct, with calculated
+state and committed DOM displayed separately. This is a deterministic teaching model,
+not realtime React tracing; retain its exclusions and never infer fixed invocation
+counts or performance from its four stages.
+
+For React specifically, responses and revealed criteria are held by the parent explorer
+and survive learning-view switches while it remains mounted. This differs from the
+NestJS practice-view lifetime described above. Refreshing or leaving clears them;
+there is no upload, persistence or automatic grading. Mobile stacks map/detail and
+experiment/result, focusing and scrolling to a selected concept or started timeline.
+Review these transitions and state retention alongside prediction/reset behavior.

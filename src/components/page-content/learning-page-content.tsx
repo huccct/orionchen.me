@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { MDXContent } from '@content-collections/mdx/react'
+import { ReactExplorer } from '@/components/learning/react-explorer'
+import { reactConcepts } from '@/components/learning/react-data'
 import { NestjsExplorer } from '@/components/learning/nestjs-mindmap'
 import { notFound } from 'next/navigation'
 import { RoomHeader } from '@/components/room-header'
@@ -33,7 +35,7 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
       <RoomHeader room="learning" locale={locale} />
       {!zh && !localized.length && (
         <p className="text-muted-foreground mb-6 text-sm">
-          The first topic is available in Chinese. English topics will appear here when translated.
+          These topics are available in Chinese. English topics will appear here when translated.
         </p>
       )}
       <div className="learning-shelf">
@@ -56,9 +58,15 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                   <ArrowRight size={16} aria-hidden="true" />
                 </span>
               </div>
-              {topic.slug === 'nestjs' && (
+              {(topic.slug === 'nestjs' || topic.slug === 'react') && (
                 <svg className="learning-map-preview" viewBox="0 0 440 260" aria-hidden="true">
-                  {branches.map((branch, index) => {
+                  {(topic.slug === 'react'
+                    ? reactConcepts.map((item) => ({
+                        id: item.id,
+                        title: item.title.split('与')[0],
+                      }))
+                    : branches
+                  ).map((branch, index) => {
                     const left = index < 3
                     const y = 58 + (index % 3) * 72
                     const start = left ? 182 : 258
@@ -77,7 +85,7 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                   })}
                   <rect x="177" y="110" width="86" height="40" rx="6" />
                   <text className="learning-map-root" x="220" y="135" textAnchor="middle">
-                    NestJS
+                    {topic.title}
                   </text>
                 </svg>
               )}
@@ -94,6 +102,8 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
   if (!topic) notFound()
   const zh = locale === 'zh'
   const prefix = localePathPrefix[locale]
+  if (slug === 'react')
+    return <ReactExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
   if (slug === 'nestjs')
     return (
       <NestjsExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
