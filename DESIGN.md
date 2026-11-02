@@ -36,7 +36,7 @@ unframed captions and complete, uncropped images. No pixel scenes or invented ph
 
 Featured experiments: six real Vibe works, with two randomly selected on mount. Session
 storage excludes the previous pair on refresh. Full 1280×720 captures preserve the original
-16:9 composition with contain sizing and no hover crop; mobile uses a single column. Top navigation contains Writing, Works, Reading only;
+16:9 composition with contain sizing and no hover crop; mobile uses a single column. Top navigation contains Writing, Knowledge Maps, Works and Reading;
 About and Guestbook remain available in the footer, with Guestbook also in the introduction.
 
 Writing archives now show authored summaries, linked topics, dates and the first local
@@ -54,3 +54,24 @@ about uses circular compositions; guestbook uses conversation outlines; topics u
 connected index nodes. Article detail backgrounds are quieter. Chinese and English
 share the same section artwork. The central text column stays clear. No background
 JavaScript, tracking of the pointer, or continuous animation is needed.
+
+## Components
+
+The independent Knowledge Maps tab inherits the site's neutral palette and typography.
+Its index uses quiet, fully linked topic rows: a short title, one learning goal, and a theme-aware six-branch diagram preview. No dates, article labels, or explanatory footer. NestJS topic detail is an immersive, full-viewport mind-map
+workspace: a central topic, six bilateral branches, curved colored connectors and clickable
+concept leaves. The site header/footer recede while the workspace is mounted; a return
+link leads to the learning index. A compact toolbar switches between the map and existing
+prediction experiments / understanding checks.
+
+Pan the map by dragging or scrolling; zoom with controls or modifier-wheel; fit the map
+or restore actual size; expand/collapse branches. A right inspector contains explanations,
+related concepts, optional code and official docs. Preserve zoom when opening it. Closing
+returns focus to the last selected node, or the canvas if none exists. Below 640px,
+the map starts centered at 65% zoom, offers the
+same pan/zoom controls and a native concept locator, with a scrollable overlay inspector.
+Keep theme controls and keyboard alternatives. Reference prose belongs in the book-icon
+panel, not above the map. No decorative motion or prerequisite reading wall.
+
+Future topics reuse the learning method in [the authoring guide](docs/visual-learning.md),
+not necessarily the NestJS tree.

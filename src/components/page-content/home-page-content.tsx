@@ -83,17 +83,17 @@ export function HomePageContent({ locale }: { locale: Locale }) {
               <>
                 Beyond code, I’m starting to explore documentary filmmaking. My video account is{' '}
                 <a href={siteConfig.social.bilibili}>
-                  阿南走街串巷 <ArrowUpRight size={13} />
+                  Tunan放映室 <ArrowUpRight size={13} />
                 </a>
-                . I want to tell stories about people outside the spotlight, still living with care.
+                . Through conversations and film, I want to explore people’s experiences and choices.
               </>
             ) : (
               <>
                 代码之外，也在慢慢开始拍纪录片。内容账号叫{' '}
                 <a href={siteConfig.social.bilibili}>
-                  阿南走街串巷 <ArrowUpRight size={13} />
+                  Tunan放映室 <ArrowUpRight size={13} />
                 </a>
-                ，想记录那些不在叙事中心、但仍然认真活着的人。
+                ，想通过对话和影像，记录不同人的经历与选择。
               </>
             )}
           </p>

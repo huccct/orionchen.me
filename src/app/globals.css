@@ -298,6 +298,7 @@ body {
 }
 .site-links {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 24px;
   font-size: 13px;

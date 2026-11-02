@@ -6,6 +6,7 @@ import type { Locale } from './config'
  * client component for the LanguageToggle.
  */
 export type LocaleAvailability = {
+  learning?: Record<Locale, string[]>
   posts: Record<Locale, string[]>
   works: Record<Locale, string[]>
 }

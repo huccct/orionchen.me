@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { allPosts, allWorks } from 'content-collections'
+import { allPosts, allWorks, allLearnings } from 'content-collections'
 import { type Locale, locales } from './config'
 import type { LocaleAvailability } from './locale-availability-types'
 
@@ -17,20 +17,27 @@ export function getLocaleAvailability(): LocaleAvailability {
   const posts = Object.fromEntries(
     locales.map((locale) => [
       locale,
-      allPosts
-        .filter((post) => !post.draft && post.lang === locale)
-        .map((post) => post.slug),
+      allPosts.filter((post) => !post.draft && post.lang === locale).map((post) => post.slug),
     ])
   ) as Record<Locale, string[]>
 
   const works = Object.fromEntries(
     locales.map((locale) => [
       locale,
-      allWorks
-        .filter((work) => work.lang === locale)
-        .map((work) => work.slug),
+      allWorks.filter((work) => work.lang === locale).map((work) => work.slug),
     ])
   ) as Record<Locale, string[]>
 
-  return { posts, works }
+  return {
+    posts,
+    works,
+    learning: Object.fromEntries(
+      locales.map((locale) => [
+        locale,
+        allLearnings
+          .filter((topic) => !topic.draft && topic.lang === locale)
+          .map((topic) => topic.slug),
+      ])
+    ) as Record<Locale, string[]>,
+  }
 }

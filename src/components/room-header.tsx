@@ -5,6 +5,12 @@ import { localePathPrefix } from '@/i18n/config'
 import './room-header.css'
 
 const rooms = {
+  learning: [
+    '知识地图',
+    'Knowledge Maps',
+    '看见联系，动手实验，把知识长进脑子里。',
+    'See the connections. Experiment. Build a mental model.',
+  ],
   writing: [
     '写作',
     'Writing',

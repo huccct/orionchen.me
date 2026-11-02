@@ -1,0 +1,39 @@
+---
+title: 'NestJS'
+seoTitle: '把 NestJS 装进脑子：一棵可以动手的知识树'
+date: '2026-11-02'
+slug: nestjs
+summary: '理清后端的分工与联系，学会判断一个问题该放在哪一层。'
+tags:
+  - 知识地图
+  - nestjs
+  - backend
+  - typescript
+draft: false
+---
+
+学 NestJS，我更想在脑子里长出一棵树：遇到问题，知道它属于哪一层、该找谁、会影响哪里。API 可以查，关系要想明白。
+
+这个专题可以动手。点开概念看分工，先预测一个请求会怎样结束，再改变条件观察结果。最后用自己的话解释、排错，试着把同样的思路用到另一个场景。
+
+## 先把骨架搭起来
+
+第一次学，建议先抓住 **Module → Controller → Service** 这条组装关系，再跟一遍请求从进入到返回的过程。然后把数据、安全和工程能力逐步挂上去。
+
+树上的分组是帮助记忆的主归属，并不是互斥分类。比如 Guard 属于请求生命周期，也常承担安全边界；DTO 是数据契约，又会参与输入校验。
+
+这是一张入门到项目实践的核心地图。自定义 Provider、动态模块、作用域、缓存、队列、WebSocket 和微服务等内容，等遇到具体问题时再沿着主干长出来，不用一开始全部背下。
+
+## 接着读与动手
+
+- [用 Cursor 和 Chrome 调试 NestJS](/blog/cursor-chrome-debug-nestjs)：沿着真实请求打断点。
+- [大话 DTO、DAO 和 MVC](/blog/dto-dao-mvc-explained)：用饭馆的分工理解数据边界。
+- [从 .env 到 YAML 理解 NestJS 配置](/blog/nestjs-configuration-explained)：把环境差异从业务代码中拿出来。
+
+## 参考与边界
+
+技术关系以 [NestJS Modules](https://docs.nestjs.com/modules)、[Providers](https://docs.nestjs.com/providers) 和 [Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle) 为依据。每个概念也附有对应的官方文档。
+
+学习界面借鉴 [roadmap.sh](https://roadmap.sh/backend) 用地图定位知识的方式，以及 [Explorable Explanations](https://explorabl.es/) 通过操作理解关系的理念。这里的六条主干是为学习 NestJS 整理的结构，并非官方的章节划分。
+
+最初的学习背景来自[这套 NestJS 课程](https://www.bilibili.com/video/BV1r9YYzcEr4/)，这里按概念关系组织，不是逐课笔记或视频内容总结。页面中的请求和模块实验均为浏览器内的教学模型，不会启动真实 Nest 服务或写入数据库。

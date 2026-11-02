@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: '/blog/nestjs-mental-model', destination: '/learning/nestjs', permanent: true },
       { source: '/projects', destination: '/works', permanent: true },
       { source: '/resume', destination: '/about', permanent: true },
     ]

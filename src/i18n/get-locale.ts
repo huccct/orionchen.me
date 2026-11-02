@@ -80,6 +80,12 @@ function checkAvailability(
     return null
   }
 
+  const learningMatch = /^\/learning\/([^/]+)$/.exec(strippedPath)
+  if (learningMatch) {
+    const slug = decodeURIComponent(learningMatch[1]!)
+    return availability.learning?.[target].includes(slug) ? null : '/learning'
+  }
+
   const workMatch = /^\/works\/([^/]+)$/.exec(strippedPath)
 
   if (workMatch) {

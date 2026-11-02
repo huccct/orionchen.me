@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
-import { allPosts, allWorks } from 'content-collections'
+import { allPosts, allWorks, allLearnings } from 'content-collections'
 import { htmlLang, locales, localePathPrefix } from '@/i18n/config'
 import { getPostAvailableLocales } from '@/lib/posts'
+import { getLearningAvailableLocales } from '@/lib/learning'
 import { getWorkAvailableLocales } from '@/lib/works'
 import { siteConfig } from '@/lib/site-config'
 
@@ -62,6 +63,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: lastPostDate,
       },
       { path: '/about', priority: 0.7, changeFrequency: 'monthly' },
+      { path: '/learning', priority: 0.8, changeFrequency: 'monthly' },
       { path: '/reading', priority: 0.6, changeFrequency: 'monthly' },
     ] satisfies StaticEntry[]
   ).flatMap((entry): SitemapEntry[] =>
@@ -95,8 +97,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         // List every locale with a published version of this slug, so
         // <xhtml:link> pairs zh ↔ en when both exist. When only one
         // locale has the post the alternate map collapses to that one.
-        (alt) =>
-          available.includes(alt) ? `${localePathPrefix[alt]}/blog/${post.slug}` : null
+        (alt) => (available.includes(alt) ? `${localePathPrefix[alt]}/blog/${post.slug}` : null)
       )
     })
 
@@ -114,10 +115,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
           priority: 0.7,
           images: [url(work.cover)],
         },
-        (alt) =>
-          available.includes(alt) ? `${localePathPrefix[alt]}/works/${work.slug}` : null
+        (alt) => (available.includes(alt) ? `${localePathPrefix[alt]}/works/${work.slug}` : null)
       )
     })
 
-  return [...staticPages, ...posts, ...works]
+  const learning: SitemapEntry[] = allLearnings
+    .filter((topic) => !topic.draft)
+    .map((topic) =>
+      withAlternates(
+        {
+          url: url(`${localePathPrefix[topic.lang]}/learning/${topic.slug}`),
+          lastModified: topic.date,
+          changeFrequency: 'monthly',
+          priority: 0.8,
+        },
+        (alt) =>
+          getLearningAvailableLocales(topic.slug).includes(alt)
+            ? `${localePathPrefix[alt]}/learning/${topic.slug}`
+            : null
+      )
+    )
+
+  return [...staticPages, ...posts, ...works, ...learning]
 }

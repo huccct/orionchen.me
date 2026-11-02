@@ -34,6 +34,14 @@ const works = defineCollection({
   }),
 })
 
+const learning = defineCollection({
+  name: 'learning',
+  directory: 'src/content/learning',
+  include: '**/*.mdx',
+  schema: postSchema,
+  transform: async (doc, ctx) => ({ ...doc, body: await compileMDX(ctx, doc) }),
+})
+
 export default defineConfig({
-  content: [posts, works],
+  content: [posts, works, learning],
 })

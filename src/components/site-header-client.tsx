@@ -18,6 +18,7 @@ export function SiteHeaderClient({ availability }: { availability: LocaleAvailab
   const homeHref = prefix || '/'
   const nav = [
     { href: `${prefix}/blog`, label: dict.nav.writing },
+    { href: `${prefix}/learning`, label: locale === 'zh' ? '知识地图' : 'Knowledge Maps' },
     { href: `${prefix}/works`, label: dict.nav.works },
     { href: `${prefix}/reading`, label: locale === 'zh' ? '阅读' : 'Reading' },
   ]
