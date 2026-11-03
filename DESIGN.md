@@ -69,7 +69,7 @@ or restore actual size; expand/collapse branches. A right inspector contains exp
 related concepts, optional code and official docs. Preserve zoom when opening it. Closing
 returns focus to the last selected node, or the canvas if none exists. Below 640px,
 the map starts centered at 65% zoom, offers the
-same pan/zoom controls and a native concept locator, with a scrollable overlay inspector.
+same pan/zoom controls and a theme-aware, grouped concept locator with a bounded scrollable list, with a scrollable overlay inspector.
 Keep theme controls and keyboard alternatives. Reference prose belongs in the book-icon
 panel, not above the map. No decorative motion or prerequisite reading wall.
 
@@ -82,7 +82,7 @@ React inherits the neutral/moss tokens and existing typography, using the same s
 full-viewport map workspace as NestJS: central root, colored domains, groups and
 concept leaves, pan/zoom/fit controls and independent domain/group collapse. Keep the right inspector,
 focus return and book-icon reference panel consistent across both topics. Below 640px,
-retain centered 65% initial zoom, the native concept locator and overlay inspector.
+retain centered 65% initial zoom, the theme-aware, grouped concept locator and overlay inspector.
 The React experiment pairs prediction controls with a four-stage timeline and separate
 calculated/committed values; its columns stack at 760px and below. Preserve quiet surface
 tones, keyboard controls, theme switching and the index return. See

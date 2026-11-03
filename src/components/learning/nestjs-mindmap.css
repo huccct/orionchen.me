@@ -326,25 +326,6 @@ body:has(.mindmap-app) > header,
 body:has(.mindmap-app) > footer {
   display: none;
 }
-.mindmap-tools select {
-  max-width: 120px;
-  height: 36px;
-  padding: 4px 8px;
-  border: 1px solid var(--site-border);
-  border-radius: 5px;
-  background: var(--site-bg);
-  color: var(--site-fg);
-  font-size: 12px;
-}
-.mindmap-tools select:focus-visible {
-  outline: 2px solid var(--site-accent);
-  outline-offset: 2px;
-}
-@media (max-width: 640px) {
-  .mindmap-tools select {
-    max-width: 108px;
-  }
-}
 .mindmap-zoom .mindmap-scale {
   width: 48px;
   font-size: 12px;
@@ -398,7 +379,7 @@ body:has(.mindmap-app) > footer {
   gap: 8px;
 }
 .mindmap-search input,
-.mindmap-search select {
+.mindmap-search .mindmap-locator {
   min-width: 0;
   height: 38px;
   padding: 6px 10px;
@@ -410,7 +391,7 @@ body:has(.mindmap-app) > footer {
 .mindmap-search input {
   width: 180px;
 }
-.mindmap-search select {
+.mindmap-search .mindmap-locator {
   width: 170px;
 }
 .mindmap-search :focus-visible {
@@ -432,8 +413,86 @@ body:has(.mindmap-app) > footer {
     width: 100%;
   }
   .mindmap-search input,
-  .mindmap-search select {
+  .mindmap-search .mindmap-locator {
     flex: 1;
     width: 50%;
+  }
+}
+
+.mindmap-search .mindmap-locator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mindmap-locator > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mindmap-locator > span:last-child {
+  flex-shrink: 0;
+}
+.mindmap-locator[data-popup-open] {
+  border-color: var(--site-accent);
+}
+.mindmap-locator-positioner {
+  z-index: 50;
+}
+.mindmap-locator-popup {
+  width: min(300px, calc(100vw - 24px));
+  max-height: var(--available-height);
+  overflow: hidden;
+  border: 1px solid var(--site-border);
+  border-radius: 8px;
+  background: var(--site-bg);
+  color: var(--site-fg);
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+.mindmap-locator-heading {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--site-border);
+  color: var(--site-muted);
+  font-size: 12px;
+}
+.mindmap-locator-list {
+  max-height: min(380px, 55dvh, calc(var(--available-height) - 48px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--site-border) transparent;
+  padding: 6px;
+}
+.mindmap-locator-group {
+  padding: 14px 8px 6px;
+  color: var(--site-muted);
+  font-size: 12px;
+}
+.mindmap-locator-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}
+.mindmap-locator-item[data-highlighted] {
+  background: var(--site-surface);
+  color: var(--site-accent);
+}
+.mindmap-locator-item[data-selected] {
+  color: var(--site-accent);
+}
+.mindmap-locator-empty {
+  padding: 20px 8px;
+  color: var(--site-muted);
+}
+@media (pointer: coarse) {
+  .mindmap-locator-item {
+    min-height: 44px;
   }
 }

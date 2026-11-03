@@ -11,6 +11,7 @@ import {
   type ComponentType,
 } from 'react'
 import Link from 'next/link'
+import { Select } from '@base-ui/react/select'
 import {
   ArrowLeft,
   ArrowRight,
@@ -59,6 +60,7 @@ export function KnowledgeMapWorkspace({
   Experiment,
 }: WorkspaceProps) {
   const [search, setSearch] = useState('')
+  const locatorSelected = useRef(false)
   const matches = concepts.filter((node) =>
     `${node.name} ${node.group ?? ''} ${node.role}`
       .toLowerCase()
@@ -237,26 +239,70 @@ export function KnowledgeMapWorkspace({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-          <select
-            aria-label="定位概念"
-            value={matches.some((node) => node.id === selected) ? (selected ?? '') : ''}
-            onChange={(event) => {
-              if (event.target.value) explore(event.target.value)
+          <Select.Root
+            items={concepts.map((node) => ({ value: node.id, label: node.name }))}
+            modal={false}
+            onOpenChange={(open) => {
+              if (open) locatorSelected.current = false
+            }}
+            value={matches.some((node) => node.id === selected) ? selected : null}
+            onValueChange={(id) => {
+              if (id) {
+                locatorSelected.current = true
+                explore(id)
+              }
             }}
           >
-            <option value="">{search ? `${matches.length} 个匹配概念` : '定位概念…'}</option>
-            {branches.map((item) => (
-              <optgroup key={item.id} label={item.title}>
-                {matches
-                  .filter((node) => node.branch === item.id)
-                  .map((node) => (
-                    <option key={node.id} value={node.id}>
-                      {node.name}
-                    </option>
-                  ))}
-              </optgroup>
-            ))}
-          </select>
+            <Select.Trigger className="mindmap-locator" aria-label="定位概念">
+              <Select.Value placeholder={search ? `${matches.length} 个匹配概念` : '定位概念…'} />
+              <Select.Icon>
+                <ChevronDown size={14} />
+              </Select.Icon>
+            </Select.Trigger>
+            <Select.Portal>
+              <Select.Positioner
+                className="mindmap-locator-positioner"
+                align="end"
+                sideOffset={6}
+                alignItemWithTrigger={false}
+              >
+                <Select.Popup
+                  className="mindmap-locator-popup"
+                  finalFocus={() => (locatorSelected.current ? detail.current : true)}
+                >
+                  <div className="mindmap-locator-heading">{matches.length} 个概念</div>
+                  <Select.List className="mindmap-locator-list">
+                    {branches.map((item) => {
+                      const items = matches.filter((node) => node.branch === item.id)
+                      if (!items.length) return null
+                      return (
+                        <Select.Group key={item.id}>
+                          <Select.GroupLabel className="mindmap-locator-group">
+                            {item.title}
+                          </Select.GroupLabel>
+                          {items.map((node) => (
+                            <Select.Item
+                              key={node.id}
+                              value={node.id}
+                              className="mindmap-locator-item"
+                            >
+                              <Select.ItemText>{node.name}</Select.ItemText>
+                              <Select.ItemIndicator>
+                                <Check size={14} />
+                              </Select.ItemIndicator>
+                            </Select.Item>
+                          ))}
+                        </Select.Group>
+                      )
+                    })}
+                    {!matches.length && (
+                      <p className="mindmap-locator-empty">没有匹配概念，试试其他关键词。</p>
+                    )}
+                  </Select.List>
+                </Select.Popup>
+              </Select.Positioner>
+            </Select.Portal>
+          </Select.Root>
         </div>
       </div>
       <div className="mindmap-body">
