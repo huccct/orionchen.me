@@ -894,3 +894,38 @@ body:has([data-page='work'])::before {
     transform: none;
   }
 }
+
+/* ponytail: animate the existing artwork layer; no canvas or animation runtime. */
+.background-motion-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.background-motion-toggle:hover {
+  color: var(--site-accent);
+}
+.background-motion-toggle:focus-visible {
+  outline: 2px solid var(--site-accent);
+  outline-offset: 4px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body:not(:has([data-page='post'], [data-page='work'], .mindmap-app))::before {
+    animation: page-lines-drift 12s ease-in-out infinite alternate;
+  }
+  body:has([data-motion-paused='true'])::before {
+    animation-play-state: paused;
+  }
+  body:not(:has([data-page='post'], [data-page='work'], .mindmap-app)) .background-motion-toggle {
+    display: inline-flex;
+  }
+}
+@keyframes page-lines-drift {
+  from {
+    transform: scale(1.02) translateY(-6px);
+  }
+  to {
+    transform: scale(1.045) translateY(6px);
+  }
+}

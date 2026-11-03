@@ -48,12 +48,13 @@ Reading uses real book covers, downloaded and optimized as local WebP assets, wi
 visible recommendation notes and direct book links. Image sources are recorded in
 public/images/books/sources.json. Preserve each cover without cropping. Reading and Works
 use two columns on desktop and one on narrow screens; work titles and badges stack so
-long titles remain readable. Each section has distinct static artwork in the outer margins: home uses contour lines;
+long titles remain readable. Each section has distinct artwork in the outer margins: home uses contour lines;
 writing uses manuscript rules; works uses geometric orbits; reading uses page arcs;
 about uses circular compositions; guestbook uses conversation outlines; topics uses
 connected index nodes. Article detail backgrounds are quieter. Chinese and English
-share the same section artwork. The central text column stays clear. No background
-JavaScript, tracking of the pointer, or continuous animation is needed.
+share the same section artwork. The central text column stays clear. Background artwork drifts subtly on a 24-second CSS cycle; article and work detail pages stay static.
+Respect reduced motion, pause while the page is hidden, and offer a localized pause/play control
+in the footer. No pointer tracking or animation library is needed.
 
 ## Components
 
