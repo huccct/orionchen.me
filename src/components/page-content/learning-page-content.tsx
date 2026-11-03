@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { MDXContent } from '@content-collections/mdx/react'
 import { ReactExplorer } from '@/components/learning/react-explorer'
-import { reactConcepts } from '@/components/learning/react-data'
+import { reactMapBranches } from '@/components/learning/react-map-data'
 import { NestjsExplorer } from '@/components/learning/nestjs-mindmap'
 import { notFound } from 'next/navigation'
 import { RoomHeader } from '@/components/room-header'
@@ -12,7 +12,8 @@ import { localePathPrefix, type Locale } from '@/i18n/config'
 import { getLearningTopic, getLearningTopics } from '@/lib/learning'
 import { createBreadcrumbJsonLd, createCollectionPageJsonLd } from '@/lib/seo'
 import '@/components/room-header.css'
-import { branches } from '@/components/learning/nestjs-data'
+import { nestMapBranches } from '@/components/learning/nestjs-map-data'
+import { LearningMapPreview } from '@/components/learning/learning-map-preview'
 import '@/components/learning/learning-index.css'
 
 export function LearningIndexContent({ locale }: { locale: Locale }) {
@@ -59,35 +60,10 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                 </span>
               </div>
               {(topic.slug === 'nestjs' || topic.slug === 'react') && (
-                <svg className="learning-map-preview" viewBox="0 0 440 260" aria-hidden="true">
-                  {(topic.slug === 'react'
-                    ? reactConcepts.map((item) => ({
-                        id: item.id,
-                        title: item.title.split('与')[0],
-                      }))
-                    : branches
-                  ).map((branch, index) => {
-                    const left = index < 3
-                    const y = 58 + (index % 3) * 72
-                    const start = left ? 182 : 258
-                    const end = left ? 122 : 318
-                    return (
-                      <g key={branch.id}>
-                        <path
-                          d={`M ${start} 130 C ${left ? 148 : 292} 130, ${left ? 158 : 282} ${y}, ${end} ${y}`}
-                        />
-                        <path d={`M ${end} ${y} H ${left ? 40 : 400}`} />
-                        <text x={left ? 80 : 360} y={y - 10} textAnchor="middle">
-                          {branch.title}
-                        </text>
-                      </g>
-                    )
-                  })}
-                  <rect x="177" y="110" width="86" height="40" rx="6" />
-                  <text className="learning-map-root" x="220" y="135" textAnchor="middle">
-                    {topic.title}
-                  </text>
-                </svg>
+                <LearningMapPreview
+                  title={topic.title}
+                  branches={topic.slug === 'react' ? reactMapBranches : nestMapBranches}
+                />
               )}
             </Link>
           </article>

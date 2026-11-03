@@ -1,7 +1,8 @@
+import { reactCurriculum, reactAdditionalBranches } from './react-curriculum'
 import { reactConcepts } from './react-data'
 import type { MapBranch, MapConcept, MapNote } from './knowledge-map-workspace'
 
-export const reactMapBranches: MapBranch[] = [
+const coreBranches: MapBranch[] = [
   { id: 'components', title: '组件与 JSX', question: '界面怎样拆分？' },
   { id: 'props', title: 'Props 与组合', question: '信息怎样传递？' },
   { id: 'state', title: 'State 与事件', question: '交互怎样被记住？' },
@@ -176,7 +177,7 @@ const leaves = [
   ],
 ] as const
 
-export const reactMapConcepts: MapConcept[] = leaves.map(([id, branch, name, role, why, doc]) => {
+const coreConcepts: MapConcept[] = leaves.map(([id, branch, name, role, why, doc]) => {
   const parent = reactConcepts.find((item) => item.id === branch)!
   return {
     id,
@@ -189,7 +190,7 @@ export const reactMapConcepts: MapConcept[] = leaves.map(([id, branch, name, rol
     docs: `https://react.dev/learn/${doc}`,
   }
 })
-export const reactMapNotes: Record<string, MapNote> = Object.fromEntries(
+const coreNotes: Record<string, MapNote> = Object.fromEntries(
   leaves.map(([id, branch, , , , , code]) => {
     const parent = reactConcepts.find((item) => item.id === branch)!
     return [
@@ -203,3 +204,14 @@ export const reactMapNotes: Record<string, MapNote> = Object.fromEntries(
     ]
   })
 )
+
+export const reactMapBranches = [
+  reactAdditionalBranches[0]!,
+  ...coreBranches,
+  ...reactAdditionalBranches.slice(1),
+]
+export const reactMapConcepts: MapConcept[] = [
+  ...coreConcepts.map((node) => ({ ...node, group: '核心概念', level: '基础' as const })),
+  ...reactCurriculum.concepts,
+]
+export const reactMapNotes: Record<string, MapNote> = { ...coreNotes, ...reactCurriculum.notes }

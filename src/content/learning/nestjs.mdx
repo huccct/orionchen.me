@@ -22,7 +22,9 @@ draft: false
 
 树上的分组是帮助记忆的主归属，并不是互斥分类。比如 Guard 属于请求生命周期，也常承担安全边界；DTO 是数据契约，又会参与输入校验。
 
-这是一张入门到项目实践的核心地图。自定义 Provider、动态模块、作用域、缓存、队列、WebSocket 和微服务等内容，等遇到具体问题时再沿着主干长出来，不用一开始全部背下。
+这张地图从基础覆盖到进阶和工程：依赖与生命周期、API 契约、异步任务、实时通信、微服务、可观测性和架构均有对应领域。点击领域展开子主题，再打开具体概念。初始折叠只为方便浏览，不代表只提供基础内容。
+
+每个概念有用途、场景、误区、练习目标和官方资料；专项交互实验单独标注。目前请求和模块实验可直接操作，其余内容通过节点练习目标实践。数据库、消息系统与部署平台的深入知识属于关联领域，不能把 Nest 的集成接口当作这些系统的全部知识。
 
 ## 接着读与动手
 
@@ -34,6 +36,6 @@ draft: false
 
 技术关系以 [NestJS Modules](https://docs.nestjs.com/modules)、[Providers](https://docs.nestjs.com/providers) 和 [Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle) 为依据。每个概念也附有对应的官方文档。
 
-学习界面借鉴 [roadmap.sh](https://roadmap.sh/backend) 用地图定位知识的方式，以及 [Explorable Explanations](https://explorabl.es/) 通过操作理解关系的理念。这里的六条主干是为学习 NestJS 整理的结构，并非官方的章节划分。
+学习界面借鉴 [roadmap.sh](https://roadmap.sh/backend) 用地图定位知识的方式，以及 [Explorable Explanations](https://explorabl.es/) 通过操作理解关系的理念。这里的领域与子主题按知识关系组织，并非官方章节的逐项翻译；数量随内容变化。
 
 最初的学习背景来自[这套 NestJS 课程](https://www.bilibili.com/video/BV1r9YYzcEr4/)，这里按概念关系组织，不是逐课笔记或视频内容总结。页面中的请求和模块实验均为浏览器内的教学模型，不会启动真实 Nest 服务或写入数据库。

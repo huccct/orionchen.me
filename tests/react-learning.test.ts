@@ -32,7 +32,9 @@ it('connects every React leaf to a branch, inspector and valid related concepts'
   for (const node of reactMapConcepts) {
     expect(branches.has(node.branch)).toBe(true)
     const notes = reactMapNotes[node.id]!
-    expect(notes.code.length).toBeGreaterThan(0)
+    expect(notes.when.length).toBeGreaterThan(0)
+    expect(notes.pitfall.length).toBeGreaterThan(0)
+    expect(node.check.length).toBeGreaterThan(0)
     for (const related of notes.related) expect(nodes.has(related)).toBe(true)
   }
   for (const branch of branches)

@@ -58,8 +58,8 @@ JavaScript, tracking of the pointer, or continuous animation is needed.
 ## Components
 
 The independent Knowledge Maps tab inherits the site's neutral palette and typography.
-Its index uses quiet, fully linked topic rows: a short title, one learning goal, and a theme-aware six-branch diagram preview. No dates, article labels, or explanatory footer. NestJS topic detail is an immersive, full-viewport mind-map
-workspace: a central topic, six bilateral branches, curved colored connectors and clickable
+Its index uses quiet, fully linked topic rows: a short title, one learning goal, and a theme-aware diagram preview. No dates, article labels, or explanatory footer. NestJS topic detail is an immersive, full-viewport mind-map
+workspace: a central topic, bilateral domains, expandable groups, curved colored connectors and clickable
 concept leaves. The site header/footer recede while the workspace is mounted; a return
 link leads to the learning index. A compact toolbar switches between the map and existing
 prediction experiments / understanding checks.
@@ -79,11 +79,22 @@ not necessarily the NestJS tree.
 ### React learning extension
 
 React inherits the neutral/moss tokens and existing typography, using the same shared
-full-viewport map workspace as NestJS: central root, six bilateral colored branches,
-18 clickable leaves, pan/zoom/fit controls and branch collapse. Keep the right inspector,
+full-viewport map workspace as NestJS: central root, colored domains, groups and
+concept leaves, pan/zoom/fit controls and independent domain/group collapse. Keep the right inspector,
 focus return and book-icon reference panel consistent across both topics. Below 640px,
 retain centered 65% initial zoom, the native concept locator and overlay inspector.
 The React experiment pairs prediction controls with a four-stage timeline and separate
 calculated/committed values; its columns stack at 760px and below. Preserve quiet surface
 tones, keyboard controls, theme switching and the index return. See
 [the React surface contract](docs/surfaces/react-learning.md).
+
+### Expanded learning curricula
+
+Both topic workspaces use four levels: topic → domain → group → concept. Domains and
+groups start collapsed so the opening view communicates scope. Geometry is calculated
+from visible content, balanced on both sides of the root; never hard-code a branch count
+or fixed leaf coordinates. Search filters the concept locator; choosing a concept opens
+its domain and group. Use the inspector's level label and explicit experiment availability
+to distinguish conceptual coverage from interactive teaching. Code disclosures appear only
+when a useful snippet exists. The source-derived [curriculum outline](docs/learning-curriculum.md)
+records current coverage; it is not a promise to cover every API or ecosystem package.

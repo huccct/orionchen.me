@@ -17,7 +17,11 @@ export function ReactExplorer({ reference }: { reference: ReactNode }) {
       conceptNotes={reactMapNotes}
       modes={['知识地图', '渲染实验', '理解检查']}
       reference={reference}
-      experimentFor={() => '渲染实验'}
+      experimentFor={(concept) =>
+        ['queue', 'snapshot', 'commit', 'use-state', 'events'].includes(concept.id)
+          ? '渲染实验'
+          : null
+      }
       Experiment={ReactMapActivities}
     />
   )

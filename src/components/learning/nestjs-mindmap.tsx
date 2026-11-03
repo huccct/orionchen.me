@@ -2,7 +2,11 @@
 
 import type { ReactNode } from 'react'
 import { KnowledgeMapWorkspace } from './knowledge-map-workspace'
-import { branches, concepts, conceptNotes } from './nestjs-data'
+import {
+  nestMapBranches as branches,
+  nestMapConcepts as concepts,
+  nestMapNotes as conceptNotes,
+} from './nestjs-map-data'
 import { RequestWalkthrough, ModuleWorkshop, Practice } from './nestjs-explorer'
 
 export function NestjsExplorer({ reference }: { reference?: ReactNode }) {
@@ -15,7 +19,13 @@ export function NestjsExplorer({ reference }: { reference?: ReactNode }) {
       conceptNotes={conceptNotes}
       modes={['知识地图', '请求实验', '模块实验', '理解检查']}
       reference={reference}
-      experimentFor={(concept) => (concept.branch === 'structure' ? '模块实验' : '请求实验')}
+      experimentFor={(concept) =>
+        concept.branch === 'structure'
+          ? '模块实验'
+          : ['request', 'security'].includes(concept.branch)
+            ? '请求实验'
+            : null
+      }
       Experiment={NestjsActivities}
     />
   )

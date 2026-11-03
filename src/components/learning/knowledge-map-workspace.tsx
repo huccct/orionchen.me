@@ -2,6 +2,7 @@
 
 import {
   useCallback,
+  useMemo,
   useEffect,
   useRef,
   useState,
@@ -23,26 +24,16 @@ import {
   BookOpen,
   MousePointer2,
   RotateCcw,
+  ChevronsDownUp,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import './nestjs-explorer.css'
 import './nestjs-mindmap.css'
 
-const W = 1420,
-  H = 920
+import { layoutKnowledgeMap, groupKey } from './map-layout'
+import type { MapBranch, MapConcept, MapNote } from './map-types'
+export type { MapBranch, MapConcept, MapNote } from './map-types'
 const colors = ['#5f856e', '#8f7846', '#618994', '#a87561', '#8a77a0', '#6e85aa']
-export type MapBranch = { id: string; title: string; question: string }
-export type MapConcept = {
-  id: string
-  branch: string
-  name: string
-  role: string
-  why: string
-  link: string
-  check: string
-  docs: string
-}
-export type MapNote = { when: string; pitfall: string; code: string; related: string[] }
 type WorkspaceProps = {
   title: string
   subtitle: string
@@ -51,7 +42,7 @@ type WorkspaceProps = {
   conceptNotes: Record<string, MapNote>
   modes: string[]
   reference?: ReactNode
-  experimentFor: (concept: MapConcept) => string
+  experimentFor: (concept: MapConcept) => string | null
   Experiment: ComponentType<{ mode: string; onExplore: (id: string) => void }>
 }
 type Camera = { x: number; y: number; scale: number }
@@ -67,9 +58,27 @@ export function KnowledgeMapWorkspace({
   experimentFor,
   Experiment,
 }: WorkspaceProps) {
+  const [search, setSearch] = useState('')
+  const matches = concepts.filter((node) =>
+    `${node.name} ${node.group ?? ''} ${node.role}`
+      .toLowerCase()
+      .includes(search.trim().toLowerCase())
+  )
   const [mode, setMode] = useState('知识地图')
   const [selected, setSelected] = useState<string | null>(null)
-  const [collapsed, setCollapsed] = useState<string[]>([])
+  const [collapsed, setCollapsed] = useState<string[]>(() => branches.map((branch) => branch.id))
+  const allGroups = useMemo(
+    () => [...new Set(concepts.map((node) => groupKey(node.branch, node.group ?? '核心概念')))],
+    [concepts]
+  )
+  const [collapsedGroups, setCollapsedGroups] = useState<string[]>(() => [
+    ...new Set(concepts.map((node) => groupKey(node.branch, node.group ?? '核心概念'))),
+  ])
+  const layout = useMemo(
+    () => layoutKnowledgeMap(branches, concepts, collapsed, collapsedGroups),
+    [branches, concepts, collapsed, collapsedGroups]
+  )
+  const initialBounds = useRef(layout.bounds)
   const [showReference, setShowReference] = useState(false)
   const [camera, setCamera] = useState<Camera>({ x: 0, y: 0, scale: 1 })
   const [dragging, setDragging] = useState(false)
@@ -84,9 +93,13 @@ export function KnowledgeMapWorkspace({
   const fit = useCallback(() => {
     const el = viewport.current
     if (!el) return
-    const scale = Math.max(0.22, Math.min(1, (el.clientWidth - 48) / W, (el.clientHeight - 48) / H))
-    setCamera({ x: (el.clientWidth - W * scale) / 2, y: (el.clientHeight - H * scale) / 2, scale })
-  }, [])
+    const bounds = layout.bounds
+    const scale = Math.max(
+      0.05,
+      Math.min(1, (el.clientWidth - 48) / bounds.width, (el.clientHeight - 48) / bounds.height)
+    )
+    setCamera({ x: el.clientWidth / 2, y: el.clientHeight / 2, scale })
+  }, [layout.bounds])
   useEffect(() => {
     const el = viewport.current
     if (!el) return
@@ -96,10 +109,15 @@ export function KnowledgeMapWorkspace({
         height = el.clientHeight
       if (!width || !height) return
       if (!previous) {
-        if (width < 640) {
-          const scale = 0.65
-          setCamera({ scale, x: (width - W * scale) / 2, y: (height - H * scale) / 2 })
-        } else fit()
+        const bounds = initialBounds.current
+        const scale =
+          width < 640
+            ? 0.65
+            : Math.max(
+                0.05,
+                Math.min(1, (width - 48) / bounds.width, (height - 48) / bounds.height)
+              )
+        setCamera({ x: width / 2, y: height / 2, scale })
       } else {
         const dx = (width - previous.width) / 2,
           dy = (height - previous.height) / 2
@@ -109,14 +127,14 @@ export function KnowledgeMapWorkspace({
     })
     observer.observe(el)
     return () => observer.disconnect()
-  }, [fit])
+  }, [])
   const zoom = useCallback((factor: number, px?: number, py?: number) => {
     const el = viewport.current
     if (!el) return
     const x = px ?? el.clientWidth / 2,
       y = py ?? el.clientHeight / 2
     setCamera((old) => {
-      const scale = Math.max(0.22, Math.min(2, old.scale * factor))
+      const scale = Math.max(0.05, Math.min(2, old.scale * factor))
       const ratio = scale / old.scale
       return { scale, x: x - (x - old.x) * ratio, y: y - (y - old.y) * ratio }
     })
@@ -151,6 +169,10 @@ export function KnowledgeMapWorkspace({
     const node = concepts.find((item) => item.id === id)
     lastNode.current = id
     setCollapsed((old) => old.filter((item) => item !== node?.branch))
+    if (node)
+      setCollapsedGroups((old) =>
+        old.filter((item) => item !== groupKey(node.branch, node.group ?? '核心概念'))
+      )
     setSelected(id)
     setShowReference(false)
     setMode('知识地图')
@@ -188,26 +210,6 @@ export function KnowledgeMapWorkspace({
           ))}
         </nav>
         <div className="mindmap-tools">
-          <select
-            aria-label="定位概念"
-            value={selected ?? ''}
-            onChange={(event) => {
-              if (event.target.value) explore(event.target.value)
-            }}
-          >
-            <option value="">定位概念…</option>
-            {branches.map((item) => (
-              <optgroup key={item.id} label={item.title}>
-                {concepts
-                  .filter((node) => node.branch === item.id)
-                  .map((node) => (
-                    <option key={node.id} value={node.id}>
-                      {node.name}
-                    </option>
-                  ))}
-              </optgroup>
-            ))}
-          </select>
           <button
             type="button"
             aria-label="学习说明与参考"
@@ -222,6 +224,41 @@ export function KnowledgeMapWorkspace({
           <ThemeToggle label="切换主题" />
         </div>
       </header>
+      <div className="mindmap-discovery">
+        <p>
+          {branches.length} 个领域 · {concepts.length} 个概念{' '}
+          <span>从领域展开到子主题，再选择概念</span>
+        </p>
+        <div className="mindmap-search">
+          <input
+            type="search"
+            aria-label="搜索知识概念"
+            placeholder="搜索概念或子主题"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+          <select
+            aria-label="定位概念"
+            value={matches.some((node) => node.id === selected) ? (selected ?? '') : ''}
+            onChange={(event) => {
+              if (event.target.value) explore(event.target.value)
+            }}
+          >
+            <option value="">{search ? `${matches.length} 个匹配概念` : '定位概念…'}</option>
+            {branches.map((item) => (
+              <optgroup key={item.id} label={item.title}>
+                {matches
+                  .filter((node) => node.branch === item.id)
+                  .map((node) => (
+                    <option key={node.id} value={node.id}>
+                      {node.name}
+                    </option>
+                  ))}
+              </optgroup>
+            ))}
+          </select>
+        </div>
+      </div>
       <div className="mindmap-body">
         <div
           className="mindmap-canvas"
@@ -282,92 +319,131 @@ export function KnowledgeMapWorkspace({
           <div
             className="mindmap-world"
             style={{
-              width: W,
-              height: H,
+              width: 1,
+              height: 1,
               transform: `translate(${camera.x}px, ${camera.y}px) scale(${camera.scale})`,
             }}
           >
-            <svg width={W} height={H} className="mindmap-lines" aria-hidden="true">
-              {branches.map((item, i) => {
-                const right = i >= 3,
-                  row = i % 3,
-                  y = 190 + row * 270,
-                  bx = right ? 920 : 330
-                const leaves = concepts.filter((node) => node.branch === item.id)
+            <svg
+              width={layout.bounds.width}
+              height={layout.bounds.height}
+              viewBox={`${layout.bounds.x} ${layout.bounds.y} ${layout.bounds.width} ${layout.bounds.height}`}
+              style={{ left: layout.bounds.x, top: layout.bounds.y }}
+              className="mindmap-lines"
+              aria-hidden="true"
+            >
+              {layout.edges.map((edge) => {
+                const from =
+                  edge.from === 'root'
+                    ? layout.root
+                    : layout.positions.find((p) => p.id === edge.from)!
+                const to = layout.positions.find((p) => p.id === edge.to)!
+                const x1 = to.right ? from.x + from.width : from.x
+                const x2 = to.right ? to.x : to.x + to.width
+                const y1 = from.y + from.height / 2,
+                  y2 = to.y + to.height / 2,
+                  mid = (x1 + x2) / 2
                 return (
-                  <g key={item.id} stroke={colors[i]} fill="none">
-                    <path
-                      strokeWidth="3"
-                      d={`M ${right ? 800 : 620} 456 C ${right ? 870 : 550} 456, ${right ? 850 : 570} ${y}, ${right ? bx : bx + 170} ${y}`}
-                    />
-                    {!collapsed.includes(item.id) &&
-                      leaves.map((node, j) => {
-                        const ly = y + (j - (leaves.length - 1) / 2) * 58
-                        return (
-                          <path
-                            key={node.id}
-                            strokeWidth="1.5"
-                            d={`M ${right ? bx + 170 : bx} ${y} C ${right ? 1130 : 290} ${y}, ${right ? 1120 : 290} ${ly}, ${right ? 1160 : 260} ${ly}`}
-                          />
-                        )
-                      })}
-                  </g>
+                  <path
+                    key={edge.to}
+                    d={`M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}`}
+                    stroke={colors[edge.colorIndex % colors.length]}
+                    strokeWidth={edge.from === 'root' ? 3 : 1.5}
+                    fill="none"
+                  />
                 )
               })}
             </svg>
             <button
               type="button"
               className="mindmap-center"
-              style={{ left: 620, top: 420 }}
+              style={{ left: -90, top: -36 }}
+              aria-label={`${title}，返回领域总览`}
               onClick={() => {
-                setCollapsed([])
-                fit()
+                setCollapsed(branches.map((branch) => branch.id))
+                setCollapsedGroups(allGroups)
+                const el = viewport.current
+                if (el) {
+                  const overview = layoutKnowledgeMap(
+                    branches,
+                    concepts,
+                    branches.map((branch) => branch.id),
+                    allGroups
+                  )
+                  const scale = Math.max(
+                    0.05,
+                    Math.min(
+                      1,
+                      (el.clientWidth - 48) / overview.bounds.width,
+                      (el.clientHeight - 48) / overview.bounds.height
+                    )
+                  )
+                  setCamera({ x: el.clientWidth / 2, y: el.clientHeight / 2, scale })
+                }
               }}
-              aria-label={`${title}，展开全部并适应画布`}
             >
               <strong>{title}</strong>
               <span>{subtitle}</span>
             </button>
-            {branches.map((item, i) => {
-              const right = i >= 3,
-                y = 190 + (i % 3) * 270,
-                bx = right ? 920 : 330,
-                closed = collapsed.includes(item.id),
-                leaves = concepts.filter((node) => node.branch === item.id)
+            {layout.positions.map((node) => {
+              const closed =
+                node.kind === 'branch'
+                  ? collapsed.includes(node.branch)
+                  : collapsedGroups.includes(node.id)
+              const item = branches.find((branch) => branch.id === node.branch)!
               return (
-                <div key={item.id} style={{ '--branch-color': colors[i] } as CSSProperties}>
-                  <button
-                    className="mindmap-branch"
-                    type="button"
-                    style={{ left: bx, top: y - 35 }}
-                    aria-expanded={!closed}
-                    aria-label={`${closed ? '展开' : '收起'}${item.title}分支`}
-                    onClick={() => toggle(item.id)}
-                  >
-                    <span>
-                      <strong>{item.title}</strong>
-                      <small>{item.question}</small>
-                    </span>
-                    {closed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                  {!closed &&
-                    leaves.map((node, j) => (
-                      <button
-                        id={`map-node-${node.id}`}
-                        key={node.id}
-                        className="mindmap-node"
-                        style={{
-                          left: right ? 1160 : 60,
-                          top: y + (j - (leaves.length - 1) / 2) * 58 - 22,
-                        }}
-                        type="button"
-                        aria-pressed={selected === node.id}
-                        onClick={() => explore(node.id)}
-                      >
-                        {node.name}
-                      </button>
-                    ))}
-                </div>
+                <button
+                  key={node.id}
+                  id={`map-node-${node.id}`}
+                  type="button"
+                  className={
+                    node.kind === 'concept'
+                      ? 'mindmap-node'
+                      : node.kind === 'group'
+                        ? 'mindmap-group'
+                        : 'mindmap-branch'
+                  }
+                  style={
+                    {
+                      left: node.x,
+                      top: node.y,
+                      width: node.width,
+                      height: node.height,
+                      '--branch-color': colors[node.colorIndex % colors.length],
+                    } as CSSProperties
+                  }
+                  aria-pressed={node.kind === 'concept' ? selected === node.id : undefined}
+                  aria-expanded={node.kind !== 'concept' ? !closed : undefined}
+                  aria-label={
+                    node.kind === 'concept'
+                      ? node.label
+                      : `${closed ? '展开' : '收起'}${node.label}${node.kind === 'branch' ? '分支' : '子主题'}`
+                  }
+                  onClick={() => {
+                    if (node.kind === 'concept') explore(node.id)
+                    else if (node.kind === 'branch') toggle(node.branch)
+                    else
+                      setCollapsedGroups((old) =>
+                        old.includes(node.id)
+                          ? old.filter((id) => id !== node.id)
+                          : [...old, node.id]
+                      )
+                  }}
+                >
+                  {node.kind === 'concept' ? (
+                    node.label
+                  ) : (
+                    <>
+                      <span>
+                        <strong>{node.label}</strong>
+                        <small>
+                          {node.kind === 'branch' ? item.question : `${node.count} 个概念`}
+                        </small>
+                      </span>
+                      {closed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
+                    </>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -406,10 +482,16 @@ export function KnowledgeMapWorkspace({
               notes && (
                 <div className="nest-detail">
                   <div className="nest-breadcrumb">
-                    {title} / {branch.title}
+                    {title} / {branch.title} / {concept.group ?? '核心概念'}
                   </div>
                   <h3>{concept.name}</h3>
                   <p className="nest-role">{concept.role}</p>
+                  <p className="nest-note">
+                    {concept.level ?? '基础'} · 概念说明已提供 ·{' '}
+                    {experimentFor(concept)
+                      ? '可进入相关教学实验'
+                      : '暂无专项交互实验，先完成下方练习目标'}
+                  </p>
                   <h4>解决什么问题，为什么需要</h4>
                   <p>{concept.why}</p>
                   <h4>什么时候用</h4>
@@ -433,25 +515,29 @@ export function KnowledgeMapWorkspace({
                     <h4>理解了，就能做到</h4>
                     <p>{concept.check}</p>
                   </div>
-                  <details key={concept.id} className="nest-code">
-                    <summary>按需看代码片段</summary>
-                    <p className="nest-note">
-                      示意片段，省略导入与项目上下文；不是完整可运行项目。
-                    </p>
-                    <pre>
-                      <code>{notes.code}</code>
-                    </pre>
-                  </details>
+                  {notes.code && (
+                    <details key={concept.id} className="nest-code">
+                      <summary>按需看代码片段</summary>
+                      <p className="nest-note">
+                        示意片段，省略导入与项目上下文；不是完整可运行项目。
+                      </p>
+                      <pre>
+                        <code>{notes.code}</code>
+                      </pre>
+                    </details>
+                  )}
                   <a href={concept.docs} target="_blank" rel="noreferrer">
                     查阅官方文档 <ArrowRight size={14} aria-hidden="true" />
                   </a>
                   <div className="mindmap-inspector-actions">
-                    <button type="button" onClick={() => changeMode(experimentFor(concept))}>
-                      进入实验
-                      <ArrowRight size={14} />
-                    </button>
+                    {experimentFor(concept) && (
+                      <button type="button" onClick={() => changeMode(experimentFor(concept)!)}>
+                        进入相关实验
+                        <ArrowRight size={14} />
+                      </button>
+                    )}
                     <button type="button" onClick={() => changeMode('理解检查')}>
-                      检查理解
+                      基础理解检查
                       <Check size={14} />
                     </button>
                   </div>
@@ -465,7 +551,7 @@ export function KnowledgeMapWorkspace({
         <footer className="mindmap-status">
           <span className="mindmap-hint">
             <MousePointer2 size={13} />
-            拖动画布 · 点击节点 · Ctrl / ⌘ + 滚轮缩放
+            领域 → 子主题 → 概念 · 连线表示分组 · 拖拽 / 缩放
           </span>
           <div className="mindmap-zoom">
             <button type="button" aria-label="缩小地图" onClick={() => zoom(1 / 1.2)}>
@@ -485,8 +571,18 @@ export function KnowledgeMapWorkspace({
             <button type="button" aria-label="适应画布" onClick={fit}>
               <Scan size={17} />
             </button>
-            <button type="button" aria-label="展开全部分支" onClick={() => setCollapsed([])}>
+            <button type="button" aria-label="展开所有领域" onClick={() => setCollapsed([])}>
               <RotateCcw size={16} />
+            </button>
+            <button
+              type="button"
+              aria-label="收起全部分支"
+              onClick={() => {
+                setCollapsed(branches.map((branch) => branch.id))
+                setCollapsedGroups(allGroups)
+              }}
+            >
+              <ChevronsDownUp size={16} />
             </button>
           </div>
           <span className="mindmap-count">

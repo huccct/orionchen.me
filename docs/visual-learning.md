@@ -89,8 +89,7 @@ experiment, rather than copying every NestJS view.
 ## React implementation
 
 React uses the same `knowledge-map-workspace.tsx` as NestJS, with a full-viewport,
-pannable and zoomable bilateral tree. `react-map-data.ts` supplies six branches and
-18 concept leaves; `react-explorer.tsx` configures the workspace and retains React's
+pannable and zoomable bilateral tree. `react-map-data.ts` combines foundational concepts with `react-curriculum.ts`; `react-explorer.tsx` configures the workspace and retains React's
 prediction timeline and explanation/debugging/transfer activities. The `react` slug
 mounts it with MDX reference prose in the book-icon panel. See
 [the surface contract](surfaces/react-learning.md).
@@ -109,3 +108,30 @@ focus/return and mobile concept navigation alongside prediction/reset behavior a
 response clearing. Below 640px, the map uses centered 65% initial zoom and an overlay
 inspector; at 760px and below, experiment input/result stack and starting the timeline
 focuses and scrolls it into view.
+
+## Curriculum depth and expansion
+
+Both React and NestJS organize topic → domain → group → concept, spanning foundational,
+advanced, engineering and ecosystem levels. See the full source-derived
+[curriculum outline](learning-curriculum.md) for domain/group titles, every concept,
+levels and official documentation. Coverage addresses primary domains with explicit
+boundaries, not every framework API or third-party package.
+
+`map-types.ts` defines the shared model; `map-layout.ts` computes bilateral positions
+and bounds from expanded content. Domains and groups initially collapse independently.
+Search matches concept names, groups and roles; the native locator opens the selected
+concept's ancestors. Keep camera controls, keyboard navigation, focus return and mobile
+inspection usable as the curriculum grows. Do not impose the original branch count.
+
+`nestjs-map-data.ts` merges original nodes with `nestjs-curriculum.ts`; React uses
+`react-map-data.ts` and `react-curriculum.ts`. Each concept needs purpose, usage,
+misconception, a checkable learning goal, relationships and a primary source. Code is
+optional: omit the disclosure when no appropriate example exists.
+
+Inspector labels distinguish available conceptual explanation from an available related
+teaching experiment. React's render model links only from queue, snapshot, commit,
+useState and event nodes. NestJS links organization-domain concepts to its module model
+and request/security-domain concepts to its request model. These are related exercises,
+not dedicated simulations of every linked concept. Other nodes expose learning goals
+and sources without pretending an advanced simulation exists. General reflection checks
+remain bounded activities and do not certify mastery of the full curriculum.
