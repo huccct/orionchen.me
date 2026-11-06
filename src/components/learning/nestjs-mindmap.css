@@ -106,8 +106,8 @@
   position: absolute;
 }
 .mindmap-center {
-  width: 180px;
-  height: 72px;
+  padding: 12px;
+  overflow-wrap: anywhere;
   border-radius: 12px;
   background: var(--site-accent);
   color: var(--site-bg);
@@ -115,7 +115,8 @@
 }
 .mindmap-center strong {
   display: block;
-  font-size: 28px;
+  font-size: 24px;
+  text-wrap: balance;
   font-weight: 600;
   line-height: 1.2;
 }

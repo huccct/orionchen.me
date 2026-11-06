@@ -403,7 +403,12 @@ export function KnowledgeMapWorkspace({
             <button
               type="button"
               className="mindmap-center"
-              style={{ left: -90, top: -36 }}
+              style={{
+                left: layout.root.x,
+                top: layout.root.y,
+                width: layout.root.width,
+                height: layout.root.height,
+              }}
               aria-label={`${title}，返回领域总览`}
               onClick={() => {
                 setCollapsed(branches.map((branch) => branch.id))

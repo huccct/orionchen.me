@@ -12,19 +12,19 @@ export function LearningMapPreview({ title, branches }: { title: string; branche
         return (
           <g key={branch.id}>
             <path
-              d={`M ${left ? 177 : 263} ${center} C ${left ? 148 : 292} ${center}, ${left ? 158 : 282} ${y}, ${left ? 122 : 318} ${y}`}
+              d={`M ${left ? 152 : 288} ${center} C ${left ? 148 : 292} ${center}, ${left ? 158 : 282} ${y}, ${left ? 122 : 318} ${y}`}
             />
             <path d={`M ${left ? 122 : 318} ${y} H ${left ? 20 : 420}`} />
-            <text x={left ? 72 : 368} y={y - 7} textAnchor="middle" style={{ fontSize: 12 }}>
-              {branch.title}
-            </text>
+            <foreignObject x={left ? 8 : 300} y={y - 39} width="132" height="36">
+              <div className="learning-map-label">{branch.title}</div>
+            </foreignObject>
           </g>
         )
       })}
-      <rect x="177" y={center - 20} width="86" height="40" rx="6" />
-      <text className="learning-map-root" x="220" y={center + 5} textAnchor="middle">
-        {title}
-      </text>
+      <rect x="152" y={center - 36} width="136" height="72" rx="6" />
+      <foreignObject x="160" y={center - 28} width="120" height="56">
+        <div className="learning-map-root">{title}</div>
+      </foreignObject>
     </svg>
   )
 }

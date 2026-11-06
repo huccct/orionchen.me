@@ -26,7 +26,7 @@ export function layoutKnowledgeMap(
   const edges: { from: string; to: string; colorIndex: number }[] = []
   const split = Math.ceil(branches.length / 2)
   const sides = [branches.slice(0, split), branches.slice(split)]
-  const root = { x: -90, y: -36, width: 180, height: 72 }
+  const root = { x: -120, y: -52, width: 240, height: 104 }
   let maxExtent = 300
   sides.forEach((side, sideIndex) => {
     const right = sideIndex === 1
