@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { MDXContent } from '@content-collections/mdx/react'
+import { DatabaseExplorer } from '@/components/learning/database-explorer'
+import { databaseBranches } from '@/components/learning/database-data'
 import { RequestExplorer } from '@/components/learning/request-explorer'
 import { requestBranches } from '@/components/learning/request-data'
 import { AgentExplorer } from '@/components/learning/agent-explorer'
@@ -66,17 +68,20 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
               {(topic.slug === 'nestjs' ||
                 topic.slug === 'react' ||
                 topic.slug === 'agent-engineering' ||
-                topic.slug === 'request-journey') && (
+                topic.slug === 'request-journey' ||
+                topic.slug === 'database') && (
                 <LearningMapPreview
                   title={topic.title}
                   branches={
-                    topic.slug === 'request-journey'
-                      ? requestBranches
-                      : topic.slug === 'agent-engineering'
-                        ? agentBranches
-                        : topic.slug === 'react'
-                          ? reactMapBranches
-                          : nestMapBranches
+                    topic.slug === 'database'
+                      ? databaseBranches
+                      : topic.slug === 'request-journey'
+                        ? requestBranches
+                        : topic.slug === 'agent-engineering'
+                          ? agentBranches
+                          : topic.slug === 'react'
+                            ? reactMapBranches
+                            : nestMapBranches
                   }
                 />
               )}
@@ -93,6 +98,10 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
   if (!topic) notFound()
   const zh = locale === 'zh'
   const prefix = localePathPrefix[locale]
+  if (slug === 'database')
+    return (
+      <DatabaseExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
+    )
   if (slug === 'request-journey')
     return (
       <RequestExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
