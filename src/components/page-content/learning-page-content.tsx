@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { MDXContent } from '@content-collections/mdx/react'
+import { AgentExplorer } from '@/components/learning/agent-explorer'
+import { agentBranches } from '@/components/learning/agent-data'
 import { ReactExplorer } from '@/components/learning/react-explorer'
 import { reactMapBranches } from '@/components/learning/react-map-data'
 import { NestjsExplorer } from '@/components/learning/nestjs-mindmap'
@@ -59,10 +61,18 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                   <ArrowRight size={16} aria-hidden="true" />
                 </span>
               </div>
-              {(topic.slug === 'nestjs' || topic.slug === 'react') && (
+              {(topic.slug === 'nestjs' ||
+                topic.slug === 'react' ||
+                topic.slug === 'agent-engineering') && (
                 <LearningMapPreview
                   title={topic.title}
-                  branches={topic.slug === 'react' ? reactMapBranches : nestMapBranches}
+                  branches={
+                    topic.slug === 'agent-engineering'
+                      ? agentBranches
+                      : topic.slug === 'react'
+                        ? reactMapBranches
+                        : nestMapBranches
+                  }
                 />
               )}
             </Link>
@@ -78,6 +88,8 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
   if (!topic) notFound()
   const zh = locale === 'zh'
   const prefix = localePathPrefix[locale]
+  if (slug === 'agent-engineering')
+    return <AgentExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
   if (slug === 'react')
     return <ReactExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
   if (slug === 'nestjs')
