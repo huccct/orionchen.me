@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { MDXContent } from '@content-collections/mdx/react'
+import { RequestExplorer } from '@/components/learning/request-explorer'
+import { requestBranches } from '@/components/learning/request-data'
 import { AgentExplorer } from '@/components/learning/agent-explorer'
 import { agentBranches } from '@/components/learning/agent-data'
 import { ReactExplorer } from '@/components/learning/react-explorer'
@@ -63,15 +65,18 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
               </div>
               {(topic.slug === 'nestjs' ||
                 topic.slug === 'react' ||
-                topic.slug === 'agent-engineering') && (
+                topic.slug === 'agent-engineering' ||
+                topic.slug === 'request-journey') && (
                 <LearningMapPreview
                   title={topic.title}
                   branches={
-                    topic.slug === 'agent-engineering'
-                      ? agentBranches
-                      : topic.slug === 'react'
-                        ? reactMapBranches
-                        : nestMapBranches
+                    topic.slug === 'request-journey'
+                      ? requestBranches
+                      : topic.slug === 'agent-engineering'
+                        ? agentBranches
+                        : topic.slug === 'react'
+                          ? reactMapBranches
+                          : nestMapBranches
                   }
                 />
               )}
@@ -88,6 +93,10 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
   if (!topic) notFound()
   const zh = locale === 'zh'
   const prefix = localePathPrefix[locale]
+  if (slug === 'request-journey')
+    return (
+      <RequestExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
+    )
   if (slug === 'agent-engineering')
     return <AgentExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
   if (slug === 'react')
