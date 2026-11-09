@@ -1,0 +1,12 @@
+{
+  "asset": "anatomy-plate.png",
+  "author": "OpenStax",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "sources": [
+    "https://commons.wikimedia.org/wiki/File:Muscles;_anterior_view;_unlabeled.png",
+    "https://commons.wikimedia.org/wiki/File:Muscles;_posterior_view;_unlabeled.png",
+    "https://commons.wikimedia.org/wiki/File:1105_Anterior_and_Posterior_Views_of_Muscles.jpg"
+  ],
+  "modifications": "AI-assisted removal of annotation leaders and side-by-side composition. Original cutaway regions retained. Interactive numbered markers added in HTML. This is an adapted educational illustration, not an official examination plate."
+}

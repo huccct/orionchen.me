@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { MuscleExplorer } from '@/components/learning/muscle-explorer'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { MDXContent } from '@content-collections/mdx/react'
 import { DatabaseExplorer } from '@/components/learning/database-explorer'
@@ -65,6 +67,16 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                   <ArrowRight size={16} aria-hidden="true" />
                 </span>
               </div>
+              {topic.slug === 'muscle-function' && (
+                <Image
+                  src="/images/learning/muscles/anatomy-plate.png"
+                  alt="人体肌肉前后视教学图"
+                  width={1536}
+                  height={1024}
+                  sizes="(max-width: 600px) 100vw, 520px"
+                  className="max-h-72 w-full rounded-lg bg-white object-contain"
+                />
+              )}
               {(topic.slug === 'nestjs' ||
                 topic.slug === 'react' ||
                 topic.slug === 'agent-engineering' ||
@@ -98,6 +110,10 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
   if (!topic) notFound()
   const zh = locale === 'zh'
   const prefix = localePathPrefix[locale]
+  if (slug === 'muscle-function')
+    return (
+      <MuscleExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
+    )
   if (slug === 'database')
     return (
       <DatabaseExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
