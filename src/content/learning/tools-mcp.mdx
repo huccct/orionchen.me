@@ -1,0 +1,61 @@
+---
+title: '工具调用与 MCP'
+date: '2026-11-11'
+slug: tools-mcp
+summary: '分清模型提议、应用执行与 MCP 连接，用查文章和保存笔记实验理解校验、权限、确认及超时恢复。'
+tags: [知识地图, ai, typescript, mcp]
+draft: false
+---
+
+工具让 AI 应用能查询信息或改变外部系统，但模型提出工具名和参数，不等于工具已经执行。最小调用链是 **模型提议 → 执行侧检查 → 工具执行 → 结果关联与校验 → 模型回答**。
+
+本专题从自己的学习助手出发：查一篇文章，然后把摘记存入笔记本。地图按概念分组，连线不是执行顺序；调用实验才逐步显示实际先后。
+
+## 三层关系
+
+模型工具调用表达“希望调用哪个能力、参数是什么”。普通 API 或 TypeScript 函数可以实现这个能力。MCP 则为应用与工具服务之间提供统一的发现、调用和结果交换协议，服务内部仍可以使用普通 API。
+
+Host 是管理模型、用户界面和任务的 AI 应用；MCP Client 是其中与服务通信的组件；MCP Server 暴露能力，并连接实际数据或业务系统。MCP 本身不是模型，不是 Agent 编排框架，也不会自动完成鉴权、笔记持久化或幂等去重。
+
+Tools 提供可执行操作，Resources 提供可读取的数据，Prompts 提供交互模板。只读搜索也可以是 Tool；资源列在目录里不等于内容已进入模型上下文。典型控制方式分别是模型、应用和用户，具体产品界面仍由应用设计。
+
+## 协议版本与 TypeScript 路线
+
+本次调研于 **2026-11-11** 进行，官方文档默认指向 **2026-07-28** 版。本专题引用该版本：Server 实现 `server/discover`，Client 可以选择调用以了解版本和能力；请求携带版本及能力等必需的 `_meta` 信息。工具发现使用 `tools/list`，调用使用 `tools/call`。不要将旧版初始化示例与新版消息格式混用。
+
+本实验只显示教学签名、方法名和结果片段，省略完整 JSON-RPC 包装、发现和必需元数据，不是可直接运行的 MCP 客户端。
+
+实现自己的工具时，先把查询和保存做成可单独验证的 TypeScript 函数或 API。需要多个兼容 Host 共用时再封装 MCP Server。官方 TypeScript SDK 是可选起点，使用前核对所安装版本支持的协议修订；SDK 更新进度不必与规范发布日期一致。这里不引入 LangChain、SDK 或其他新依赖。
+
+## 实验与边界
+
+六种固定场景展示只读查询、正常保存、非法参数、无写权限、工具业务错误和已写入但响应丢失。
+
+- **先预测，再观察**：模型提议并不会立刻执行；每步显示责任方、调用方状态和模拟存储中的笔记数。
+- **写入前决定**：本实验的产品策略要求对具体目标和内容确认一次；可以批准或拒绝。它不意味着所有实际写入都必须反复询问，已有授权与风险需要共同判断。
+- **权限不可绕过**：没有笔记写权限时直接停止。确认不是鉴权，参数合法也不是授权。
+- **结果未知时恢复**：响应丢失场景预设已写入一条笔记，但 Host 不知道。可按原操作键查询，或在服务支持幂等的前提下同键重试一次。
+
+笔记数是教学全知视角，不是客户端能在超时时直接读取的事实。模型调用 ID、JSON-RPC 请求 ID 与业务操作键的用途不同：重试可以使用新的请求 ID，但同一业务操作保持相同键和参数。真实服务需要持久化操作记录、原子去重、处理并发重复与同键异参；协议请求 ID 和 `idempotentHint` 不能代替这些实现。
+
+这是纯 TypeScript 模拟，没有模型调用、MCP 连接、网络等待、数据库或文件写入。只有保存参数检查是实际运行的校验代码；文章内容、权限和故障为预设，笔记计数由固定轨迹计算。没有实现通用 JSON Schema 验证器，也没有实现真实幂等服务。回退只是回看步骤，不表示撤销写入；重新预测、切换学习方式或刷新清空模拟状态。
+
+## 错误与安全判断
+
+未知工具或请求结构问题可以产生 JSON-RPC 协议错误；工具的输入或业务错误可以作为 `isError: true` 的结果返回。本实验还展示了发送前的本地参数拦截。收到正常 HTTP 或 JSON-RPC 响应，不能直接判定业务成功。
+
+超时不证明没有副作用，取消接收也不会撤销已提交操作。先核实，或在明确的幂等保证下有限重试，并设置总截止时间、退避与重试上限。容量不足、无权限或无效参数不应原样重复。
+
+工具描述和 annotations 都不是安全执行机制。不可信服务声称自己只读或幂等，并不保证行为如此；外部工具内容也不能升级为用户授权。应用和服务端仍需限制权限、校验输入输出，并保留必要且脱敏的调用记录。
+
+理解检查中的回答只在当前视图保留，可展开 Markdown 笔记自行复制；不自动保存或评分。
+
+继续学习 [上下文工程](/learning/context-engineering)、[AI 应用与 Agent 工程](/learning/agent-engineering)、[大模型基础与接入](/learning/llm) 和 [AI 评测与可靠性](/learning/evaluation)。
+
+## 调研与参考
+
+- [MCP Architecture overview · 2026-07-28](https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture)：Host / Client / Server、协议范围、发现流程、Stdio 与 Streamable HTTP。
+- [MCP Tools specification · 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28/server/tools)：工具定义、输入输出、错误分类、用户控制与服务端安全要求。
+- [Understanding MCP servers · 2026-07-28](https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts)：Tools、Resources、Prompts 的用途和典型控制方式。
+- [Official MCP SDKs · 2026-07-28](https://modelcontextprotocol.io/docs/2026-07-28/sdk)：官方 TypeScript SDK 入口，以及 SDK 与协议支持版本的区别。
+- [AWS Builders’ Library：Timeouts, retries, and backoff with jitter](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/)：超时与副作用、有限重试、幂等、退避及多层重试放大。
