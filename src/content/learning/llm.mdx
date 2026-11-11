@@ -1,0 +1,42 @@
+---
+title: '大模型基础与接入'
+date: '2026-11-11'
+slug: llm
+summary: '理解 Token、上下文、流式响应与结构化输出，判断一次模型请求何时才算业务可用。'
+tags: [知识地图, ai, typescript]
+draft: false
+---
+
+从请求到应用接受结果，有多个不同的成功条件。本专题用四个领域、十二个概念和一次请求实验建立基础判断。
+
+## 从哪里开始
+
+先沿 **Token → 历史与上下文 → 服务端调用 → 流式响应 → 结构化输出 → 业务校验** 探索，再补错误分类、重试和模型选择。地图连线表示知识分组与关联，不是执行顺序。
+
+## 请求实验
+
+选择正常完成、输出达到上限、断流、拒绝或临时限流，先预测能否得到可用结果，再逐步观察。正常路径也要经过“收到文字 → 响应完成 → 校验通过”。断流只能说明客户端没有拿到终态，不能断言服务端失败。
+
+这是浏览器内的固定 TypeScript 教学轨迹，没有真实 API 请求、模型生成或运行时 schema 校验。摘要与校验结果为预设，不测量模型质量、token、价格或延迟。事件以 OpenAI Responses API 为例，不代表所有供应商协议相同，也没有展示完整 SDK 的全部事件。
+
+切换场景清空预测。书面回答仅保留在当前理解检查视图；切换学习方式、离开或刷新即清空，不上传、不保存、不自动评分。
+
+## 用 TypeScript 接回真实项目
+
+最小实践是浏览器 → 自己的服务端接口 → 模型官方 JavaScript / TypeScript SDK。密钥留在服务端，由服务端执行身份、额度、输入和结果校验。无需 LangChain 或 Agent 框架。
+
+先接通普通文本，再加流式展示与独立终态，随后添加结构化输出和运行时校验。核对 SDK 自带超时与重试，避免叠加。用任务样例比较质量、延迟与成本，不把某个模型名或价格写成永久答案。
+
+后续学习 [RAG 与知识检索](/learning/rag)、[AI 应用与 Agent 工程](/learning/agent-engineering)；网络过程结合 [一次请求的旅程](/learning/request-journey)。
+
+## 调研与参考
+
+以下官方资料于 **2026-11-11** 查阅。通用原则与 Responses 专属字段分别说明，不混用 Chat Completions 参数。
+
+- [Streaming responses](https://developers.openai.com/api/docs/guides/streaming-responses)：SSE、增量与完成事件。
+- [Streaming events](https://developers.openai.com/api/reference/resources/responses/streaming-events)：Responses 事件参考。
+- [Structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs)：text.format、schema、拒绝与不完整输出。
+- [Conversation state](https://developers.openai.com/api/docs/guides/conversation-state)：历史、会话与上下文预算。
+- [Rate limits](https://developers.openai.com/api/docs/guides/rate-limits)：请求与 token 限制、有限退避。
+- [Error codes](https://developers.openai.com/api/docs/guides/error-codes)：认证、限流、额度与服务错误。
+- [Production best practices](https://developers.openai.com/api/docs/guides/production-best-practices)：密钥、质量、延迟与成本。
