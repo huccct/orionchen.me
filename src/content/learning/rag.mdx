@@ -1,0 +1,53 @@
+---
+title: 'RAG 与知识检索'
+date: '2026-11-10'
+slug: rag
+summary: '从文档分块、向量表示到证据与引用，比较检索结果，判断回答是否有据可查。'
+tags:
+  - 知识地图
+  - ai
+  - rag
+  - typescript
+draft: false
+---
+
+RAG（检索增强生成）先找到相关资料，再让模型基于资料回答。关键不只是“调用模型”，而是让正确、完整、当前用户有权查看的证据进入本次上下文。
+
+## 从哪里开始
+
+先沿着 **RAG 与直接提供上下文 → 离线索引与在线查询 → 结构分块与重叠 → Embedding → 关键词与语义检索 → Top-K → 引用、证据不足与拒答** 探索，再用评测检查哪里出了问题。
+
+地图有六个领域、十四个概念。连线表示知识分组与联系，不表示运行时执行顺序。混合检索、Rerank 和权限控制提供概念解释与练习目标，本版不模拟这些机制的完整实现。
+
+## 检索实验
+
+先查看四条虚构手册资料，再选择问题、检索方式和 Top-K，预测返回片段是否能提供完整回答依据，然后运行检索。
+
+- **同义表达**：对比“停止 / 撤销”与资料中的“取消 / 回滚”，观察关键词可能漏检。向量模式下比较 K=1 与 K=2，查看是否找齐两条标注证据。
+- **精确错误码**：查找 E409，观察精确词匹配的价值。本例故意设置了不理想的问题向量，不代表真实模型一定检索失败。
+- **资料里没有答案**：查询报告恢复期限，观察高相似度结果为什么仍不能支持答案。
+
+余弦相似度和排序由 TypeScript 实时计算，但问题和片段向量都是**手工二维教学数值**，不是调用模型产生的 Embedding。关键词模式按人工选定词的子串命中数计分，不实现自动分词或 BM25。向量模式故意不设阈值，便于观察“总能找到近邻”不等于“总有答案”。
+
+实验中的“证据齐全”与 Recall@K 来自预先人工标注，不是模型判断。无答案问题的 recall 不适用。这里只展示检索片段和带来源 ID 的上下文，不调用模型、不生成回答，也不模拟真实模型质量、token 消耗或生产性能。
+
+预测和书面回答只保留在当前活动视图，切换学习方式、离开或刷新即清空；不上传、不保存、不自动评分。
+
+## 用 TypeScript 接回真实项目
+
+下一步可用本站少量公开文章做实践：在服务端使用模型官方 JavaScript / TypeScript SDK 生成文档与问题向量，用内存检索验证效果，再把带引用的片段交给生成模型。密钥只能留在服务端，不能放进浏览器。
+
+先验证分块、相关性和无答案处理，再根据持久化、规模与权限需要接入 PostgreSQL + pgvector。不要求 LangChain，也不需要为学习这条链路先搭建 Agent 框架。这个真实问答服务尚未在本页接入。
+
+任务执行与权限边界见 [AI 应用与 Agent 工程](/learning/agent-engineering)，数据建模见 [数据库地图](/learning/database)，后端部署与接口见 [NestJS 地图](/learning/nestjs)。
+
+## 调研与参考
+
+以下资料于 **2026-11-10** 查阅。课程采用通用原理，不把某家服务的默认分块参数或评测示例阈值当作通用标准。
+
+- [OpenAI Retrieval](https://developers.openai.com/api/docs/guides/retrieval)：索引与查询、属性过滤、排序、分块和基于检索结果生成回答。
+- [OpenAI Embeddings](https://developers.openai.com/api/docs/guides/embeddings)：文本向量、同模型检索、余弦相似度与单位向量。
+- [Microsoft：文档分块](https://learn.microsoft.com/en-us/azure/search/vector-search-how-to-chunk-documents)：结构边界、重叠及字符与 token 的区别。
+- [Microsoft：混合检索](https://learn.microsoft.com/en-us/azure/search/hybrid-search-overview)：关键词与向量的互补性、RRF 和可选重排。
+- [OWASP RAG Security](https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html)：片段权限继承、不可信资料、来源与缓存隔离。
+- [OpenAI：评测实践](https://developers.openai.com/api/docs/guides/evaluation-best-practices)：任务样例、检索与回答分层评测、人工校准和持续回归。本页引用评测方法，不依赖该文档中已标注弃用的托管 Evals 平台。

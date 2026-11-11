@@ -9,6 +9,8 @@ import { RequestExplorer } from '@/components/learning/request-explorer'
 import { requestBranches } from '@/components/learning/request-data'
 import { AgentExplorer } from '@/components/learning/agent-explorer'
 import { agentBranches } from '@/components/learning/agent-data'
+import { RagExplorer } from '@/components/learning/rag-explorer'
+import { ragBranches } from '@/components/learning/rag-data'
 import { ReactExplorer } from '@/components/learning/react-explorer'
 import { reactMapBranches } from '@/components/learning/react-map-data'
 import { NestjsExplorer } from '@/components/learning/nestjs-mindmap'
@@ -80,20 +82,23 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
               {(topic.slug === 'nestjs' ||
                 topic.slug === 'react' ||
                 topic.slug === 'agent-engineering' ||
+                topic.slug === 'rag' ||
                 topic.slug === 'request-journey' ||
                 topic.slug === 'database') && (
                 <LearningMapPreview
                   title={topic.title}
                   branches={
-                    topic.slug === 'database'
-                      ? databaseBranches
-                      : topic.slug === 'request-journey'
-                        ? requestBranches
-                        : topic.slug === 'agent-engineering'
-                          ? agentBranches
-                          : topic.slug === 'react'
-                            ? reactMapBranches
-                            : nestMapBranches
+                    topic.slug === 'rag'
+                      ? ragBranches
+                      : topic.slug === 'database'
+                        ? databaseBranches
+                        : topic.slug === 'request-journey'
+                          ? requestBranches
+                          : topic.slug === 'agent-engineering'
+                            ? agentBranches
+                            : topic.slug === 'react'
+                              ? reactMapBranches
+                              : nestMapBranches
                   }
                 />
               )}
@@ -124,6 +129,8 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
     )
   if (slug === 'agent-engineering')
     return <AgentExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
+  if (slug === 'rag')
+    return <RagExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
   if (slug === 'react')
     return <ReactExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
   if (slug === 'nestjs')
