@@ -1,0 +1,52 @@
+---
+title: '大模型工作原理'
+date: '2026-11-11'
+slug: llm-mechanics
+summary: '从 Token、向量与 Attention 到下一步概率，用可回放的生成实验理解上下文、温度、训练与幻觉。'
+tags: [知识地图, ai, typescript]
+draft: false
+---
+
+理解工作原理，是为了知道该怎样使用、验证与改进模型。先沿 **文本 → Token ID → 向量与位置 → 多层网络 → logits → 概率 → 选择并追加** 学习，再回头区分参数、上下文与训练。
+
+这里主要讨论常见的自回归因果语言模型。原始 Transformer 是编码器—解码器架构；现代模型有不同结构和训练目标，不应将“所有 Transformer”与“下一 token 生成器”等同。地图连线表示概念分组与关联，并非执行时序。
+
+## 一次生成与一次训练
+
+训练根据目标和损失更新参数。生成时，普通推理使用已有参数，根据当前上下文计算下一 token 分布；生成的内容又成为后续上下文。因果遮罩阻止某个位置读取未来答案，即使训练时多个位置的计算可以并行进行。
+
+当前上下文包括系统提供的指令、问题、被加入的历史和资料，以及已生成内容。应用的聊天记录、长期记忆与模型参数是不同层次。RAG 检索资料并加入上下文；微调通过训练更新参数。想回答最新博客内容，可以先提供相关原文，再根据规模引入检索，用评测检查效果。
+
+## 实验实际做了什么
+
+选择天气、温度、贪心或采样、抽样序列以及步数上限。先预测第一个片段，再查看每一步分数、概率、累计区间、选中片段和输出前缀。保持其他条件不变，一次只改一个变量。
+
+这是纯 TypeScript 教学模型：候选与 logits 来自手工规则，中文片段不是实际 tokenizer 输出。程序实际计算数值稳定的 Softmax，并以给定的 [0, 1) 数值在累计概率区间中选择候选。抽样序列 A / B 是固定演示值，不是模型的随机种子；回退与重播不会重新抽样。它没有实现网络、Attention、训练、top-k / top-p，也不调用外部模型。
+
+第 2 步的分数同时受天气和第 1 步片段影响，展示生成结果反馈到下一轮的关系。为便于观察，第 3 步只选结尾，第 4 步只有 EOS 候选。选择 2 步上限会在 EOS 前截断。小词表可能产生不自然搭配，不用于评价真实模型的质量、速度或成本。
+
+温度仅调整分布形状。贪心直接取最大概率，不把 T=0 代入 Softmax。真实推理服务还受模型版本、实现与运行条件影响，不能从本实验的可回放性推导出 API 的逐字确定性。
+
+## 流畅为什么可能是错的
+
+下一 token 概率衡量当前条件下的续写倾向，并不是整句事实正确率。模型可能缺少某个事实、错误使用上下文，训练或评测也可能奖励猜测。降低温度不能查证事实，RAG 和微调也不能单独保证零错误。
+
+对论文、日期、金额等信息核验原始证据；把明确表达不确定、请求补充资料和合理拒答纳入成功标准。这里引用的幻觉研究提供一种分析视角，不是对所有错误的唯一解释。
+
+## 学完之后
+
+用自己的话解释一遍生成循环，写下一个误解和一次对比实验。理解检查中的文字只在当前视图保留，切换学习方式、刷新或离开会清空；可展开 Markdown 笔记自行复制保存。
+
+继续学习 [大模型基础与接入](/learning/llm)、[RAG 与知识检索](/learning/rag)、[AI 应用与 Agent 工程](/learning/agent-engineering) 和 [AI 评测与可靠性](/learning/evaluation)。
+
+## 调研与参考
+
+以下资料于 **2026-11-11** 查阅；示例不依赖资料中的 Python 库或历史模型。
+
+- [Hugging Face：Tokenizers](https://huggingface.co/learn/llm-course/chapter2/4)：分词、词表 ID、子词与解码。
+- [Hugging Face：How do Transformers work?](https://huggingface.co/learn/llm-course/chapter1/4)：架构、预训练、微调与因果目标。
+- [Google Research：Transformer 原始架构说明](https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/)：表示、Attention 与编码器—解码器。
+- [Hugging Face：How to generate text](https://huggingface.co/blog/how-to-generate)：自回归、贪心、温度、抽样与停止。
+- [Hugging Face：Generation strategies](https://huggingface.co/docs/transformers/generation_strategies)：生成策略的机制与差异。
+- [Hugging Face：Inference](https://huggingface.co/learn/llm-course/chapter1/8)：Prefill、Decode 与 KV cache。注意 logits 应理解为未归一化分数，不是概率。
+- [OpenAI：Why language models hallucinate](https://openai.com/index/why-language-models-hallucinate/)：事实错误、不确定性与训练评测激励。
