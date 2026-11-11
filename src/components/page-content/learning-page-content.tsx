@@ -13,6 +13,8 @@ import { AiCodingExplorer } from '@/components/learning/ai-coding-explorer'
 import { aiCodingBranches } from '@/components/learning/ai-coding-data'
 import { EvaluationExplorer } from '@/components/learning/evaluation-explorer'
 import { evaluationBranches } from '@/components/learning/evaluation-data'
+import { ContextExplorer } from '@/components/learning/context-explorer'
+import { contextBranches } from '@/components/learning/context-data'
 import { LlmMechanicsExplorer } from '@/components/learning/llm-mechanics-explorer'
 import { mechanicsBranches } from '@/components/learning/llm-mechanics-data'
 import { LlmExplorer } from '@/components/learning/llm-explorer'
@@ -93,6 +95,7 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                 topic.slug === 'rag' ||
                 topic.slug === 'llm' ||
                 topic.slug === 'llm-mechanics' ||
+                topic.slug === 'context-engineering' ||
                 topic.slug === 'evaluation' ||
                 topic.slug === 'ai-coding' ||
                 topic.slug === 'request-journey' ||
@@ -100,25 +103,27 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                 <LearningMapPreview
                   title={topic.title}
                   branches={
-                    topic.slug === 'llm-mechanics'
-                      ? mechanicsBranches
-                      : topic.slug === 'ai-coding'
-                        ? aiCodingBranches
-                        : topic.slug === 'evaluation'
-                          ? evaluationBranches
-                          : topic.slug === 'llm'
-                            ? llmBranches
-                            : topic.slug === 'rag'
-                              ? ragBranches
-                              : topic.slug === 'database'
-                                ? databaseBranches
-                                : topic.slug === 'request-journey'
-                                  ? requestBranches
-                                  : topic.slug === 'agent-engineering'
-                                    ? agentBranches
-                                    : topic.slug === 'react'
-                                      ? reactMapBranches
-                                      : nestMapBranches
+                    topic.slug === 'context-engineering'
+                      ? contextBranches
+                      : topic.slug === 'llm-mechanics'
+                        ? mechanicsBranches
+                        : topic.slug === 'ai-coding'
+                          ? aiCodingBranches
+                          : topic.slug === 'evaluation'
+                            ? evaluationBranches
+                            : topic.slug === 'llm'
+                              ? llmBranches
+                              : topic.slug === 'rag'
+                                ? ragBranches
+                                : topic.slug === 'database'
+                                  ? databaseBranches
+                                  : topic.slug === 'request-journey'
+                                    ? requestBranches
+                                    : topic.slug === 'agent-engineering'
+                                      ? agentBranches
+                                      : topic.slug === 'react'
+                                        ? reactMapBranches
+                                        : nestMapBranches
                   }
                 />
               )}
@@ -156,6 +161,10 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
   if (slug === 'evaluation')
     return (
       <EvaluationExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
+    )
+  if (slug === 'context-engineering')
+    return (
+      <ContextExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
     )
   if (slug === 'llm-mechanics')
     return (
