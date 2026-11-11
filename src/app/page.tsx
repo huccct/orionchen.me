@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
-import { HomePageContent } from '@/components/page-content/home-page-content'
+import { MatrixComputer } from './matrix/computer'
+import { getPublishedPosts } from '@/lib/posts'
+import './matrix/matrix.css'
 import { getDictionary } from '@/i18n/get-dictionary'
 import { createMetadata } from '@/lib/seo'
 
@@ -11,5 +13,8 @@ export const metadata: Metadata = createMetadata({
 })
 
 export default function Home() {
-  return <HomePageContent locale="zh" />
+  const posts = getPublishedPosts('zh')
+    .slice(0, 3)
+    .map(({ title, slug, date }) => ({ title, slug, date }))
+  return <MatrixComputer posts={posts} />
 }

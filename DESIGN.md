@@ -99,3 +99,26 @@ its domain and group. Use the inspector's level label and explicit experiment av
 to distinguish conceptual coverage from interactive teaching. Code disclosures appear only
 when a useful snippet exists. The source-derived [curriculum outline](docs/learning-curriculum.md)
 records current coverage; it is not a promise to cover every API or ecosystem package.
+
+### Matrix homepage (`/`)
+
+The default homepage is the Matrix/Neo room. The former text-first home remains at
+`/classic`; `/matrix` redirects to `/`. Other pages retain the text-first design. A procedural Three.js CRT workstation,
+warm desk lamp and cool rainy window light textured wood, aged plastic and plaster.
+Labelled keys, a handwritten note and a floppy disk give the desk lived-in detail.
+Monospace terminal type and phosphor green belong to this homepage experience.
+
+Click the physical screen (or focus the canvas and press Enter) to smoothly move the
+camera in front of the monitor. Actual DOM links and scrollable posts are projected
+inside its screen; the surrounding CRT remains visible. Internal links open a
+same-origin iframe with a green reading theme; next-article navigation stays inside
+it, while independent reading opens a new tab. Escape inside the reader returns to
+the terminal; Escape there, an outside click or disconnect returns to the desk.
+Focus follows entry and exit. Mobile reading brings the camera closer and expands
+the text viewport for readability.
+
+Click the lamp or press L to toggle it; the floppy opens Vibe. P, the monitor knobs
+and the terminal motion control pause the environment. Reduced motion skips camera
+transitions and environmental animation. Hidden tabs suspend animation frames;
+screen textures update only when their cursor state changes, and shadow maps remain
+static. WebGL failure or context loss offers a text-terminal fallback.

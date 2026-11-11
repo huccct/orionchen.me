@@ -32,8 +32,9 @@ and book recommendations. Keep existing URL shapes and the retired town redirect
 In October 2026 the user retired the pixel town and chose a text-first personal site,
 using antfu.me as the aesthetic reference: quiet typography, generous whitespace,
 small personal details and polished interactions. Keep the existing handwritten
-signature. Active pages use ordinary website navigation rather than the retired
-game or room-navigation experience. Visual details live in DESIGN.md.
+signature. On November 11, 2026 the user chose the Matrix/Neo computer room as the default
+Chinese homepage. Keep the text-first homepage at `/classic` and the existing English
+home at `/en`; other content pages retain ordinary website navigation. Visual details live in DESIGN.md.
 
 ## Evidence on Hand
 

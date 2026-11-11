@@ -45,6 +45,7 @@ export function buildLocalePath(
 ): string {
   const stripped = stripLocale(pathname)
   const prefix = localePathPrefix[locale]
+  if (stripped === '/classic' && locale === 'en') return '/en'
   const target = stripped === '/' ? prefix || '/' : `${prefix}${stripped}`
 
   if (!availability) return target
