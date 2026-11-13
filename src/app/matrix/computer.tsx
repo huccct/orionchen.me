@@ -1,11 +1,38 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight } from 'lucide-react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { ArrowLeft, Sun, Moon } from 'lucide-react'
 import Link from 'next/link'
-import type { MatrixTerminal } from './terminal'
-import { MatrixTerminal as TerminalContent } from './terminal'
-import type { ComponentProps } from 'react'
+import { useTheme } from 'next-themes'
+type Post = { title: string; slug: string; date: string }
+
+function subscribeSmallScreen(update: () => void) {
+  const media = window.matchMedia('(max-width: 700px)')
+  media.addEventListener('change', update)
+  return () => media.removeEventListener('change', update)
+}
+const smallScreenSnapshot = () => window.matchMedia('(max-width: 700px)').matches
+const serverScreenSnapshot = () => false
+const clientSnapshot = () => true
+const subscribeHydration = () => () => {}
+
+export function terminalMessage(elapsed: number) {
+  return 'Wake up, Orion.'.slice(0, Math.max(1, Math.floor(elapsed / 110) + 1))
+}
+
+const terminalRoutes: Record<string, string> = {
+  blog: '/blog',
+  'ls --all': '/blog',
+  works: '/works',
+  about: '/about',
+  reading: '/reading',
+  map: '/learning',
+  guestbook: '/guestbook',
+}
+export function terminalRoute(command: string) {
+  const key = command.trim().toLowerCase()
+  return Object.hasOwn(terminalRoutes, key) ? terminalRoutes[key] : null
+}
 
 export function monitorPath(href: string, origin: string) {
   try {
@@ -24,29 +51,110 @@ export function monitorPath(href: string, origin: string) {
   }
 }
 
-export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>) {
+export function MatrixComputer({ posts }: { posts: Post[] }) {
+  const smallScreen = useSyncExternalStore(
+    subscribeSmallScreen,
+    smallScreenSnapshot,
+    serverScreenSnapshot
+  )
+  const { resolvedTheme, setTheme } = useTheme()
+  const hydrated = useSyncExternalStore(subscribeHydration, clientSnapshot, serverScreenSnapshot)
+  const daylight = hydrated && resolvedTheme === 'light'
+  const daylightRef = useRef(false)
+  useEffect(() => {
+    daylightRef.current = daylight
+  }, [daylight])
+  const lightingControl = (
+    <button
+      type="button"
+      className="matrix-lighting-toggle"
+      aria-label={daylight ? '切换到黑夜' : '切换到白天'}
+      onClick={() => setTheme(daylight ? 'dark' : 'light')}
+    >
+      {daylight ? <Moon size={17} aria-hidden="true" /> : <Sun size={17} aria-hidden="true" />}
+    </button>
+  )
+  const [roomRequested, setRoomRequested] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const screenRef = useRef<HTMLDivElement>(null)
   const zoomRef = useRef(false)
   const [zoomed, setZoomed] = useState(false)
+  const [readerExpanded, setReaderExpanded] = useState(false)
+  const commandRef = useRef<HTMLInputElement>(null)
+  const [command, setCommand] = useState('')
+  const [transcript, setTranscript] = useState<{ command: string; output: string }[]>([])
+  const [showIntro, setShowIntro] = useState(true)
   const toggleZoom = (value: boolean) => {
     zoomRef.current = value
     setZoomed(value)
+    if (!value) setReaderExpanded(false)
   }
-  const [inside, setInside] = useState(false)
-  const [motionPaused, setMotionPaused] = useState(false)
   const motionPausedRef = useRef(false)
-  const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
   const [activePath, setActivePath] = useState<string | null>(null)
-  const readingRef = useRef(false)
-  useEffect(() => {
-    readingRef.current = activePath !== null
-  }, [activePath])
   const [frameLoading, setFrameLoading] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const lampOnRef = useRef(true)
-  const [lampOn, setLampOn] = useState(true)
+
+  function runCommand(raw: string) {
+    const value = raw.trim().toLowerCase()
+    if (!value) return
+    setCommand('')
+    const path = terminalRoute(value)
+    if (path && value !== 'blog') {
+      setFrameLoading(true)
+      setActivePath(path)
+      return
+    }
+    if (value === 'clear') {
+      setTranscript([])
+      setShowIntro(false)
+      commandRef.current?.focus()
+      return
+    }
+    if (value === 'exit') {
+      if (smallScreen && !failed) setRoomRequested(true)
+      toggleZoom(false)
+      canvasRef.current?.focus()
+      return
+    }
+    const article = /^open ([1-9]\d*)$/.exec(value)
+    if (article && posts[Number(article[1]) - 1]) {
+      setFrameLoading(true)
+      setActivePath(`/blog/${posts[Number(article[1]) - 1]!.slug}`)
+      return
+    }
+    let output = ''
+    switch (value) {
+      case 'help':
+      case 'blog':
+        break
+      case 'classic':
+      case 'rabbit':
+        break
+      case 'whoami':
+        output =
+          '我是 Orion，一个不只关心技术的工程师。\n写代码，记录生活，也慢慢开始拍纪录片。\n输入 about 可以继续了解我。'
+        break
+      case 'day':
+      case 'night':
+        setTheme(value === 'day' ? 'light' : 'dark')
+        output = value === 'day' ? '天亮了。' : '夜深了。'
+        break
+      case 'lamp':
+        lampOnRef.current = !lampOnRef.current
+        output = lampOnRef.current ? '台灯亮了。' : '台灯关了。'
+        break
+      default:
+        output = `没有找到指令「${raw.trim()}」。输入 help 查看可用指令。`
+    }
+    setTranscript((lines) => [...lines.slice(-19), { command: raw.trim(), output }])
+    commandRef.current?.focus()
+  }
+
+  useEffect(() => {
+    commandRef.current?.scrollIntoView({ block: 'nearest' })
+  }, [transcript])
 
   function openInMonitor(event: React.MouseEvent<HTMLDivElement>) {
     const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]')
@@ -77,19 +185,22 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
     if (!doc || !frame?.contentWindow) return
     const style = doc.createElement('style')
     style.textContent = `
-      :root, html.dark { color-scheme:dark; --background:#07130c; --foreground:#c1d8c7; --muted:#112419; --muted-foreground:#a1b9a9; --border:#2c4634; --accent:#a7e8b9; --card:#0b1b11; }
-      html, body { background:#07130c!important; color:#c1d8c7!important; font-size:15px; scrollbar-width:thin; scrollbar-color:#426c50 #07130c; }
+      :root, html.dark { color-scheme:dark; --background:#07100b; --foreground:#b5d9bc; --muted:#202622; --muted-foreground:#a9b4ac; --border:#303a33; --accent:#a1c8ac; --card:#19201b; }
+      html, body { background:#07100b!important; color:#b5d9bc!important; font-size:16px; font-family:ui-monospace, monospace!important; scrollbar-width:thin; scrollbar-color:#536358 #07100b; }
       body::before, .site-header, .site-footer, .detail-navigation { display:none!important; }
-      body > main { padding:22px!important; max-width:100%!important; }
-      h1 { font-size:24px!important; line-height:1.5!important; } h2 { font-size:20px!important; }
-      .prose { font-size:15px!important; line-height:1.95!important; } .prose p { color:#c1d8c7!important; }
-      a { color:#b1efc2; } pre { background:#0d2115!important; } ::selection {background:#a0d8ae;color:#07130c;}
-      @media(max-width:480px) { body > main {padding:14px!important;} h1 {font-size:20px!important;} }
+      body > main { padding:32px 24px 64px!important; max-width:100%!important; }
+      article[data-page='post'] { max-width:680px!important; }
+      h1, h2, h3, .prose { font-family:ui-monospace, monospace!important; }
+      h1 { font-size:30px!important; line-height:1.5!important; } h2 { font-size:23px!important; }
+      .prose { font-size:17px!important; line-height:1.95!important; } .prose p { color:#b5d9bc!important; }
+      a { color:#a1c8ac; } pre { background:#1a211c!important; } ::selection {background:#9fbaaa;color:#07100b;}
+      @media(max-width:700px) { body > main {padding:20px 8px 48px!important;} h1 {font-size:25px!important;} .prose {font-size:16px!important;} }
     `
     doc.head.appendChild(style)
     doc.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         setActivePath(null)
+        setReaderExpanded(false)
         screenRef.current?.focus()
       }
     })
@@ -123,6 +234,7 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         event.stopPropagation()
         if (url.pathname === '/' || url.pathname === '/matrix') {
           setActivePath(null)
+          setReaderExpanded(false)
           screenRef.current?.focus()
         } else {
           const path = monitorPath(link.href, window.location.origin)
@@ -135,10 +247,14 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
       true
     )
     setFrameLoading(false)
-    if (zoomRef.current) frame.focus()
+    if (zoomRef.current || smallScreen || failed) frame.focus()
   }
 
   useEffect(() => {
+    if (smallScreenSnapshot() && !roomRequested) {
+      screenRef.current?.removeAttribute('inert')
+      return
+    }
     let disposed = false
     let cleanup = () => {}
     Promise.all([
@@ -154,11 +270,12 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false })
         } catch {
           setFailed(true)
+          screenRef.current?.removeAttribute('inert')
           return
         }
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
         renderer.shadowMap.enabled = true
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap
+        renderer.shadowMap.type = THREE.PCFShadowMap
         renderer.shadowMap.autoUpdate = false
         renderer.shadowMap.needsUpdate = true
         renderer.toneMapping = THREE.ACESFilmicToneMapping
@@ -168,7 +285,7 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         scene.fog = new THREE.FogExp2('#070d0b', 0.032)
         const environment = new RoomEnvironment()
         const pmrem = new THREE.PMREMGenerator(renderer)
-        const environmentTarget = pmrem.fromScene(environment, 0.08)
+        const environmentTarget = pmrem.fromScene(environment, 0.04)
         scene.environment = environmentTarget.texture
         scene.environmentIntensity = 0.16
         environment.dispose()
@@ -221,11 +338,8 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         const lookAt = target.clone()
         const closeTarget = new THREE.Vector3(0, 2.1, 0.609)
         const closePosition = new THREE.Vector3()
-        const readingPosition = new THREE.Vector3(0, 2.1, 2.75)
         const destination = new THREE.Vector3()
-        const screenTop = new THREE.Vector3(),
-          screenBottom = new THREE.Vector3()
-        const ambient = new THREE.HemisphereLight('#9badb2', '#21180f', 0.45)
+        const ambient = new THREE.HemisphereLight('#bac3c9', '#24221e', 0.5)
         scene.add(ambient)
         const lamp = new THREE.SpotLight('#ffd19a', 30, 9, 0.95, 0.9, 2)
         lamp.position.set(-2.5, 2.28, 0.3)
@@ -235,9 +349,18 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         lamp.shadow.bias = -0.0002
         lamp.shadow.normalBias = 0.025
         scene.add(lamp, lamp.target)
-        const rim = new THREE.PointLight('#78bfa5', 9, 9, 2)
+        const rim = new THREE.PointLight('#91aaa5', 3.5, 9, 2)
         rim.position.set(2.2, 3.5, -1.7)
         scene.add(rim)
+        const daylightSource = new THREE.DirectionalLight('#fff1d4', 0)
+        daylightSource.position.set(3, 5, -1)
+        daylightSource.castShadow = true
+        daylightSource.shadow.mapSize.set(1024, 1024)
+        daylightSource.shadow.normalBias = 0.04
+        scene.add(daylightSource)
+        const nightSky = new THREE.Color('#070d0b')
+        const daySky = new THREE.Color('#a4b9b5')
+        let lightLevel = daylightRef.current ? 1 : 0
         const screenLight = new THREE.PointLight('#80ffaf', 2.8, 4, 2)
         screenLight.position.set(0, 1.9, 1.2)
         scene.add(screenLight)
@@ -348,47 +471,28 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(2.09, 1.47), screenMaterial)
         screenMesh.position.set(0, 2.1, 0.609)
         scene.add(screenMesh)
-        function drawScreen(t: number) {
-          ctx.fillStyle = '#03110a'
+        function drawScreen(message: string, cursorPhase: number) {
+          ctx.fillStyle = '#07100b'
           ctx.fillRect(0, 0, 1024, 768)
-          ctx.fillStyle = '#619b73'
-          ctx.font = '20px monospace'
-          ctx.fillText('ORION PERSONAL COMPUTER', 55, 65)
-          ctx.fillText('CONSTRUCT OS / v.01', 55, 101)
-          ctx.strokeStyle = '#224c32'
-          ctx.beginPath()
-          ctx.moveTo(55, 128)
-          ctx.lineTo(970, 128)
-          ctx.stroke()
-          ctx.shadowColor = '#50ff89'
-          ctx.shadowBlur = 10
-          ctx.fillStyle = '#a1ffc0'
-          ctx.font = '62px monospace'
-          ctx.fillText('Wake up, Orion.', 55, 300)
-          ctx.font = '28px monospace'
-          ctx.fillStyle = '#63c185'
-          ctx.fillText('The Matrix has you...', 55, 370)
+          ctx.fillStyle = '#8deda4'
+          ctx.shadowColor = '#36c86a'
+          ctx.shadowBlur = 5
+          ctx.font = '42px monospace'
+          ctx.fillText(message, 70, 315)
+          if (cursorPhase === 0) ctx.fillRect(70 + ctx.measureText(message).width + 8, 280, 20, 39)
           ctx.shadowBlur = 0
-          ctx.fillStyle = '#89c49c'
-          ctx.font = '23px monospace'
-          ctx.fillText('Follow the white rabbit.', 55, 503)
-          ctx.fillStyle = '#7bed9d'
-          ctx.fillText('> enter the construct', 55, 595)
-          if (Math.floor(t / 700) % 2 === 0) ctx.fillRect(369, 574, 15, 25)
-          ctx.font = '17px monospace'
-          ctx.fillStyle = '#679a77'
-          ctx.fillText('CLICK THE SCREEN TO CONNECT', 55, 708)
-          ctx.fillStyle = 'rgba(0,0,0,.18)'
-          for (let y = 0; y < 768; y += 4) ctx.fillRect(0, y, 1024, 1)
           texture.needsUpdate = true
         }
         box(2.65, 0.12, 0.82, 0, 0.62, 1.45, beige)
+        const keyboardKeys: InstanceType<typeof THREE.Mesh>[] = []
         for (let row = 0; row < 5; row++)
           for (let col = 0; col < 15; col++) {
             if (row === 4 && col > 3 && col < 10) continue
-            box(0.135, 0.045, 0.105, -1.18 + col * 0.166, 0.703, 1.16 + row * 0.14, edge)
+            keyboardKeys.push(
+              box(0.135, 0.045, 0.105, -1.18 + col * 0.166, 0.703, 1.16 + row * 0.14, edge)
+            )
           }
-        box(0.98, 0.045, 0.105, -0.03, 0.703, 1.72, edge)
+        keyboardKeys.push(box(0.98, 0.045, 0.105, -0.03, 0.703, 1.72, edge))
         const mouse = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 16), beige)
         mouse.scale.set(0.8, 0.45, 1.35)
         mouse.position.set(1.86, 0.64, 1.4)
@@ -438,45 +542,9 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         })
         keyboardPrint.rotation.x = -Math.PI / 2
         keyboardPrint.position.set(0, 0.729, 1.42)
-        const disk = box(
-          0.57,
-          0.035,
-          0.6,
-          2.15,
-          0.575,
-          0.7,
-          new THREE.MeshStandardMaterial({ color: '#182327', roughness: 0.65 })
-        )
-        disk.rotation.y = -0.2
-        const diskLabel = printedPlane(0.4, 0.25, (c) => {
-          c.fillStyle = '#c1b998'
-          c.fillRect(0, 0, 1024, 512)
-          c.fillStyle = '#3e453d'
-          c.font = '80px monospace'
-          c.fillText('FOLLOW THE', 70, 170)
-          c.fillText('WHITE RABBIT', 70, 290)
-        })
-        diskLabel.rotation.set(-Math.PI / 2, 0, -0.2)
-        diskLabel.position.set(2.15, 0.596, 0.74)
-        const note = printedPlane(0.7, 0.85, (c) => {
-          c.fillStyle = '#b6ad89'
-          c.fillRect(0, 0, 1024, 512)
-          c.fillStyle = '#354336'
-          c.font = 'italic 50px serif'
-          c.fillText('What is real?', 70, 130)
-          c.font = '30px monospace'
-          c.fillText('ideas / code / everyday life', 70, 220)
-          c.strokeStyle = '#53604c'
-          c.beginPath()
-          c.moveTo(70, 260)
-          c.lineTo(900, 260)
-          c.stroke()
-        })
-        note.rotation.set(-Math.PI / 2, 0, 0.14)
-        note.position.set(-2.7, 0.549, 1.18)
         // Window, rain, and distant buildings make a room beyond the monitor.
         box(2.65, 3, 0.07, 2.05, 2.8, -2.19, dark)
-        box(
+        const windowPane = box(
           2.45,
           2.8,
           0.02,
@@ -484,8 +552,8 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           2.8,
           -2.13,
           new THREE.MeshStandardMaterial({
-            color: '#073325',
-            emissive: '#092c24',
+            color: '#0a1614',
+            emissive: '#0a1715',
             emissiveIntensity: 0.4,
             roughness: 0.3,
           })
@@ -524,12 +592,12 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           new THREE.LineBasicMaterial({
             color: '#9ec5bd',
             transparent: true,
-            opacity: 0.3,
+            opacity: 0.16,
             depthWrite: false,
           })
         )
         scene.add(rain)
-        // A task lamp and a mug give the workstation a human scale.
+        // The task lamp grounds the workstation in the room.
         cylinder(0.32, 0.05, -2.5, 0.58, 0.2, edge)
         cylinder(0.035, 1.8, -2.5, 1.49, 0.2, edge)
         const shade = new THREE.Mesh(
@@ -552,33 +620,12 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         )
         bulbSurface.position.copy(bulb.position)
         scene.add(bulbSurface)
-        cylinder(0.19, 0.37, -1.95, 0.74, 1.35, beige)
-        cylinder(
-          0.16,
-          0.008,
-          -1.95,
-          0.93,
-          1.35,
-          new THREE.MeshStandardMaterial({ color: '#0b100c' })
-        )
-        const handle = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 10, 24), beige)
-        handle.position.set(-2.17, 0.77, 1.35)
-        scene.add(handle)
-        for (let i = 0; i < 3; i++)
-          box(
-            0.85,
-            0.1,
-            0.62,
-            2.75,
-            0.61 + i * 0.11,
-            0.25,
-            new THREE.MeshStandardMaterial({ color: ['#394539', '#56674f', '#25382c'][i] })
-          )
         let pointerX = 0,
           pointerY = 0,
           frame = 0,
           last = 0,
-          lastCursorPhase = -1,
+          lastScreenState = '',
+          terminalElapsed = 0,
           lastRenderedState = ''
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
         const base = new THREE.Vector3()
@@ -593,7 +640,12 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           closePosition.set(
             0,
             2.1,
-            0.609 + Math.max(2.7, 1.3 / (Math.tan(THREE.MathUtils.degToRad(19.5)) * camera.aspect))
+            0.609 +
+              Math.max(
+                1.47 / (2 * Math.tan(THREE.MathUtils.degToRad(19.5))),
+                2.09 / (2 * Math.tan(THREE.MathUtils.degToRad(19.5)) * camera.aspect)
+              ) *
+                1.26
           )
           camera.position.copy(zoomRef.current ? closePosition : base)
           camera.lookAt(target)
@@ -617,7 +669,8 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           pointerX = (event.clientX / window.innerWidth - 0.5) * 0.38
           pointerY = (event.clientY / window.innerHeight - 0.5) * 0.18
           canvas.style.cursor =
-            hitScreen(event) || raycaster.intersectObjects([...monitorKnobs, shade, disk]).length
+            hitScreen(event) ||
+            raycaster.intersectObjects([...monitorKnobs, ...keyboardKeys, shade]).length
               ? 'pointer'
               : 'default'
         }
@@ -625,15 +678,12 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           const screenHit = hitScreen(event)
           if (raycaster.intersectObject(shade).length) {
             lampOnRef.current = !lampOnRef.current
-            setLampOn(lampOnRef.current)
-          } else if (raycaster.intersectObject(disk).length) {
-            window.open('https://huccct.github.io/vibe/', '_blank', 'noopener,noreferrer')
           } else if (raycaster.intersectObjects(monitorKnobs).length) {
             motionPausedRef.current = !motionPausedRef.current
-            setMotionPaused(motionPausedRef.current)
-          } else if (screenHit) {
+          } else if (screenHit || raycaster.intersectObjects(keyboardKeys).length) {
             zoomRef.current = true
             setZoomed(true)
+            canvas.focus()
           } else if (zoomRef.current) {
             zoomRef.current = false
             setZoomed(false)
@@ -647,36 +697,65 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
             setZoomed(false)
             canvas.focus()
           }
+          if (
+            event.target instanceof HTMLInputElement ||
+            event.target instanceof HTMLTextAreaElement ||
+            (event.target instanceof HTMLElement && event.target.isContentEditable)
+          )
+            return
           if (event.code === 'KeyL' && !event.repeat) {
             lampOnRef.current = !lampOnRef.current
-            setLampOn(lampOnRef.current)
           }
-          if (
-            event.code === 'KeyP' &&
-            !event.repeat &&
-            !(event.target instanceof HTMLInputElement)
-          ) {
+          if (event.code === 'KeyP' && !event.repeat) {
             motionPausedRef.current = !motionPausedRef.current
-            setMotionPaused(motionPausedRef.current)
           }
         }
         window.addEventListener('keydown', onKey)
         canvas.addEventListener('pointermove', onMove)
         canvas.addEventListener('click', onClick)
+        const glassTop = new THREE.Vector3()
+        const glassBottom = new THREE.Vector3()
         function render(now: number) {
           frame = requestAnimationFrame(render)
           if (document.hidden || !canvas.clientWidth || now - last < 40) return
           const delta = last ? Math.min((now - last) / 1000, 0.1) : 0.04
           last = now
-          screenMesh.visible = !(zoomRef.current && readingRef.current)
-          lamp.intensity = lampOnRef.current ? 30 : 0
+          const lightTarget = daylightRef.current ? 1 : 0
+          if (Math.abs(lightTarget - lightLevel) > 0.01) renderer.shadowMap.needsUpdate = true
+          lightLevel +=
+            (lightTarget - lightLevel) * (reduced.matches ? 1 : 1 - Math.exp(-4 * delta))
+          ambient.intensity = 0.5 + lightLevel * 1.6
+          daylightSource.intensity = lightLevel * 2.8
+          rim.intensity = 3.5 + lightLevel * 12
+          scene.environmentIntensity = 0.16 + lightLevel * 0.6
+          ;(scene.background as InstanceType<typeof THREE.Color>)
+            .copy(nightSky)
+            .lerp(daySky, lightLevel)
+          ;(scene.fog as InstanceType<typeof THREE.FogExp2>).color.copy(
+            scene.background as InstanceType<typeof THREE.Color>
+          )
+          const windowMaterial = windowPane.material as InstanceType<
+            typeof THREE.MeshStandardMaterial
+          >
+          windowMaterial.color.setRGB(
+            0.04 + lightLevel * 0.46,
+            0.08 + lightLevel * 0.57,
+            0.07 + lightLevel * 0.59
+          )
+          windowMaterial.emissive.copy(windowMaterial.color)
+          windowMaterial.emissiveIntensity = 0.4 + lightLevel * 0.5
+          rain.visible = lightLevel < 0.6
+          lamp.intensity = lampOnRef.current ? 30 - lightLevel * 22 : 0
           bulb.intensity = lampOnRef.current ? 1.8 : 0
           bulbSurface.visible = lampOnRef.current
           const cursorPhase =
             reduced.matches || motionPausedRef.current ? 0 : Math.floor(now / 700) % 2
-          if (cursorPhase !== lastCursorPhase) {
-            drawScreen(cursorPhase * 700)
-            lastCursorPhase = cursorPhase
+          if (!motionPausedRef.current && !zoomRef.current) terminalElapsed += delta * 1000
+          const message = reduced.matches ? 'Wake up, Orion.' : terminalMessage(terminalElapsed)
+          const screenState = `${message}:${cursorPhase}`
+          if (screenState !== lastScreenState) {
+            drawScreen(message, cursorPhase)
+            lastScreenState = screenState
           }
           if (!reduced.matches && !motionPausedRef.current) {
             for (let i = 0; i < 240; i++) {
@@ -686,8 +765,7 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
             }
             rainPositions.needsUpdate = true
           }
-          const mobileReading = readingRef.current && canvas.clientWidth < 600
-          const nearPosition = mobileReading ? readingPosition : closePosition
+          const nearPosition = closePosition
           destination.copy(zoomRef.current ? nearPosition : base)
           if (!zoomRef.current && !reduced.matches && !motionPausedRef.current) {
             destination.x += pointerX
@@ -701,24 +779,40 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           const panel = screenRef.current
           if (panel) {
             const settled = zoomRef.current && camera.position.distanceTo(nearPosition) < 0.025
+            if (settled) {
+              glassTop.set(-1.045, 2.835, 0.609).project(camera)
+              glassBottom.set(1.045, 1.365, 0.609).project(camera)
+              panel.style.setProperty(
+                '--screen-left',
+                `${((glassTop.x + 1) * canvas.clientWidth) / 2}px`
+              )
+              panel.style.setProperty(
+                '--screen-top',
+                `${((1 - glassTop.y) * canvas.clientHeight) / 2}px`
+              )
+              panel.style.setProperty(
+                '--screen-width',
+                `${((glassBottom.x - glassTop.x) * canvas.clientWidth) / 2}px`
+              )
+              panel.style.setProperty(
+                '--screen-height',
+                `${((glassTop.y - glassBottom.y) * canvas.clientHeight) / 2}px`
+              )
+            }
             panel.style.visibility = settled ? 'visible' : 'hidden'
             panel.inert = !settled
             if (settled) {
-              const top = screenTop.set(-1.045, 2.835, 0.615).project(camera)
-              const bottom = screenBottom.set(1.045, 1.365, 0.615).project(camera)
-              panel.style.left = `${mobileReading ? 14 : ((top.x + 1) * canvas.clientWidth) / 2}px`
-              panel.style.top = `${mobileReading ? Math.max(72, ((1 - top.y) * canvas.clientHeight) / 2) : ((1 - top.y) * canvas.clientHeight) / 2}px`
-              panel.style.width = `${mobileReading ? canvas.clientWidth - 28 : ((bottom.x - top.x) * canvas.clientWidth) / 2}px`
-              panel.style.height = `${mobileReading ? canvas.clientHeight - 152 : ((top.y - bottom.y) * canvas.clientHeight) / 2}px`
-              if (document.activeElement === canvas) panel.focus({ preventScroll: true })
+              if (document.activeElement === canvas)
+                (commandRef.current ?? panel).focus({ preventScroll: true })
             }
           }
-          const renderState = `${lampOnRef.current}:${zoomRef.current}:${mobileReading}:${readingRef.current}:${canvas.width}:${canvas.height}`
+          const renderState = `${daylightRef.current}:${lampOnRef.current}:${zoomRef.current}:${canvas.width}:${canvas.height}`
           const moving =
             camera.position.distanceTo(destination) > 0.001 ||
             lookAt.distanceTo(zoomRef.current ? closeTarget : target) > 0.001
           if (
             moving ||
+            Math.abs(lightTarget - lightLevel) > 0.001 ||
             (!reduced.matches && !motionPausedRef.current) ||
             renderState !== lastRenderedState
           ) {
@@ -735,11 +829,11 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         const contextLost = (event: Event) => {
           event.preventDefault()
           setFailed(true)
+          screenRef.current?.removeAttribute('inert')
           cancelAnimationFrame(frame)
         }
         canvas.addEventListener('webglcontextlost', contextLost)
         frame = requestAnimationFrame(render)
-        setReady(true)
         cleanup = () => {
           cancelAnimationFrame(frame)
           observer.disconnect()
@@ -762,21 +856,27 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
         }
       })
       .catch(() => {
-        if (!disposed) setFailed(true)
+        if (!disposed) {
+          setFailed(true)
+          screenRef.current?.removeAttribute('inert')
+        }
       })
     return () => {
       disposed = true
       cleanup()
     }
-  }, [])
+  }, [smallScreen, roomRequested])
 
   return (
     <div className="matrix-computer-world">
       <div
         className="matrix-room"
+        data-daylight={daylight}
         data-zoomed={zoomed}
         data-reading={activePath !== null}
-        hidden={inside}
+        data-expanded={readerExpanded && activePath !== null}
+        data-direct={(smallScreen && !roomRequested) || failed}
+        data-room-requested={roomRequested}
       >
         <canvas
           ref={canvasRef}
@@ -791,30 +891,20 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
             }
           }}
         />
-        <header className="matrix-room-header">
-          <Link href="/">
-            ORION CHEN<span> / PERSONAL SPACE</span>
-          </Link>
-          <Link href="/classic">
-            文字版 <ArrowUpRight size={13} />
-          </Link>
-        </header>
-        <div className="matrix-room-caption">
-          <span>某个深夜。你的电脑还亮着。</span>
-          <p>Something is waiting for you.</p>
-        </div>
-        <div className="matrix-room-hint" role="status">
-          {failed ? (
-            <button onClick={() => setInside(true)}>场景无法显示 · 打开文字终端</button>
-          ) : !ready ? (
-            '正在打开房间…'
-          ) : zoomed ? (
-            'ESC 退回桌前 · P 暂停 · L 台灯'
-          ) : (
-            '屏幕进入 · 台灯开关 · 软盘里的秘密'
-          )}
-          {motionPaused && <span> · 环境已暂停</span>}
-        </div>
+        {smallScreen && (
+          <header className="matrix-room-header">
+            <button
+              aria-label="返回内容"
+              onClick={() => {
+                setRoomRequested(false)
+                toggleZoom(false)
+              }}
+            >
+              <ArrowLeft size={18} aria-hidden="true" />
+            </button>
+          </header>
+        )}
+        <div className="matrix-room-hint">{lightingControl}</div>
         <div
           ref={screenRef}
           className="matrix-monitor-content"
@@ -823,19 +913,20 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
           style={{ visibility: 'hidden' }}
           onClickCapture={openInMonitor}
         >
-          <div className="matrix-monitor-top">
-            ORION / PERSONAL TERMINAL <span>CONNECTED</span>
-          </div>
           {activePath ? (
             <div className="matrix-reader">
               <div className="matrix-reader-bar">
                 <button
                   onClick={() => {
                     setActivePath(null)
+                    setReaderExpanded(false)
                     screenRef.current?.focus()
                   }}
                 >
-                  ← 返回终端
+                  [esc] terminal
+                </button>
+                <button onClick={() => setReaderExpanded(!readerExpanded)}>
+                  {readerExpanded ? '[−] restore' : '[+] expand'}
                 </button>
                 <a
                   href={activePath}
@@ -843,12 +934,12 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
                   rel="noopener noreferrer"
                   onClick={(event) => event.stopPropagation()}
                 >
-                  独立阅读 ↗
+                  [↗] open
                 </a>
               </div>
               {frameLoading && (
                 <p className="matrix-reader-loading" role="status">
-                  正在读取记录…
+                  loading…
                 </p>
               )}
               <iframe
@@ -859,78 +950,116 @@ export function MatrixComputer({ posts }: ComponentProps<typeof MatrixTerminal>)
               />
             </div>
           ) : (
-            <div className="matrix-monitor-scroll">
-              <h1>
-                Wake up, Orion<span>_</span>
-              </h1>
-              <p>代码、文字，以及屏幕之外的世界。</p>
-              <nav aria-label="电脑中的导航">
-                <Link href="/works">[ 程序 ]</Link>
-                <Link href="/learning">[ 知识 ]</Link>
-                <Link href="/about">[ 身份 ]</Link>
-              </nav>
-              <h2>~/writing / 最新传输</h2>
-              {posts.map((post) => (
-                <Link className="matrix-screen-post" href={`/blog/${post.slug}`} key={post.slug}>
-                  <time>{post.date.slice(5, 10)}</time>
-                  <span>{post.title}</span>
-                </Link>
-              ))}
-              <Link className="matrix-screen-all" href="/blog">
-                → 查看全部记录
-              </Link>
-              <a className="matrix-screen-rabbit" href="https://huccct.github.io/vibe/">
-                Follow the white rabbit.
-              </a>
+            <div className="matrix-terminal">
+              {showIntro && (
+                <>
+                  <h1>Wake up, Orion.</h1>
+                  <p className="matrix-terminal-hint">
+                    Type <button onClick={() => runCommand('help')}>help</button> to begin.
+                  </p>
+                </>
+              )}
+              <div
+                className="matrix-terminal-log"
+                role="log"
+                aria-live="polite"
+                aria-relevant="additions"
+              >
+                {transcript.map((line, index) => {
+                  const value = line.command.trim().toLowerCase()
+                  return (
+                    <div key={index}>
+                      <p className="matrix-command-echo">orion@home:~ $ {line.command}</p>
+                      {value === 'help' ? (
+                        <div className="matrix-command-list" aria-label="可用指令">
+                          {[
+                            ['blog', '文章'],
+                            ['works', '作品'],
+                            ['whoami', '我是谁'],
+                            ['about', '详细介绍'],
+                            ['reading', '阅读'],
+                            ['map', '知识地图'],
+                            ['guestbook', '留言'],
+                            ['classic', '文字版'],
+                            ['rabbit', '跟随白兔'],
+                            ['day', '白天'],
+                            ['night', '黑夜'],
+                            ['lamp', '台灯'],
+                            ['clear', '清屏'],
+                            ['exit', '退出房间'],
+                          ].map(([name, description]) => (
+                            <button key={name} onClick={() => runCommand(name!)}>
+                              <span>{name}</span>
+                              <span>{description}</span>
+                            </button>
+                          ))}
+                        </div>
+                      ) : value === 'blog' ? (
+                        <div className="matrix-terminal-posts" aria-label="文章目录">
+                          {posts.map((post, index) => (
+                            <Link href={`/blog/${post.slug}`} key={post.slug}>
+                              <span>{String(index + 1).padStart(2, '0')}</span>
+                              <span>{post.title}</span>
+                            </Link>
+                          ))}
+                          <p>输入 open 1 阅读，或点击标题。</p>
+                          <Link href="/blog">ls --all　全部文章</Link>
+                        </div>
+                      ) : ['classic', 'rabbit'].includes(value) ? (
+                        <a
+                          href={value === 'classic' ? '/classic' : 'https://huccct.github.io/vibe/'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {value === 'classic' ? 'open /classic ↗' : 'Follow the white rabbit. ↗'}
+                        </a>
+                      ) : (
+                        <p>{line.output}</p>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+              <form
+                className="matrix-command"
+                onSubmit={(event) => {
+                  event.preventDefault()
+                  runCommand(command)
+                }}
+              >
+                <label htmlFor="matrix-command">orion@home:~ $</label>
+                <input
+                  ref={commandRef}
+                  id="matrix-command"
+                  aria-label="终端指令"
+                  value={command}
+                  onChange={(event) => setCommand(event.target.value)}
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  maxLength={120}
+                  enterKeyHint="go"
+                  onKeyDown={(event) => {
+                    if (event.nativeEvent.isComposing) {
+                      if (event.key === 'Enter') event.preventDefault()
+                      return
+                    }
+                    if (event.key === 'ArrowUp' && transcript.length) {
+                      event.preventDefault()
+                      setCommand(transcript.at(-1)?.command ?? '')
+                    }
+                    if (event.key === 'Escape') {
+                      event.stopPropagation()
+                      toggleZoom(false)
+                      canvasRef.current?.focus()
+                    }
+                  }}
+                />
+              </form>
             </div>
           )}
-          <div className="matrix-monitor-bottom">
-            <button
-              onClick={() => {
-                toggleZoom(false)
-                canvasRef.current?.focus()
-              }}
-            >
-              ← disconnect
-            </button>
-            <button
-              aria-pressed={!lampOn}
-              onClick={() => {
-                lampOnRef.current = !lampOn
-                setLampOn(!lampOn)
-              }}
-            >
-              {lampOn ? 'lamp: on' : 'lamp: off'}
-            </button>
-            <button
-              aria-pressed={motionPaused}
-              onClick={() => {
-                motionPausedRef.current = !motionPaused
-                setMotionPaused(!motionPaused)
-              }}
-            >
-              {motionPaused ? 'motion: off' : 'motion: on'}
-            </button>
-            <Link href="/reading">reading/</Link>
-            <Link href="/guestbook">leave a message_</Link>
-          </div>
         </div>
-        <span className="matrix-room-corner">THE CONSTRUCT / 1999</span>
       </div>
-      {inside && (
-        <>
-          <TerminalContent posts={posts} />
-          <button
-            className="matrix-back-desk"
-            onClick={() => {
-              setInside(false)
-              requestAnimationFrame(() => canvasRef.current?.focus())
-            }}
-          >
-            回到桌前
-          </button>
-        </>
-      )}
     </div>
   )
 }

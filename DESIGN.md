@@ -102,23 +102,39 @@ records current coverage; it is not a promise to cover every API or ecosystem pa
 
 ### Matrix homepage (`/`)
 
-The default homepage is the Matrix/Neo room. The former text-first home remains at
-`/classic`; `/matrix` redirects to `/`. Other pages retain the text-first design. A procedural Three.js CRT workstation,
-warm desk lamp and cool rainy window light textured wood, aged plastic and plaster.
-Labelled keys, a handwritten note and a floppy disk give the desk lived-in detail.
-Monospace terminal type and phosphor green belong to this homepage experience.
+The desktop homepage opens with a restrained Matrix/Neo room: a procedural Three.js
+CRT workstation, keyboard, mouse, warm desk lamp and cool rainy window. Textured
+wood, aged plastic and plaster provide the detail; extra desk props are omitted.
+The former text-first home remains at `/classic`; `/matrix` redirects to `/`.
 
-Click the physical screen (or focus the canvas and press Enter) to smoothly move the
-camera in front of the monitor. Actual DOM links and scrollable posts are projected
-inside its screen; the surrounding CRT remains visible. Internal links open a
-same-origin iframe with a green reading theme; next-article navigation stays inside
-it, while independent reading opens a new tab. Escape inside the reader returns to
-the terminal; Escape there, an outside click or disconnect returns to the desk.
-Focus follows entry and exit. Mobile reading brings the camera closer and expands
-the text viewport for readability.
+Click the physical screen or keyboard (or focus the canvas and press Enter) to
+approach the CRT. The HTML terminal is projected onto its glass, with the real case
+visible. It accepts allowlisted commands; `help` lists them, `whoami` responds in
+place, and `blog` prints a numbered article directory. `open 1` reads the first
+article; `ls --all` opens the complete archive. `works`, `about`, `reading`, `map`
+and `guestbook` open their real pages. Help output and article results are clickable.
+The opening screen contains only the wake-up message, a help prompt and command input.
+No logo bar, navigation tabs, cards or footer are shown inside the terminal.
+`day`, `night` and `lamp` control the room; `clear` clears the transcript and `exit`
+returns to the desk. Arrow Up recalls the last transcript command. Input never runs
+shell code. Letter shortcuts are ignored while typing into form controls.
 
-Click the lamp or press L to toggle it; the floppy opens Vibe. P, the monitor knobs
-and the terminal motion control pause the environment. Reduced motion skips camera
-transitions and environmental animation. Hidden tabs suspend animation frames;
-screen textures update only when their cursor state changes, and shadow maps remain
-static. WebGL failure or context loss offers a text-terminal fallback.
+The same-origin reader stays in the screen until `[+] expand` expands it. `[esc] terminal`
+restores the terminal; Escape inside the reader does the same, then Escape in the
+terminal returns to the room. Independent reading opens a new tab. Reading text
+and terminal output share monospaced type, dark glass and muted phosphor green.
+
+Mobile starts directly with the HTML terminal; `exit` optionally loads the room.
+WebGL failure or context loss exposes the same content instead of a separate fallback.
+The `rabbit` command offers the Vibe link; `classic` offers the text-first site.
+
+Click the lamp or press L to toggle it; P and the monitor knobs pause motion. Reduced motion skips transitions and environmental animation.
+Hidden tabs suspend animation frames; screen textures update only when the cursor
+changes and shadow maps remain static.
+
+The sun/moon icon switches room lighting using the existing persisted site theme.
+Daylight reveals the plaster, desk and window skyline; night restores rain, lamp
+light and green screen spill. The CRT types “Wake up, Orion.” and keeps it visible. The room has only a day/night
+icon; P and physical monitor knobs retain motion control for accessibility. Pausing freezes typing and the cursor;
+reduced motion displays the complete opening message immediately. Reading remains
+on a dark, clear screen in both room lighting modes.
