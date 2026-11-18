@@ -7,6 +7,7 @@ import {
   type ToolScenario,
 } from '@/components/learning/tool-call-trace'
 import { toolsMcpBranches, toolsMcpCurriculum } from '@/components/learning/tools-mcp-data'
+import { auditReportCall } from '@/components/learning/report-authorization'
 
 it('validates external save arguments instead of relying on TypeScript types', () => {
   expect(validNoteArguments(sampleNote)).toBe(true)
@@ -66,4 +67,29 @@ it('connects every concept to existing map nodes', () => {
     expect(toolsMcpBranches.some((branch) => branch.id === concept.branch)).toBe(true)
     for (const id of toolsMcpCurriculum.notes[concept.id]!.related) expect(ids).toContain(id)
   }
+})
+
+it('checks delegated scope and exact report approval and records the decision', () => {
+  const write = {
+    scope: 'read-write',
+    tool: 'write_report',
+    report: 'A',
+    approvedReport: 'A',
+  } as const
+  expect(auditReportCall({ ...write, scope: 'read', tool: 'read_report' }).decision).toBe('allow')
+  expect(auditReportCall({ ...write, scope: 'read' })).toMatchObject({
+    decision: 'deny',
+    reason: 'scope_denied',
+  })
+  expect(auditReportCall({ ...write, approvedReport: null }).reason).toBe('approval_required')
+  expect(auditReportCall(write).decision).toBe('allow')
+  expect(auditReportCall({ ...write, report: 'B' })).toMatchObject({
+    delegator: 'learning-user',
+    actor: 'report-agent',
+    tool: 'write_report',
+    report: 'B',
+    approvedReport: 'A',
+    decision: 'deny',
+    reason: 'approval_target_mismatch',
+  })
 })

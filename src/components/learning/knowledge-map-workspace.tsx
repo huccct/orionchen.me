@@ -44,7 +44,7 @@ type WorkspaceProps = {
   modes: string[]
   reference?: ReactNode
   experimentFor: (concept: MapConcept) => string | null
-  Experiment: ComponentType<{ mode: string; onExplore: (id: string) => void }>
+  Experiment: ComponentType<{ mode: string; onExplore: (id: string) => void }> | ReactNode
 }
 type Camera = { x: number; y: number; scale: number }
 
@@ -212,17 +212,19 @@ export function KnowledgeMapWorkspace({
           ))}
         </nav>
         <div className="mindmap-tools">
-          <button
-            type="button"
-            aria-label="学习说明与参考"
-            aria-pressed={showReference}
-            onClick={() => {
-              setShowReference(!showReference)
-              setSelected(null)
-            }}
-          >
-            <BookOpen size={18} />
-          </button>
+          {reference && (
+            <button
+              type="button"
+              aria-label="学习说明与参考"
+              aria-pressed={showReference}
+              onClick={() => {
+                setShowReference(!showReference)
+                setSelected(null)
+              }}
+            >
+              <BookOpen size={18} />
+            </button>
+          )}
           <ThemeToggle label="切换主题" />
         </div>
       </header>
@@ -501,7 +503,11 @@ export function KnowledgeMapWorkspace({
         </div>
         {mode !== '知识地图' && (
           <div className="mindmap-experiment" key={mode}>
-            <Experiment mode={mode} onExplore={explore} />
+            {typeof Experiment === 'function' ? (
+              <Experiment mode={mode} onExplore={explore} />
+            ) : (
+              Experiment
+            )}
           </div>
         )}
         {((concept && branch && notes) || showReference) && (
@@ -587,10 +593,12 @@ export function KnowledgeMapWorkspace({
                         <ArrowRight size={14} />
                       </button>
                     )}
-                    <button type="button" onClick={() => changeMode('理解检查')}>
-                      基础理解检查
-                      <Check size={14} />
-                    </button>
+                    {modes.includes('理解检查') && (
+                      <button type="button" onClick={() => changeMode('理解检查')}>
+                        基础理解检查
+                        <Check size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
               )

@@ -5,6 +5,7 @@ import {
   type ContextCardId,
 } from '@/components/learning/context-evidence'
 import { contextBranches, contextCurriculum } from '@/components/learning/context-data'
+import { compareMemory, memoryCases } from '@/components/learning/memory-lab'
 
 it('bounds claims by selected evidence, preserving omissions, freshness and conflicts', () => {
   expect(assessContext('stack', [], 8).status).toBe('missing')
@@ -45,4 +46,10 @@ it('keeps map links valid', () => {
     expect(contextBranches.some((branch) => branch.id === concept.branch)).toBe(true)
     for (const id of contextCurriculum.notes[concept.id]!.related) expect(ids).toContain(id)
   }
+})
+
+it('uses confirmed project memory and never revives a superseded preference', () => {
+  const results = memoryCases.map(({ day, expected }) => ({ ...compareMemory(day), expected }))
+  expect(results.every(({ scoped, expected }) => scoped === expected)).toBe(true)
+  expect(results.filter(({ latest, expected }) => latest === expected)).toHaveLength(3)
 })

@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest'
 import { agentTrace } from '@/components/learning/agent-trace'
 import { agentBranches, agentCurriculum } from '@/components/learning/agent-data'
+import { routeRelease } from '@/components/learning/agent-platform-experiment'
 
 it('distinguishes acknowledgements, duplicate side effects and cancellation', () => {
   expect(agentTrace('success', true).at(-1)).toMatchObject({ state: '成功', writes: 1 })
@@ -25,4 +26,11 @@ it('connects every concept to a branch and existing related concepts', () => {
     for (const related of agentCurriculum.notes[node.id]!.related)
       expect(ids.has(related)).toBe(true)
   }
+})
+
+it('blocks a failing candidate and can route new work back to a known good version', () => {
+  const active = routeRelease('v1', 'v2')
+  expect(active).toBe('v2')
+  expect(routeRelease(active, 'v3')).toBe('v2')
+  expect(routeRelease(active, 'v1')).toBe('v1')
 })

@@ -1,0 +1,48 @@
+---
+title: 'Agent 轨迹评测与回归门禁'
+date: '2026-11-18'
+slug: agent-trace-evaluation
+summary: '用真实 worker 事件和数据库快照检查接管时机、重复写入与任务恢复。'
+tags: [ai, agent, evaluation]
+draft: false
+---
+
+两次运行都可能把任务标为 `succeeded`。其中一次复用了原来的报告，另一次悄悄创建了第二份。只检查任务终态，会让这两次运行一起通过。
+
+## 跑出两条轨迹
+
+沿用 [Agent Runtime](/learning/agent-runtime) 的实验。Worker A 提交报告后被杀，Worker B 在租约到期前后各尝试领取一次。在 macOS 或 Linux 下载脚本，用 Python 3 运行。
+
+<a href="/learning/experiments/agent-runtime.py" download>下载实验脚本 agent-runtime.py</a>
+
+```bash
+python3 agent-runtime.py --trace > trace.jsonl
+python3 agent-runtime.py --trace --duplicate-report > duplicate.jsonl
+```
+
+每个 JSONL 文件保存一次完整运行，每行是一条事件。判定结果写到终端。正常版退出码是 `0`，故障版故意给每次执行换一个操作键，退出码是 `1`。
+
+## 用事件定位，用快照核对
+
+先在两份文件里找 worker B 在 `t=10` 的 `tool_result`。正常版的 `created` 为 `false`，`report_id` 仍是 `1`。故障版的 `created` 为 `true`，报告 ID 变成 `2`。接着看结尾的 `process_exit`，两份轨迹的任务状态都是 `succeeded`，数据库中的报告 ID 却分别是 `[1]` 和 `[1, 2]`。
+
+```text
+PASS: lease respected, original report reused, task recovered
+FAIL: create-report attempt 2 (worker B): created report 2, expected reuse of report 1
+```
+
+worker 在事务提交后记录工具事件。父进程在每次 worker 退出后记录退出码，并直接查询任务和报告表。即使 worker 被杀，父进程仍能记录数据库里实际留下了什么。事件时间沿用上一课的手动时钟，用于验证租约边界。
+
+## 把预期写成门禁
+
+1. **故障确实发生。** A 因 `SIGKILL` 退出，数据库里已有一份报告，任务仍在执行且未保存结果。
+2. **租约得到遵守。** B 在到期前被拒绝，任务和报告保持原样；到期后才能接管。
+3. **恢复符合业务预期。** 第 2 次工具调用复用原报告，任务完成并指向同一个报告 ID，数据库中始终只有一份报告。
+
+用下面这条命令做回归门禁。CI 可以直接按退出码判定，也可以加上 `--trace` 保存运行轨迹供失败时排查。故障版用于验证评分规则能抓住已知回归。
+
+```bash
+python3 agent-runtime.py
+```
+
+练习时先问自己，如果只检查最后一个 worker 的退出码或任务的 `succeeded` 状态，会漏掉哪一条错误？再回看 [模型评测与可观测性](/learning/evaluation)，对比模型输出正确性和 Agent 执行正确性分别需要哪些证据。

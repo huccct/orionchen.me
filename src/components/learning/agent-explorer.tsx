@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import { KnowledgeMapWorkspace } from './knowledge-map-workspace'
 import { agentBranches, agentCurriculum } from './agent-data'
+import { AgentPlatformExperiment } from './agent-platform-experiment'
 import { agentScenarios, agentTrace, type AgentScenario } from './agent-trace'
 import './react-explorer.css'
 
@@ -14,21 +15,35 @@ export function AgentExplorer({ reference }: { reference: ReactNode }) {
       branches={agentBranches}
       concepts={agentCurriculum.concepts}
       conceptNotes={agentCurriculum.notes}
-      modes={['知识地图', '任务实验']}
+      modes={['知识地图', '任务实验', '架构与发布']}
       reference={reference}
-      experimentFor={(concept) =>
-        ['tool-call', 'tool-result', 'task-state', 'retry', 'idempotency', 'cancellation'].includes(
-          concept.id
-        )
+      experimentFor={(concept) => {
+        if (concept.branch === 'architecture') return '架构与发布'
+        return [
+          'tool-call',
+          'tool-result',
+          'task-state',
+          'retry',
+          'idempotency',
+          'cancellation',
+        ].includes(concept.id)
           ? '任务实验'
           : null
-      }
-      Experiment={AgentExperiment}
+      }}
+      Experiment={AgentActivities}
     />
   )
 }
 
-function AgentExperiment({ onExplore }: { mode: string; onExplore: (id: string) => void }) {
+function AgentActivities({ mode, onExplore }: { mode: string; onExplore: (id: string) => void }) {
+  return mode === '架构与发布' ? (
+    <AgentPlatformExperiment onExplore={onExplore} />
+  ) : (
+    <AgentExperiment onExplore={onExplore} />
+  )
+}
+
+function AgentExperiment({ onExplore }: { onExplore: (id: string) => void }) {
   const [scenario, setScenario] = useState<AgentScenario>('success')
   const [idempotent, setIdempotent] = useState(true)
   const [prediction, setPrediction] = useState<number | null>(null)

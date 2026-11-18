@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { layoutKnowledgeMap, groupKey } from '@/components/learning/map-layout'
+import { agentLabMaps } from '@/components/learning/agent-lab-data'
 import {
   reactMapBranches,
   reactMapConcepts,
@@ -14,6 +15,10 @@ import {
 for (const [name, branches, concepts, notes] of [
   ['React', reactMapBranches, reactMapConcepts, reactMapNotes],
   ['NestJS', nestMapBranches, nestMapConcepts, nestMapNotes],
+  ...Object.entries(agentLabMaps).map(
+    ([slug, { branches, curriculum }]) =>
+      [slug, branches, curriculum.concepts, curriculum.notes] as const
+  ),
 ] as const) {
   describe(`${name} curriculum`, () => {
     it('has explained, connected advanced and engineering topics in every branch', () => {

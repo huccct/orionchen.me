@@ -2,6 +2,7 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { KnowledgeMapWorkspace } from './knowledge-map-workspace'
 import { toolsMcpBranches, toolsMcpCurriculum } from './tools-mcp-data'
+import { auditReportCall } from './report-authorization'
 import {
   toolCallTrace,
   toolScenarios,
@@ -19,33 +20,142 @@ export function ToolsMcpExplorer({ reference }: { reference: ReactNode }) {
       branches={toolsMcpBranches}
       concepts={toolsMcpCurriculum.concepts}
       conceptNotes={toolsMcpCurriculum.notes}
-      modes={['知识地图', '调用实验', '理解检查']}
+      modes={['知识地图', '调用实验', '授权实验', '理解检查']}
       reference={reference}
-      experimentFor={(concept) =>
-        [
+      experimentFor={(concept) => {
+        if (['delegation', 'confirmation', 'authorization-audit'].includes(concept.id))
+          return '授权实验'
+        return [
           'proposal',
           'schema',
           'result',
           'permissions',
-          'confirmation',
           'errors',
           'timeout',
           'idempotency',
         ].includes(concept.id)
           ? '调用实验'
           : null
-      }
+      }}
       Experiment={ToolsActivities}
     />
   )
 }
 function ToolsActivities({ mode, onExplore }: { mode: string; onExplore: (id: string) => void }) {
+  if (mode === '授权实验') return <AuthorizationExperiment onExplore={onExplore} />
   return mode === '理解检查' ? (
     <ToolsPractice onExplore={onExplore} />
   ) : (
     <ToolsExperiment onExplore={onExplore} />
   )
 }
+
+const authorizationCases = [
+  {
+    label: '只读委托 · 读取报告 A',
+    scope: 'read',
+    tool: 'read_report',
+    report: 'A',
+    approvedReport: null,
+  },
+  {
+    label: '只读委托 · 已批准写 A',
+    scope: 'read',
+    tool: 'write_report',
+    report: 'A',
+    approvedReport: 'A',
+  },
+  {
+    label: '读写委托 · 尚未批准写 A',
+    scope: 'read-write',
+    tool: 'write_report',
+    report: 'A',
+    approvedReport: null,
+  },
+  {
+    label: '读写委托 · 按批准写 A',
+    scope: 'read-write',
+    tool: 'write_report',
+    report: 'A',
+    approvedReport: 'A',
+  },
+  {
+    label: '读写委托 · 批准 A，尝试写 B',
+    scope: 'read-write',
+    tool: 'write_report',
+    report: 'B',
+    approvedReport: 'A',
+  },
+] as const
+
+const authorizationReasons = {
+  allowed: '委托范围和本次调用匹配，允许执行。',
+  scope_denied: '委托只涵盖读取，即使批准了报告 A，也没有写入权限。',
+  approval_required: '委托涵盖写入，报告 A 仍需用户批准。',
+  approval_target_mismatch: '批准的是报告 A，写入报告 B 需要重新审批。',
+}
+
+function AuthorizationExperiment({ onExplore }: { onExplore: (id: string) => void }) {
+  const [selected, setSelected] = useState<number | null>(null)
+  const scenario = selected === null ? undefined : authorizationCases[selected]
+  const audit = scenario && auditReportCall(scenario)
+
+  return (
+    <div className="react-learning react-activities">
+      <section className="react-workspace" aria-label="委托授权与审计实验">
+        <div className="react-heading">
+          <h2>Agent 可以代表用户写哪份报告？</h2>
+          <p>
+            先预测调用会放行还是拒绝，再选择场景验证。实验在浏览器里计算授权结果并生成审计记录。
+          </p>
+        </div>
+        <div className="react-experiment-layout">
+          <section className="react-experiment-input" aria-label="授权条件">
+            <fieldset>
+              <legend>模拟一次调用</legend>
+              <div className="react-options">
+                {authorizationCases.map(({ label }, index) => (
+                  <button
+                    type="button"
+                    key={label}
+                    aria-pressed={selected === index}
+                    onClick={() => setSelected(index)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          </section>
+          <section className="react-timeline-panel min-w-0" aria-label="授权审计">
+            <div className="react-trace" aria-live="polite">
+              <h3>{audit ? (audit.decision === 'allow' ? '允许执行' : '拒绝执行') : '审计记录'}</h3>
+              {audit && (
+                <>
+                  <p>{authorizationReasons[audit.reason]}</p>
+                  <pre className="whitespace-pre-wrap">
+                    <code>{JSON.stringify(audit, null, 2)}</code>
+                  </pre>
+                </>
+              )}
+            </div>
+            <p className="react-note">
+              实验身份和范围来自预设场景。结果只用于学习，不连接 MCP 服务或写入报告。
+            </p>
+            <button
+              type="button"
+              className="react-text-link"
+              onClick={() => onExplore('authorization-audit')}
+            >
+              回到授权决策审计
+            </button>
+          </section>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function ToolsExperiment({ onExplore }: { onExplore: (id: string) => void }) {
   const [scenario, setScenario] = useState<ToolScenario>('save')
   const [decision, setDecision] = useState<ToolDecision>('pending')

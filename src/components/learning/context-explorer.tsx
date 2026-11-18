@@ -2,6 +2,7 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { KnowledgeMapWorkspace } from './knowledge-map-workspace'
 import { contextBranches, contextCurriculum } from './context-data'
+import { compareMemory, memoryCases } from './memory-lab'
 import {
   assessContext,
   contextCards,
@@ -20,26 +21,120 @@ export function ContextExplorer({ reference }: { reference: ReactNode }) {
       branches={contextBranches}
       concepts={contextCurriculum.concepts}
       conceptNotes={contextCurriculum.notes}
-      modes={['知识地图', '资料实验', '理解检查']}
+      modes={['知识地图', '资料实验', '记忆实验', '理解检查']}
       reference={reference}
-      experimentFor={(concept) =>
-        ['selection', 'freshness', 'budget', 'compaction', 'uncertainty', 'boundaries'].includes(
-          concept.id
-        )
+      experimentFor={(concept) => {
+        if (['memory-notes', 'memory-lifecycle', 'memory-evaluation'].includes(concept.id))
+          return '记忆实验'
+        return [
+          'selection',
+          'freshness',
+          'budget',
+          'compaction',
+          'uncertainty',
+          'boundaries',
+        ].includes(concept.id)
           ? '资料实验'
           : null
-      }
+      }}
       Experiment={ContextActivities}
     />
   )
 }
 function ContextActivities({ mode, onExplore }: { mode: string; onExplore: (id: string) => void }) {
+  if (mode === '记忆实验') return <MemoryExperiment onExplore={onExplore} />
   return mode === '理解检查' ? (
     <ContextPractice onExplore={onExplore} />
   ) : (
     <ContextExperiment onExplore={onExplore} />
   )
 }
+
+function MemoryExperiment({ onExplore }: { onExplore: (id: string) => void }) {
+  const [day, setDay] = useState<number | null>(null)
+  const selected = memoryCases.find((item) => item.day === day)
+  const result = selected && compareMemory(selected.day)
+  const evaluations = memoryCases.map(({ day, expected }) => ({ ...compareMemory(day), expected }))
+  const show = (value: string | null) => value ?? '无可用偏好'
+
+  return (
+    <div className="react-learning react-activities">
+      <section className="react-workspace" aria-label="长期记忆实验">
+        <div className="react-heading">
+          <h2>博客的旧发布频率还有效吗？</h2>
+          <p>在不同日期读取博客项目的发布偏好，比较直接取最新记录与按项目、来源和有效期读取。</p>
+        </div>
+        <div className="react-experiment-layout">
+          <section className="react-experiment-input" aria-label="记忆读取时点">
+            <fieldset>
+              <legend>选择要核对的时点</legend>
+              <div className="react-options">
+                {memoryCases.map(({ day: value, label }) => (
+                  <button
+                    type="button"
+                    key={value}
+                    aria-pressed={day === value}
+                    onClick={() => setDay(value)}
+                  >
+                    第 {value} 天 · {label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <p className="react-note">
+              日期、来源与偏好是教学样例，读取和评分规则由 TypeScript 执行。
+            </p>
+          </section>
+          <section className="react-timeline-panel min-w-0" aria-label="记忆读取结果">
+            <div className="react-trace" aria-live="polite">
+              {result && selected ? (
+                <>
+                  <h3>第 {selected.day} 天的读取结果</h3>
+                  <ul className="list-disc pl-5">
+                    <li>直接取最新记录：{show(result.latest)}</li>
+                    <li>按项目、来源和有效期读取：{show(result.scoped)}</li>
+                    <li>样例期望：{show(selected.expected)}</li>
+                  </ul>
+                  <details>
+                    <summary>查看截至这一天的记忆记录</summary>
+                    <ul className="list-disc pl-5">
+                      {result.history.map((record) => (
+                        <li key={record.day}>
+                          第 {record.day} 天 · {record.project} · {record.source} ·{' '}
+                          {record.value ?? '撤回偏好'}
+                          {'expires' in record && `（第 ${record.expires} 天起失效）`}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </>
+              ) : (
+                <p>先选一个日期，再查看这一轮会读到什么。</p>
+              )}
+            </div>
+            <details>
+              <summary>查看全组回归结果</summary>
+              <p>
+                直接取最新记录 {evaluations.filter((item) => item.latest === item.expected).length}/
+                {evaluations.length}；按项目、来源和有效期读取{' '}
+                {evaluations.filter((item) => item.scoped === item.expected).length}/
+                {evaluations.length}。
+              </p>
+            </details>
+            <button
+              type="button"
+              className="react-text-link"
+              onClick={() => onExplore('memory-lifecycle')}
+            >
+              回到长期记忆的写入、更新与失效
+            </button>
+          </section>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 function ContextExperiment({ onExplore }: { onExplore: (id: string) => void }) {
   const [question, setQuestion] = useState<ContextQuestion>('stack')
   const [selected, setSelected] = useState<ContextCardId[]>([])

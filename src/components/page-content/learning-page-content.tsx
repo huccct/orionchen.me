@@ -9,6 +9,9 @@ import { RequestExplorer } from '@/components/learning/request-explorer'
 import { requestBranches } from '@/components/learning/request-data'
 import { AgentExplorer } from '@/components/learning/agent-explorer'
 import { agentBranches } from '@/components/learning/agent-data'
+import { AgentLabExplorer } from '@/components/learning/agent-lab-explorer'
+import { agentLabMaps } from '@/components/learning/agent-lab-data'
+import type { MapBranch } from '@/components/learning/map-types'
 import { AiCodingExplorer } from '@/components/learning/ai-coding-explorer'
 import { aiCodingBranches } from '@/components/learning/ai-coding-data'
 import { EvaluationExplorer } from '@/components/learning/evaluation-explorer'
@@ -38,6 +41,23 @@ import { nestMapBranches } from '@/components/learning/nestjs-map-data'
 import { LearningMapPreview } from '@/components/learning/learning-map-preview'
 import '@/components/learning/learning-index.css'
 
+const mapPreviews: Partial<Record<string, MapBranch[]>> = {
+  nestjs: nestMapBranches,
+  react: reactMapBranches,
+  'agent-engineering': agentBranches,
+  'agent-runtime': agentLabMaps['agent-runtime'].branches,
+  'agent-trace-evaluation': agentLabMaps['agent-trace-evaluation'].branches,
+  rag: ragBranches,
+  llm: llmBranches,
+  'llm-mechanics': mechanicsBranches,
+  'context-engineering': contextBranches,
+  'tools-mcp': toolsMcpBranches,
+  evaluation: evaluationBranches,
+  'ai-coding': aiCodingBranches,
+  'request-journey': requestBranches,
+  database: databaseBranches,
+}
+
 export function LearningIndexContent({ locale }: { locale: Locale }) {
   const zh = locale === 'zh'
   const prefix = localePathPrefix[locale]
@@ -62,26 +82,23 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
         </p>
       )}
       <div className="learning-shelf">
-        {topics.map((topic) => (
-          <article key={`${topic.lang}-${topic.slug}`}>
-            <Link
-              href={`${localePathPrefix[topic.lang]}/learning/${topic.slug}`}
-              className="learning-entry"
-            >
+        {topics.map(({ lang, slug, title, summary }) => (
+          <article key={`${lang}-${slug}`}>
+            <Link href={`${localePathPrefix[lang]}/learning/${slug}`} className="learning-entry">
               <div className="learning-entry-copy">
-                <h2>{topic.title}</h2>
-                {!zh && topic.lang === 'zh' && (
+                <h2>{title}</h2>
+                {!zh && lang === 'zh' && (
                   <span className="learning-language" lang="en">
                     In Chinese
                   </span>
                 )}
-                <p>{topic.summary}</p>
+                <p>{summary}</p>
                 <span className="learning-entry-action">
                   {zh ? '展开知识地图' : 'Explore the knowledge map'}
                   <ArrowRight size={16} aria-hidden="true" />
                 </span>
               </div>
-              {topic.slug === 'muscle-function' && (
+              {slug === 'muscle-function' && (
                 <Image
                   src="/images/learning/muscles/anatomy-plate.png"
                   alt="人体肌肉前后视教学图"
@@ -91,46 +108,8 @@ export function LearningIndexContent({ locale }: { locale: Locale }) {
                   className="max-h-72 w-full rounded-lg bg-white object-contain"
                 />
               )}
-              {(topic.slug === 'nestjs' ||
-                topic.slug === 'react' ||
-                topic.slug === 'agent-engineering' ||
-                topic.slug === 'rag' ||
-                topic.slug === 'llm' ||
-                topic.slug === 'llm-mechanics' ||
-                topic.slug === 'context-engineering' ||
-                topic.slug === 'tools-mcp' ||
-                topic.slug === 'evaluation' ||
-                topic.slug === 'ai-coding' ||
-                topic.slug === 'request-journey' ||
-                topic.slug === 'database') && (
-                <LearningMapPreview
-                  title={topic.title}
-                  branches={
-                    topic.slug === 'tools-mcp'
-                      ? toolsMcpBranches
-                      : topic.slug === 'context-engineering'
-                        ? contextBranches
-                        : topic.slug === 'llm-mechanics'
-                          ? mechanicsBranches
-                          : topic.slug === 'ai-coding'
-                            ? aiCodingBranches
-                            : topic.slug === 'evaluation'
-                              ? evaluationBranches
-                              : topic.slug === 'llm'
-                                ? llmBranches
-                                : topic.slug === 'rag'
-                                  ? ragBranches
-                                  : topic.slug === 'database'
-                                    ? databaseBranches
-                                    : topic.slug === 'request-journey'
-                                      ? requestBranches
-                                      : topic.slug === 'agent-engineering'
-                                        ? agentBranches
-                                        : topic.slug === 'react'
-                                          ? reactMapBranches
-                                          : nestMapBranches
-                  }
-                />
+              {mapPreviews[slug] && (
+                <LearningMapPreview title={title} branches={mapPreviews[slug]} />
               )}
             </Link>
           </article>
@@ -159,6 +138,15 @@ export function LearningTopicContent({ locale, slug }: { locale: Locale; slug: s
     )
   if (slug === 'agent-engineering')
     return <AgentExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
+  if (slug === 'agent-runtime' || slug === 'agent-trace-evaluation')
+    return (
+      <AgentLabExplorer
+        slug={slug}
+        title={topic.title}
+        summary={topic.summary ?? '从概念进入动手实验'}
+        lesson={<MDXContent code={topic.body} components={mdxComponents} />}
+      />
+    )
   if (slug === 'ai-coding')
     return (
       <AiCodingExplorer reference={<MDXContent code={topic.body} components={mdxComponents} />} />
